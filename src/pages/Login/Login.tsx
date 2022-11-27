@@ -41,7 +41,7 @@ const Login = () => {
     const handleSubmitLogin = (values: LoginType) => {
         AuthService.signIn(values).then(
             (res: any) => {
-                if (res.statusCode === 201) {
+                if (res.statusCode === 200) {
                     let accessToken = res?.data?.accessToken;
                     if (accessToken) {
                         localStorage.setItem('access_token', accessToken);
@@ -53,6 +53,13 @@ const Login = () => {
                             status: 'success',
                         });
                     }
+                } else {
+                    toast({
+                        position: 'top-right',
+                        title: 'Đăng nhập thất bại',
+                        duration: 2000,
+                        status: 'error',
+                    });
                 }
             },
             (err) => {

@@ -23,12 +23,10 @@ export const ResetPasswordChema = () => {
 
 export const registerSchema = () => {
     return Yup.object({
-        username: Yup.string()
-            .trim()
-            .min(6, 'Username must be more than 6 characters')
-            .required('Username is required'),
-        email: Yup.string().email('Please enter correct email').required('Email is required'),
-        password: Yup.string().required('Password must be more than 6 characters'),
-        confirmPasswords: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+        email: Yup.string().trim().required('Vui lòng nhập email').email('Vui lòng nhập email đúng định dạng'),
+        password: Yup.string().required('Vui lòng nhập mật khẩu').min(6, 'Mật khẩu phải lớn hơn 6 kí tự'),
+        confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Mật khẩu không khớp'),
+        first_name: Yup.string().required('Vui lòng họ của bạn'),
+        last_name: Yup.string().required('Vui lòng tên của bạn'),
     });
 };
