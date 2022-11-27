@@ -1,33 +1,63 @@
-import { Button, FormControl, Input, InputGroup, InputLeftElement, InputRightElement } from '@chakra-ui/react';
+import {
+    Button,
+    FormControl,
+    Input,
+    InputGroup,
+    InputLeftElement,
+    InputRightElement,
+    useToast,
+} from '@chakra-ui/react';
 import { ErrorMessage, Field, Form, Formik, FormikProps } from 'formik';
 import { useState } from 'react';
 import { BiUserCircle } from 'react-icons/bi';
 import { FiUserCheck } from 'react-icons/fi';
 import { HiEye, HiEyeOff } from 'react-icons/hi';
 import { RiLockPasswordFill, RiLockPasswordLine } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import images from '~/assets/images';
 import Image from '~/components/Image';
 import Logo from '~/components/Logo';
 import InputFieldIcon from '~/layouts/components/CustomField/InputFieldIcon';
+import { AuthService } from '~/services';
+import { RegisterType } from '~/utils/Types';
+import { registerSchema } from '~/utils/validationSchema';
 import './Register.scss';
-type ValuesForm = {
-    username: string;
-    password: string;
-    rememberPassword: boolean;
-};
 
 const initLoginForm = {
-    username: '',
+    email: '',
     password: '',
-    rememberPassword: false,
+    confirmPassword: '',
+    first_name: '',
+    last_name: '',
 };
 
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleSubmitLogin = (values: ValuesForm) => {
+    const Navigate = useNavigate();
+    const toast = useToast();
+
+    const handleSubmitLogin = (values: RegisterType) => {
         console.log(values);
+
+        AuthService.Login(values).then((res: any) => {
+            if (res.statusCode === 201) {
+                toast({
+                    position: 'top-right',
+                    title: 'Đăng ký thành công',
+                    duration: 2000,
+                    status: 'success',
+                });
+                Navigate('/login');
+            } else {
+                toast({
+                    position: 'top-right',
+                    title: 'Đăng ký thất bại',
+                    duration: 2000,
+                    status: 'error',
+                });
+            }
+        });
     };
 
     const HandleTogglePassword = () => {
@@ -60,31 +90,45 @@ const Register = () => {
                         </div>
                         <Formik
                             initialValues={initLoginForm}
-                            onSubmit={(values: ValuesForm) => handleSubmitLogin(values)}
+                            validationSchema={registerSchema}
+                            onSubmit={(values: RegisterType) => handleSubmitLogin(values)}
                         >
-                            {(formik: FormikProps<ValuesForm>) => (
+                            {(formik: FormikProps<RegisterType>) => (
                                 <Form className=" max-w-[400px] m-auto">
                                     <div className="form-group">
                                         <InputFieldIcon
                                             type="text"
-                                            name="username"
+                                            name="email"
                                             size="md"
                                             icon={<FiUserCheck />}
                                             borderRadius="10px"
                                             paddingY={7}
-                                            placeholder="Tên đăng nhập.."
+                                            placeholder="Email.."
                                         />
                                     </div>
-                                    <div className="form-group my-3">
-                                        <InputFieldIcon
-                                            type="text"
-                                            name="fullname"
-                                            size="md"
-                                            icon={<BiUserCircle />}
-                                            borderRadius="10px"
-                                            paddingY={7}
-                                            placeholder="Họ tên đầy đủ.."
-                                        />
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="form-group my-3 col-span-1">
+                                            <InputFieldIcon
+                                                type="text"
+                                                name="first_name"
+                                                size="md"
+                                                icon={<BiUserCircle />}
+                                                borderRadius="10px"
+                                                paddingY={7}
+                                                placeholder="Nhập họ.."
+                                            />
+                                        </div>
+                                        <div className="form-group my-3 col-span-1">
+                                            <InputFieldIcon
+                                                type="text"
+                                                name="last_name"
+                                                size="md"
+                                                icon={<BiUserCircle />}
+                                                borderRadius="10px"
+                                                paddingY={7}
+                                                placeholder="Nhập tên.."
+                                            />
+                                        </div>
                                     </div>
                                     <div className="form-group my-3 password">
                                         <FormControl>
@@ -106,7 +150,6 @@ const Register = () => {
                                                                 <Input
                                                                     {...field}
                                                                     type={showPassword ? 'text' : 'password'}
-                                                                    name="password"
                                                                     borderRadius="10px"
                                                                     paddingY={7}
                                                                     placeholder="Nhập mật khẩu.."
@@ -135,7 +178,7 @@ const Register = () => {
                                                             <ErrorMessage
                                                                 component="div"
                                                                 name={field.name}
-                                                                className="error w-full text-left"
+                                                                className="error-validate"
                                                             />
                                                         </>
                                                     );
@@ -145,7 +188,7 @@ const Register = () => {
                                     </div>
                                     <div className="form-group my-3 password">
                                         <FormControl>
-                                            <Field name="password">
+                                            <Field name="confirmPassword">
                                                 {(props: any) => {
                                                     const { field, meta } = props;
                                                     return (
@@ -163,10 +206,9 @@ const Register = () => {
                                                                 <Input
                                                                     {...field}
                                                                     type={showPassword ? 'text' : 'password'}
-                                                                    name="password"
                                                                     borderRadius="10px"
                                                                     paddingY={7}
-                                                                    placeholder="Xác nhận nmật khẩu.."
+                                                                    placeholder="Xác nhận mật khẩu.."
                                                                     borderRight="2px solid var(--primary)"
                                                                     className={`${
                                                                         meta.touched && meta.error && 'is-invalid'
@@ -192,7 +234,7 @@ const Register = () => {
                                                             <ErrorMessage
                                                                 component="div"
                                                                 name={field.name}
-                                                                className="error w-full text-left"
+                                                                className="error-validate"
                                                             />
                                                         </>
                                                     );
