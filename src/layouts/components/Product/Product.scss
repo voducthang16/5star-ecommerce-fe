@@ -1,0 +1,43 @@
+.size:checked ~ .size-label,
+.color:checked ~ .color-label {
+    color: #fe696a;
+    border-color: #fe696a;
+}
+
+.product-hover {
+    .product-size-hover {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(-20px);
+        transition: all ease 0.4s;
+    }
+    .wishlist-wrapper {
+        .wishlist-text {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            left: 50%;
+            transform: translate(-50%, -20px);
+            transition: all ease 0.4s;
+        }
+        &:hover {
+            .wishlist-text {
+                transform: translate(-50%, 0px);
+                opacity: 1;
+                visibility: visible;
+                pointer-events: visible;
+                transition: all ease 0.4s;
+            }
+        }
+    }
+    &:hover {
+        .product-size-hover {
+            transform: translateY(0px);
+            opacity: 1;
+            visibility: visible;
+            pointer-events: visible;
+            transition: all ease 0.4s;
+        }
+    }
+}

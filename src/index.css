@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    @apply w-full mx-auto px-4 2xl:max-w-screen-2xl 2xl:px-32 
+    xl:max-w-screen-xl xl:px-10 lg:max-w-screen-lg md:max-w-screen-md sm:max-w-screen-sm;
+}
+
+.input {
+    @apply block w-full py-3 px-4 text-base outline-none bg-transparent
+    focus:outline-none transition ease-in-out duration-100;
+}
+
+.card {
+    @apply bg-white rounded-md;
+}
+
+.input-form {
+    @apply shadow-md rounded-lg focus:ring-2 focus:ring-offset-0 focus:ring-primary focus:ring-opacity-50 focus:shadow-none;
+}
+
+.input-search {
+    @apply block w-full py-3 px-4 text-base outline-none bg-slate-50 shadow-none;
+}
+
+/* Header */
+
+.sticky {
+    @apply fixed top-0 left-0 right-0 z-[9999] animate-navbarShow;
+}
+
+.sticky .navbar,
+.three-sharp {
+    @apply hidden;
+}
+
+.sticky .three-sharp {
+    @apply lg:block;
+}
+
+.sticky-mt-36 {
+    @apply pt-36;
+}
+
+.sticky-mt-20 {
+    @apply pt-20;
+}
+
+.icon-header-wrapper {
+    @apply relative p-2 hover:bg-slate-100 hover:transition-all hover:rounded-full hover:cursor-pointer;
+}
+
+/* End Header */
+
+/* Scroll To Top */
+.scroll-to-top.active {
+    @apply opacity-100 visible;
+}
+
+/* HOVER */
+
+.hover-text {
+    @apply hover:text-primary transition-all duration-200 cursor-pointer;
+}
+
+.error-validate {
+    @apply text-sm text-red-500 text-left w-full;
+}
