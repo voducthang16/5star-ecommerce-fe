@@ -3,7 +3,19 @@ import { AiOutlineDelete, AiOutlineHeart, AiOutlineShoppingCart, AiOutlineUser }
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { IoReorderThreeSharp } from 'react-icons/io5';
 import { Link, NavLink } from 'react-router-dom';
-import Image from '~/components//Image';
+import {
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    PopoverHeader,
+    PopoverBody,
+    PopoverFooter,
+    PopoverArrow,
+    PopoverCloseButton,
+    PopoverAnchor,
+    Button,
+} from '@chakra-ui/react';
+import Image from '~/components/Image';
 import { FourSquaresIcon } from '~/components/Icons';
 import Logo from '~/components/Logo';
 import Search from '../Search';
@@ -85,9 +97,15 @@ function Header() {
                                         <IoReorderThreeSharp className="text-2xl" />
                                     </li>
                                     <li className="hidden lg:block icon-header-wrapper">
-                                        <Link to={'/my-account'}>
-                                            <AiOutlineUser className="text-2xl" />
-                                        </Link>
+                                        <Popover placement="bottom">
+                                            <PopoverTrigger>
+                                                <AiOutlineUser className="text-2xl" />
+                                            </PopoverTrigger>
+                                            <PopoverContent className="mr-32">
+                                                <Link to={'/my-account'}>Tài khoản của tôi</Link>
+                                                {/* <PopoverBody>Tài khoản của tôi</PopoverBody> */}
+                                            </PopoverContent>
+                                        </Popover>
                                     </li>
                                     <li className="hidden lg:block icon-header-wrapper relative">
                                         <Link to={'/cart'}>
