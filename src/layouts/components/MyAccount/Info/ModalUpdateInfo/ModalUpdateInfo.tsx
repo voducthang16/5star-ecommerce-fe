@@ -42,16 +42,13 @@ const ModalUpdateInfo = () => {
             </Button>
             <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} size="xl">
                 <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>Cập nhật thông tin cơ bản</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        <Formik
-                            initialValues={initCheckoutForm}
-                            onSubmit={(values: ValuesForm) => handleSubmitForm(values)}
-                        >
-                            {(formik: FormikProps<ValuesForm>) => (
-                                <Form>
+                <Formik initialValues={initCheckoutForm} onSubmit={(values: ValuesForm) => handleSubmitForm(values)}>
+                    {(formik: FormikProps<ValuesForm>) => (
+                        <Form>
+                            <ModalContent>
+                                <ModalHeader>Cập nhật thông tin cơ bản</ModalHeader>
+                                <ModalCloseButton />
+                                <ModalBody>
                                     <div className="form-group grid gird-cols-1 md:grid-cols-2 gap-2">
                                         <InputField
                                             name="fullname"
@@ -71,26 +68,26 @@ const ModalUpdateInfo = () => {
                                     </div>
                                     <div className="form-group mt-2">
                                         <InputField
-                                            type="email"
-                                            name="email"
+                                            type="text"
+                                            name="address"
                                             placeholder="Nhập địa chỉ"
                                             label="Địa chỉ"
                                         />
                                     </div>
-                                </Form>
-                            )}
-                        </Formik>
-                    </ModalBody>
+                                </ModalBody>
 
-                    <ModalFooter>
-                        <Button colorScheme="blue" mr={3} onClick={onClose}>
-                            Đóng
-                        </Button>
-                        <Button variant="ghost" type="submit">
-                            Cập nhật
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
+                                <ModalFooter>
+                                    <Button colorScheme="blue" mr={3} onClick={onClose}>
+                                        Đóng
+                                    </Button>
+                                    <Button variant="ghost" type="submit">
+                                        Cập nhật
+                                    </Button>
+                                </ModalFooter>
+                            </ModalContent>
+                        </Form>
+                    )}
+                </Formik>
             </Modal>
         </>
     );
