@@ -1,22 +1,15 @@
+import { Button, Popover, PopoverContent, PopoverTrigger, Tooltip } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { AiOutlineDelete, AiOutlineHeart, AiOutlineShoppingCart, AiOutlineUser } from 'react-icons/ai';
+import { BiMessageSquareCheck } from 'react-icons/bi';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { IoReorderThreeSharp } from 'react-icons/io5';
+import { MdOutlineManageAccounts } from 'react-icons/md';
+import { RiUserSharedLine } from 'react-icons/ri';
+import { TbUserCircle } from 'react-icons/tb';
 import { Link, NavLink } from 'react-router-dom';
-import {
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-    PopoverHeader,
-    PopoverBody,
-    PopoverFooter,
-    PopoverArrow,
-    PopoverCloseButton,
-    PopoverAnchor,
-    Button,
-} from '@chakra-ui/react';
-import Image from '~/components/Image';
 import { FourSquaresIcon } from '~/components/Icons';
+import Image from '~/components/Image';
 import Logo from '~/components/Logo';
 import Search from '../Search';
 import './Header.scss';
@@ -71,51 +64,129 @@ function Header() {
                             <div className="col-span-1 lg:col-span-2 flex items-center">
                                 <ul className="flex-1 flex justify-end lg:space-x-2 xl:space-x-6">
                                     <li onClick={handleShowNavbar} className="hidden icon-header-wrapper three-sharp">
-                                        <IoReorderThreeSharp className="text-2xl" />
+                                        <Button className="!p-3 !rounded-full !bg-transparent hover:text-primary">
+                                            <div className="icon relative text-2xl">
+                                                <IoReorderThreeSharp />
+                                            </div>
+                                        </Button>
                                     </li>
                                     <li className="hidden lg:block icon-header-wrapper">
                                         <Link to={'/my-account/wish-list'}>
-                                            <AiOutlineHeart className="text-2xl" />
-                                            <span
-                                                className="absolute -top-1 -right-1 bg-primary text-white h-4 w-4 
-                                        block text-center rounded-full text-[10px]"
-                                            >
-                                                5
-                                            </span>
+                                            <Button className="!p-3 !rounded-full !bg-transparent hover:!bg-hover hover:text-primary">
+                                                <Tooltip label="Yêu thích">
+                                                    <div className="icon relative text-2xl">
+                                                        <AiOutlineHeart />
+                                                        <span className="badge-notif-header">9</span>
+                                                    </div>
+                                                </Tooltip>
+                                            </Button>
                                         </Link>
                                     </li>
                                     <li className="icon-header-wrapper">
-                                        <IoMdNotificationsOutline className="text-2xl" />
-                                        <span
-                                            className="absolute top-0 right-0 bg-primary text-white h-4 w-4 
-                                        block text-center rounded-full text-[10px]"
-                                        >
-                                            3
-                                        </span>
+                                        <div className="notification relative z-20">
+                                            <Popover>
+                                                <PopoverTrigger>
+                                                    <Button className="!p-3 !bg-transparent hover:!bg-hover hover:text-primary !rounded-full">
+                                                        <Tooltip label="Thông báo">
+                                                            <div className="icon relative text-2xl">
+                                                                <IoMdNotificationsOutline />
+                                                                <span className="badge-notif-header">3</span>
+                                                            </div>
+                                                        </Tooltip>
+                                                        <span className="pulse"></span>
+                                                    </Button>
+                                                </PopoverTrigger>
+
+                                                <PopoverContent className="mr-[70px]">
+                                                    <div className="menu-dropdown bg-white text-base shadow-xl rounded-md">
+                                                        <div className="dropdown-header-title p-3 border-b">
+                                                            <h3 className="text-base font-medium">Thông báo</h3>
+                                                        </div>
+                                                        <ul className="list-menu p-2 py-3 z-50">
+                                                            {[1].map((menu, index) => (
+                                                                <li key={index}>
+                                                                    <Link to="" className="link-icon-header">
+                                                                        <span className="icon bg-primary p-1 rounded-md text-white text-xl mr-2">
+                                                                            <BiMessageSquareCheck />
+                                                                        </span>
+                                                                        <span className="title font-medium">
+                                                                            Bạn vừa nhận một tin nhắn mới
+                                                                        </span>
+                                                                    </Link>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                </PopoverContent>
+                                            </Popover>
+                                        </div>
                                     </li>
                                     <li onClick={handleShowNavbarMobile} className="icon-header-wrapper lg:hidden">
                                         <IoReorderThreeSharp className="text-2xl" />
                                     </li>
                                     <li className="hidden lg:block icon-header-wrapper">
-                                        <Popover placement="bottom">
-                                            <PopoverTrigger>
-                                                <AiOutlineUser className="text-2xl" />
-                                            </PopoverTrigger>
-                                            <PopoverContent className="mr-32">
-                                                <Link to={'/my-account'}>Tài khoản của tôi</Link>
-                                                {/* <PopoverBody>Tài khoản của tôi</PopoverBody> */}
-                                            </PopoverContent>
-                                        </Popover>
+                                        <div className="notification relative z-20">
+                                            <Popover>
+                                                <PopoverTrigger>
+                                                    <Button className="!p-3 !rounded-full !bg-transparent hover:!bg-hover hover:text-primary">
+                                                        <Tooltip label="Tài khoản">
+                                                            <div className="icon relative text-2xl">
+                                                                <AiOutlineUser />
+                                                                <span className="badge-notif-header">9</span>
+                                                            </div>
+                                                        </Tooltip>
+                                                    </Button>
+                                                </PopoverTrigger>
+
+                                                <PopoverContent className="mr-[70px]" width="250px">
+                                                    <div className="menu-dropdown bg-white text-base shadow-xl rounded-md">
+                                                        <div className="dropdown-header-title p-3 border-b">
+                                                            <h3 className="text-base font-medium">Tài khoản</h3>
+                                                        </div>
+                                                        <ul className="list-menu p-2 py-3 z-50">
+                                                            <li>
+                                                                <Link to="/my-account" className="link-icon-header">
+                                                                    <span className="icon text-primary p-1 text-2xl mr-2">
+                                                                        <MdOutlineManageAccounts />
+                                                                    </span>
+                                                                    <span className="title font-medium">
+                                                                        Tài khoản của tôi
+                                                                    </span>
+                                                                </Link>
+                                                            </li>
+                                                            <li>
+                                                                <Link to="/login" className="link-icon-header">
+                                                                    <span className="icon text-primary p-1 text-2xl mr-2">
+                                                                        <TbUserCircle />
+                                                                    </span>
+                                                                    <span className="title font-medium">Đăng nhập</span>
+                                                                </Link>
+                                                            </li>
+                                                            <li>
+                                                                <Link to="/register" className="link-icon-header">
+                                                                    <span className="icon text-primary p-1 text-2xl mr-2">
+                                                                        <RiUserSharedLine />
+                                                                    </span>
+                                                                    <span className="title font-medium">Đăng ký</span>
+                                                                </Link>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </PopoverContent>
+                                            </Popover>
+                                        </div>
                                     </li>
                                     <li className="hidden lg:block icon-header-wrapper relative">
                                         <Link to={'/cart'}>
-                                            <AiOutlineShoppingCart className="text-2xl" />
-                                            <span
-                                                style={{ fontSize: '10px' }}
-                                                className="absolute -top-1 -right-1 bg-primary text-white h-4 w-4 block text-center rounded-full"
-                                            >
-                                                5
-                                            </span>
+                                            <Button className="!p-3 !rounded-full !bg-transparent hover:!bg-hover hover:text-primary">
+                                                <Tooltip label="Giỏ hàng">
+                                                    <div className="icon relative text-2xl">
+                                                        <AiOutlineShoppingCart />
+
+                                                        <span className="badge-notif-header">9</span>
+                                                    </div>
+                                                </Tooltip>
+                                            </Button>
                                         </Link>
                                         <div className="cart-hover absolute top-full pt-4 right-0 w-[400px]">
                                             <div className="bg-white rounded-xl p-4 cart-hover-wrapper cursor-default">
