@@ -6,6 +6,7 @@ module.exports = {
             colors: {
                 primary: '#319795',
                 secondary: '#748ACC',
+                hover: '#dfe6e9',
                 tblack: '#262834', // text-black
                 tbase: '##767676', // text-gray
                 input: '#F5F8FA', //ebf0f6

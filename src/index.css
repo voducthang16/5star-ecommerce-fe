@@ -54,7 +54,7 @@
 }
 
 .icon-header-wrapper {
-    @apply relative p-2 hover:bg-slate-100 hover:transition-all hover:rounded-full hover:cursor-pointer;
+    @apply relative hover:bg-slate-100 hover:transition-all hover:rounded-full hover:cursor-pointer;
 }
 
 /* End Header */
@@ -72,4 +72,13 @@
 
 .error-validate {
     @apply text-sm text-red-500 text-left w-full;
+}
+
+.link-icon-header {
+    @apply flex items-center hover:bg-hover hover:text-primary hover:transition-all hover:duration-300 rounded-md px-3;
+}
+
+.badge-notif-header {
+    @apply absolute w-[14px] h-[14px] top-[-3px] right-[-5px] text-[9px] bg-primary text-white rounded-full text-center leading-[14px]
+    absolute w-[14px] h-[14px] top-[-3px] right-[-5px] text-[9px] bg-primary text-white rounded-full text-center leading-[14px];
 }
