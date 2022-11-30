@@ -1,13 +1,14 @@
+import { useToast } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import { AddToCartIcon, HeartEmptyIcon } from '~/components/Icons';
 import Image from '~/components/Image';
-import Rate from '../Rate';
-import { insertSize, insertColor, product_parent } from '~/features/cart/cartSlice';
+import { addToCart, getProduct, updateToCart } from '~/features/cart/cartSlice';
 import { getProducts } from '~/features/product/productSlice';
+import CartService from '~/services/CartService';
+import { ResponseType } from '~/utils/Types';
+import Rate from '../Rate';
 import './Product.scss';
-import { AiOutlineShoppingCart } from 'react-icons/ai';
-import { useToast } from '@chakra-ui/react';
 interface ProductProps {
     idProduct: number;
     name?: string;
@@ -21,6 +22,7 @@ interface ProductProps {
 function Product({ idProduct, name, slug, color, size, images, type = 0 }: ProductProps) {
     const dispatch = useAppDispatch();
     const products = useAppSelector(getProducts);
+    const productAddCart = useAppSelector(getProduct);
     const colorArray: any = color ? Object?.entries(color) : '';
     const sizeArray: any = size ? Object?.entries(size) : '';
     const handleChangeImage = (id: number, index: any) => {
@@ -37,15 +39,44 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
         });
     };
 
+    const requestAddToCart = (idStock: number) => {
+        let dataSendRequest = {
+            id_product: idStock,
+            quantity: 1,
+        };
+        CartService.addToCart(dataSendRequest).then((res: ResponseType) => {
+            if (res.statusCode === 201) {
+                const existProduct = productAddCart.find((item: any) => item.id_product === idStock);
+                if (existProduct) {
+                    let dataRedux = {
+                        id_product: idStock,
+                        quantity: existProduct.quantity + 1,
+                    };
+                    dispatch(updateToCart(dataRedux));
+                } else {
+                    dispatch(addToCart(dataSendRequest));
+                }
+                toast({
+                    title: 'Thông báo',
+                    description: 'Thêm vào giỏ hàng',
+                    status: 'success',
+                    position: 'top-right',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            }
+        });
+    };
+
     const toast = useToast();
 
     const handleAddToCart = (e: any, idProduct: number, type: number) => {
         e.preventDefault();
         const idProductParent = idProduct;
         const productParent = document.querySelector(`#product_${idProductParent}`);
-        let idColor: number | undefined;
-        let idSize: number | undefined;
-        let idAttr: number | undefined;
+        let idColor: number = 0;
+        let idSize: number = 0;
+        let idAttr: number = 0;
         if (productParent?.querySelectorAll('.color')) {
             const colorArray = productParent?.querySelectorAll('.color');
             colorArray.forEach((item: any) => {
@@ -62,27 +93,19 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
                 }
             });
         }
+
         if (type === 0) {
-            toast({
-                title: 'Thông báo',
-                description: 'Thêm vào giỏ hàng',
-                status: 'success',
-                position: 'top-right',
-                duration: 3000,
-                isClosable: true,
-            });
+            const find_product = products.find((item: any) => item.id === idProduct) as any;
+            let stockProduct = find_product?.stocks;
+            if (stockProduct?.length === 1) {
+                let idAttr = stockProduct[0].id;
+                requestAddToCart(idAttr);
+            }
         } else if (type === 1) {
             if (idColor) {
-                toast({
-                    title: 'Thông báo',
-                    description: 'Thêm vào giỏ hàng',
-                    status: 'success',
-                    position: 'top-right',
-                    duration: 3000,
-                    isClosable: true,
-                });
                 const find_product = products.find((item: any) => item.id === idProduct) as any;
                 idAttr = find_product.stocks.find((item: any) => item.id_classify_1 === idColor).id;
+                requestAddToCart(idAttr);
             } else {
                 toast({
                     title: 'Thông báo',
@@ -95,18 +118,11 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
             }
         } else if (type === 2) {
             if (idColor && idSize) {
-                toast({
-                    title: 'Thông báo',
-                    description: 'Thêm vào giỏ hàng',
-                    status: 'success',
-                    position: 'top-right',
-                    duration: 3000,
-                    isClosable: true,
-                });
                 const find_product = products.find((item: any) => item.id === idProduct) as any;
                 idAttr = find_product.stocks.find(
                     (item: any) => item.id_classify_1 === idColor && item.id_classify_2 === idSize,
                 ).id;
+                requestAddToCart(idAttr);
             } else if (idSize) {
                 toast({
                     title: 'Thông báo',
