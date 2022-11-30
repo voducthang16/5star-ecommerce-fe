@@ -15,3 +15,8 @@ export type AddToCart = {
     id_product: number;
     quantity: number;
 };
+
+export type ResponseType = {
+    statusCode?: number;
+    data?: any;
+};

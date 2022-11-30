@@ -8,8 +8,13 @@ const addToCart = (data: AddToCart) => {
     return AxiosInstance.post(Config.apiUrl + url, data);
 };
 
+const getCart = () => {
+    return AxiosInstance.get(Config.apiUrl + url);
+};
+
 const CartService = {
     addToCart,
+    getCart,
 };
 
 export default CartService;

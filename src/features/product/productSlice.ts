@@ -49,7 +49,6 @@ export const productSlice = createSlice({
             })
             .addCase(fetchProductAsync.fulfilled, (state, action) => {
                 state.status = 'idle';
-                console.log('action.payload: ', action.payload);
                 state.value = action.payload;
             })
             .addCase(fetchProductAsync.rejected, (state) => {
