@@ -207,7 +207,7 @@ function Home() {
                                     color={item.classify_1}
                                     size={item.classify_2}
                                     type={item.classify_n}
-                                    images={item.image}
+                                    images={item.images}
                                 />
                             </div>
                         ))}
@@ -334,6 +334,7 @@ function Home() {
                         </div>
                         {fourStep.map((item: any, index: number) => (
                             <div
+                                key={index}
                                 className="relative flex flex-col items-center max-w-xs mx-auto"
                                 data-aos="fade-left"
                                 data-aos-delay={index * 200}

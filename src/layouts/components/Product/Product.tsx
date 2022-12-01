@@ -173,7 +173,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
                 </div>
                 <div className="relative">
                     <div className="relative w-full p-[50%] rounded-3xl">
-                        {images.map((item: any, index: any) => (
+                        {images?.map((item: any, index: any) => (
                             <Image
                                 key={index}
                                 className={`images_${idProduct} absolute inset-0 w-full rounded-3xl object-contain bg-[#f1f1f1]`}
@@ -195,12 +195,12 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
                                                 type="radio"
                                                 value={value}
                                                 name="size"
-                                                id={`${idProduct}_${value}`}
+                                                id={`s_${idProduct}_${value}`}
                                             />
                                             <label
                                                 className="size-label bg-white w-8 h-8 text-center 
                                                 leading-8 inline-block border border-slate-200 rounded-lg"
-                                                htmlFor={`${idProduct}_${value}`}
+                                                htmlFor={`s_${idProduct}_${value}`}
                                             >
                                                 {key}
                                             </label>
@@ -231,7 +231,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
                                         className="color w-px h-px appearance-none"
                                         type="radio"
                                         name="color"
-                                        id={`${idProduct}_${value}`}
+                                        id={`c_${idProduct}_${value}`}
                                         value={value}
                                     />
                                     <label
@@ -239,7 +239,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
                                             handleChangeImage(idProduct, index);
                                         }}
                                         className="color-label bg-white relative inline-block w-8 h-8 border border-slate-200 rounded-full"
-                                        htmlFor={`${idProduct}_${value}`}
+                                        htmlFor={`c_${idProduct}_${value}`}
                                     >
                                         <span
                                             style={{ backgroundColor: `${key}` }}
