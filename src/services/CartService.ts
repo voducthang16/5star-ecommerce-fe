@@ -12,9 +12,14 @@ const getCart = () => {
     return AxiosInstance.get(Config.apiUrl + url);
 };
 
+const deleteCart = (id: number) => {
+    return AxiosInstance.delete(Config.apiUrl + url + '/' + id);
+};
+
 const CartService = {
     addToCart,
     getCart,
+    deleteCart,
 };
 
 export default CartService;

@@ -12,6 +12,8 @@ import { Tooltip } from '@chakra-ui/react';
 import Image from '~/components/Image';
 import images from '~/assets/images';
 import Wishlist from '~/layouts/components/MyAccount/Wishlist';
+import UploadService from '~/services/UploadService';
+import UserService from '~/services/UserService';
 const MyAccount = () => {
     const location: any = useLocation();
     const Navigate = useNavigate();
@@ -31,9 +33,16 @@ const MyAccount = () => {
 
     // END STATE
 
-    const handleChangeAvatar = (event: any) => {
+    const handleChangeAvatar = async (event: any) => {
         let files = event?.target?.files[0];
-        console.log(files);
+        if (files) {
+            const idAvatar = await UploadService.requestUploadImage(files);
+            if (idAvatar) {
+                UserService.UpdateUser(idAvatar, 1).then((res) => {
+                    console.log(res);
+                });
+            }
+        }
     };
 
     const handleLogout = () => {
@@ -71,6 +80,7 @@ const MyAccount = () => {
                                                 type="file"
                                                 id="uploadAvatar"
                                                 className="opacity-0 w-0"
+                                                accept="image/*"
                                                 onChange={(e) => handleChangeAvatar(e)}
                                             />
                                         </div>
