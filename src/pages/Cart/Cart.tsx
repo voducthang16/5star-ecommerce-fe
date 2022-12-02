@@ -1,3 +1,4 @@
+import { Input } from '@chakra-ui/react';
 import axios from 'axios';
 import { Form, Formik, FormikProps } from 'formik';
 import { useEffect, useState } from 'react';
@@ -6,9 +7,10 @@ import { IoCloseOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import images from '~/assets/images';
-import { CodIcon } from '~/components/Icons';
+import { CodIcon, FastDeliveryIcon, SaveDeliveryIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import { getCart, getCartAsync } from '~/features/cart/cartSlice';
+import { motion } from 'framer-motion';
 import { InputField } from '~/layouts/components/CustomField';
 import CartService from '~/services/CartService';
 import { ResponseType } from '~/utils/Types';
@@ -149,7 +151,12 @@ function Cart() {
 
                                     <div className="space-y-5">
                                         <div className="form-group grid gird-cols-1 md:grid-cols-2 gap-2">
-                                            <InputField name="fullname" placeholder="Họ & Tên" className="flex-1" />
+                                            <InputField
+                                                name="fullname"
+                                                placeholder="Họ & Tên"
+                                                className="flex-1"
+                                                p="20px"
+                                            />
                                             <InputField name="phone" placeholder="Số Điện Thoại" />
                                         </div>
                                         <div className="form-group">
@@ -165,9 +172,7 @@ function Cart() {
                                                     getDistrict(+e.target.value);
                                                 }}
                                             >
-                                                <option value="0" hidden>
-                                                    Tỉnh, Thành Phố
-                                                </option>
+                                                <option hidden>Tỉnh, Thành Phố</option>
                                                 {city?.map((item: any, index) => (
                                                     <option key={index} value={item.code}>
                                                         {item.name}
@@ -182,9 +187,7 @@ function Cart() {
                                                 }}
                                                 className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
                                             >
-                                                <option value="0" hidden>
-                                                    Quận, Huyện
-                                                </option>
+                                                <option hidden>Quận, Huyện</option>
                                                 {district?.map((item: any, index) => (
                                                     <option key={index} value={item.code}>
                                                         {item.name}
@@ -197,9 +200,7 @@ function Cart() {
                                                 }}
                                                 className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
                                             >
-                                                <option value="0" hidden>
-                                                    Xã, Phường
-                                                </option>
+                                                <option hidden>Xã, Phường</option>
                                                 {ward?.map((item: any, index) => (
                                                     <option key={index} value={item.code}>
                                                         {item.name}
@@ -208,35 +209,57 @@ function Cart() {
                                             </select>
                                         </div>
                                         <div>
-                                            <InputField type="text" name="address" placeholder="Nhập Địa Chỉ" />
+                                            <InputField type="text" name="address" placeholder="Nhập địa chỉ cụ thể" />
                                         </div>
-                                        <div className="flex justify-between">
-                                            <h6>Hình thức giao hàng: </h6>
-
-                                            <div
-                                                onClick={() => {
-                                                    setTypeShip('road');
-                                                    feeShip();
-                                                }}
-                                                className="flex items-center space-x-2"
-                                            >
-                                                <label htmlFor="save">Giao hàng tiết kiệm</label>
-                                                <input type="radio" name="type_ship" id="save" />
+                                    </div>
+                                    <div className="order_method">
+                                        <h5 className="text-2xl font-bold mb-4">Hình thức giao hàng:</h5>
+                                        <div className="space-y-4">
+                                            <div className="group">
+                                                <input className="hidden" type="radio" name="type_ship" id="save" />
+                                                <label
+                                                    onClick={() => {
+                                                        setTypeShip('road');
+                                                        feeShip();
+                                                    }}
+                                                    htmlFor="save"
+                                                    className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-[#2f5acf] cursor-pointer 
+                                        border border-slate-300 rounded-lg text-base space-x-8 transition-all"
+                                                >
+                                                    <span className="relative block w-5 h-5 rounded-full border border-[#d9d9d9] group-hover:border-[#2f5acf]">
+                                                        <span
+                                                            className="checkmark hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                                        w-[10px] h-[10px] bg-[#2f5acf] rounded-full"
+                                                        ></span>
+                                                    </span>
+                                                    <SaveDeliveryIcon width={40} height={40} fillColor1="#319795" />
+                                                    <span>Giao hàng tiết kiệm</span>
+                                                </label>
                                             </div>
-                                            <div
-                                                onClick={() => {
-                                                    setTypeShip('fly');
-                                                    feeShip();
-                                                }}
-                                                className="flex items-center space-x-2"
-                                            >
-                                                <label htmlFor="fast">Giao hàng nhanh</label>
-                                                <input type="radio" name="type_ship" id="fast" />
+                                            <div className="group">
+                                                <input className="hidden" type="radio" name="type_ship" id="fast" />
+                                                <label
+                                                    onClick={() => {
+                                                        setTypeShip('fly');
+                                                        feeShip();
+                                                    }}
+                                                    htmlFor="fast"
+                                                    className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-[#2f5acf] cursor-pointer 
+                                        border border-slate-300 rounded-lg text-base space-x-8 transition-all"
+                                                >
+                                                    <span className="relative block w-5 h-5 rounded-full border border-[#d9d9d9] group-hover:border-[#2f5acf]">
+                                                        <span
+                                                            className="checkmark hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                                        w-[10px] h-[10px] bg-[#2f5acf] rounded-full"
+                                                        ></span>
+                                                    </span>
+                                                    <FastDeliveryIcon width={40} height={40} fillColor1="red" />
+                                                    <span>Giao hàng nhanh</span>
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div>
+                                    <div className="order_payment">
                                         <h5 className="text-2xl font-bold mb-4">Hình thức thanh toán</h5>
                                         <div className="space-y-4">
                                             <div className="group">
@@ -396,9 +419,21 @@ function Cart() {
                                     </div>
                                 ))}
                         </div>
-                        <div className="flex pt-4 border-t border-slate-200">
-                            <input type="text" className="input input-form !rounded-2xl" placeholder="Mã giảm giá" />
-                            <button className="text-base bg-slate-400 min-w-[120px] rounded-2xl">Áp dụng</button>
+                        <div className="flex pt-4 border-t border-slate-200 gap-2">
+                            <Input type="text" placeholder="Mã giảm giá" />
+                            <motion.button
+                                whileHover={{
+                                    backgroundColor: '#fff',
+                                    border: '1px solid #000',
+                                    color: '#000',
+                                    scale: 1.01,
+                                    transition: { duration: 0.2 },
+                                }}
+                                whileTap={{ scale: 0.95 }}
+                                className="text-base bg-black text-white min-w-[120px] rounded-2xl"
+                            >
+                                Áp dụng
+                            </motion.button>
                         </div>
                         <div className="text-sm py-4 space-y-4 border-t border-b border-slate-200">
                             <p className="flex justify-between">

@@ -75,40 +75,48 @@ function Header() {
                                 </li>
                                 <li className="icon-header-wrapper">
                                     <div className="notification relative z-20">
-                                        <Popover>
-                                            <PopoverTrigger>
-                                                <Button className="!p-3 !bg-transparent hover:!bg-hover hover:text-primary !rounded-full">
-                                                    <Tooltip label="Thông báo">
-                                                        <div className="icon relative text-2xl">
-                                                            <IoMdNotificationsOutline />
-                                                            <span className="badge-notif-header">3</span>
-                                                        </div>
-                                                    </Tooltip>
-                                                    <span className="pulse"></span>
-                                                </Button>
-                                            </PopoverTrigger>
+                                        <Popover closeOnBlur={true}>
+                                            {({ isOpen, onClose }) => (
+                                                <>
+                                                    <PopoverTrigger>
+                                                        <Button className="!p-3 !bg-transparent hover:!bg-hover hover:text-primary !rounded-full">
+                                                            <Tooltip label="Thông báo">
+                                                                <div className="icon relative text-2xl">
+                                                                    <IoMdNotificationsOutline />
+                                                                    <span className="badge-notif-header">3</span>
+                                                                </div>
+                                                            </Tooltip>
+                                                            <span className="pulse"></span>
+                                                        </Button>
+                                                    </PopoverTrigger>
 
-                                            <PopoverContent className="mr-[70px]">
-                                                <div className="menu-dropdown bg-white text-base shadow-xl rounded-md">
-                                                    <div className="dropdown-header-title p-3 border-b">
-                                                        <h3 className="text-base font-medium">Thông báo</h3>
-                                                    </div>
-                                                    <ul className="list-menu p-2 py-3 z-50">
-                                                        {[1].map((menu, index) => (
-                                                            <li key={index}>
-                                                                <Link to="" className="link-icon-header">
-                                                                    <span className="icon bg-primary p-1 rounded-md text-white text-xl mr-2">
-                                                                        <BiMessageSquareCheck />
-                                                                    </span>
-                                                                    <span className="title font-medium">
-                                                                        Bạn vừa nhận một tin nhắn mới
-                                                                    </span>
-                                                                </Link>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            </PopoverContent>
+                                                    <PopoverContent className="mr-[70px]">
+                                                        <div className="menu-dropdown bg-white text-base shadow-xl rounded-md">
+                                                            <div className="dropdown-header-title p-3 border-b">
+                                                                <h3 className="text-base font-medium">Thông báo</h3>
+                                                            </div>
+                                                            <ul className="list-menu p-2 py-3 z-50">
+                                                                {[1].map((menu, index) => (
+                                                                    <li key={index}>
+                                                                        <Link
+                                                                            to=""
+                                                                            className="link-icon-header"
+                                                                            onClick={onClose}
+                                                                        >
+                                                                            <span className="icon bg-primary p-1 rounded-md text-white text-xl mr-2">
+                                                                                <BiMessageSquareCheck />
+                                                                            </span>
+                                                                            <span className="title font-medium">
+                                                                                Bạn vừa nhận một tin nhắn mới
+                                                                            </span>
+                                                                        </Link>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    </PopoverContent>
+                                                </>
+                                            )}
                                         </Popover>
                                     </div>
                                 </li>
@@ -122,52 +130,72 @@ function Header() {
                                 <li className="hidden lg:block icon-header-wrapper">
                                     <div className="notification relative z-20">
                                         <Popover>
-                                            <PopoverTrigger>
-                                                <Button className="!p-3 !rounded-full !bg-transparent hover:!bg-hover hover:text-primary">
-                                                    <Tooltip label="Tài khoản">
-                                                        <div className="icon relative text-2xl">
-                                                            <AiOutlineUser />
-                                                            <span className="badge-notif-header">9</span>
-                                                        </div>
-                                                    </Tooltip>
-                                                </Button>
-                                            </PopoverTrigger>
+                                            {({ isOpen, onClose }) => (
+                                                <>
+                                                    <PopoverTrigger>
+                                                        <Button className="!p-3 !rounded-full !bg-transparent hover:!bg-hover hover:text-primary">
+                                                            <Tooltip label="Tài khoản">
+                                                                <div className="icon relative text-2xl">
+                                                                    <AiOutlineUser />
+                                                                    <span className="badge-notif-header">9</span>
+                                                                </div>
+                                                            </Tooltip>
+                                                        </Button>
+                                                    </PopoverTrigger>
 
-                                            <PopoverContent className="mr-[70px]" width="250px">
-                                                <div className="menu-dropdown bg-white text-base shadow-xl rounded-md">
-                                                    <div className="dropdown-header-title p-3 border-b">
-                                                        <h3 className="text-base font-medium">Tài khoản</h3>
-                                                    </div>
-                                                    <ul className="list-menu p-2 py-3 z-50">
-                                                        <li>
-                                                            <Link to="/my-account" className="link-icon-header">
-                                                                <span className="icon text-primary p-1 text-2xl mr-2">
-                                                                    <MdOutlineManageAccounts />
-                                                                </span>
-                                                                <span className="title font-medium">
-                                                                    Tài khoản của tôi
-                                                                </span>
-                                                            </Link>
-                                                        </li>
-                                                        <li>
-                                                            <Link to="/login" className="link-icon-header">
-                                                                <span className="icon text-primary p-1 text-2xl mr-2">
-                                                                    <TbUserCircle />
-                                                                </span>
-                                                                <span className="title font-medium">Đăng nhập</span>
-                                                            </Link>
-                                                        </li>
-                                                        <li>
-                                                            <Link to="/register" className="link-icon-header">
-                                                                <span className="icon text-primary p-1 text-2xl mr-2">
-                                                                    <RiUserSharedLine />
-                                                                </span>
-                                                                <span className="title font-medium">Đăng ký</span>
-                                                            </Link>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </PopoverContent>
+                                                    <PopoverContent className="mr-[70px]" width="250px">
+                                                        <div className="menu-dropdown bg-white text-base shadow-xl rounded-md">
+                                                            <div className="dropdown-header-title p-3 border-b">
+                                                                <h3 className="text-base font-medium">Tài khoản</h3>
+                                                            </div>
+                                                            <ul className="list-menu p-2 py-3 z-50">
+                                                                <li>
+                                                                    <Link
+                                                                        to="/my-account"
+                                                                        className="link-icon-header"
+                                                                        onClick={onClose}
+                                                                    >
+                                                                        <span className="icon text-primary p-1 text-2xl mr-2">
+                                                                            <MdOutlineManageAccounts />
+                                                                        </span>
+                                                                        <span className="title font-medium">
+                                                                            Tài khoản của tôi
+                                                                        </span>
+                                                                    </Link>
+                                                                </li>
+                                                                <li>
+                                                                    <Link
+                                                                        to="/login"
+                                                                        className="link-icon-header"
+                                                                        onClick={onClose}
+                                                                    >
+                                                                        <span className="icon text-primary p-1 text-2xl mr-2">
+                                                                            <TbUserCircle />
+                                                                        </span>
+                                                                        <span className="title font-medium">
+                                                                            Đăng nhập
+                                                                        </span>
+                                                                    </Link>
+                                                                </li>
+                                                                <li>
+                                                                    <Link
+                                                                        to="/register"
+                                                                        className="link-icon-header"
+                                                                        onClick={onClose}
+                                                                    >
+                                                                        <span className="icon text-primary p-1 text-2xl mr-2">
+                                                                            <RiUserSharedLine />
+                                                                        </span>
+                                                                        <span className="title font-medium">
+                                                                            Đăng ký
+                                                                        </span>
+                                                                    </Link>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </PopoverContent>
+                                                </>
+                                            )}
                                         </Popover>
                                     </div>
                                 </li>
