@@ -2,9 +2,9 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
 import { useState } from 'react';
 import { BiUser } from 'react-icons/bi';
 import { BsHandbag, BsHeart } from 'react-icons/bs';
-import { GoPencil } from 'react-icons/go';
+import { GoLocation, GoPencil } from 'react-icons/go';
 import { MdLogout } from 'react-icons/md';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Breadcrumb from '~/components/Breadcrumb';
 import { Info, Order } from '~/layouts/components/MyAccount';
 import './MyAccount.scss';
@@ -14,6 +14,7 @@ import images from '~/assets/images';
 import Wishlist from '~/layouts/components/MyAccount/Wishlist';
 import UploadService from '~/services/UploadService';
 import UserService from '~/services/UserService';
+import Address from '~/layouts/components/MyAccount/Address';
 const MyAccount = () => {
     const location: any = useLocation();
     const Navigate = useNavigate();
@@ -92,7 +93,7 @@ const MyAccount = () => {
                                 </div>
                             </div>
                             <TabList className="!flex-col !border-none">
-                                <Link to="/my-account/info">
+                                <NavLink to="/my-account/info">
                                     <Tab
                                         className="tab-col-item mt-4"
                                         _selected={{ color: 'white', bg: '#319795', borderLeft: '4px solid #066D84' }}
@@ -102,8 +103,8 @@ const MyAccount = () => {
                                         </span>
                                         Thông tin cá nhân
                                     </Tab>
-                                </Link>
-                                <Link to="/my-account/order">
+                                </NavLink>
+                                <NavLink to="/my-account/order">
                                     <Tab
                                         className="tab-col-item"
                                         _selected={{ color: 'white', bg: '#319795', borderLeft: '4px solid #066D84' }}
@@ -113,8 +114,19 @@ const MyAccount = () => {
                                         </span>
                                         Danh sách đơn hàng
                                     </Tab>
-                                </Link>
-                                <Link to="/my-account/wish-list">
+                                </NavLink>
+                                <NavLink to="">
+                                    <Tab
+                                        className="tab-col-item"
+                                        _selected={{ color: 'white', bg: '#319795', borderLeft: '4px solid #066D84' }}
+                                    >
+                                        <span className="text-xl mr-2">
+                                            <GoLocation />
+                                        </span>
+                                        Địa chỉ của tôi
+                                    </Tab>
+                                </NavLink>
+                                <NavLink to="/my-account/wish-list">
                                     <Tab
                                         className="tab-col-item"
                                         _selected={{ color: 'white', bg: '#319795', borderLeft: '4px solid #066D84' }}
@@ -124,7 +136,7 @@ const MyAccount = () => {
                                         </span>
                                         Sản phẩm yêu thích
                                     </Tab>
-                                </Link>
+                                </NavLink>
 
                                 <Tab
                                     className="tab-col-item"
@@ -151,6 +163,9 @@ const MyAccount = () => {
                                     </TabPanel>
                                     <TabPanel padding={0}>
                                         <Order />
+                                    </TabPanel>
+                                    <TabPanel padding={0}>
+                                        <Address />
                                     </TabPanel>
                                     <TabPanel padding={0}>
                                         <Wishlist />
