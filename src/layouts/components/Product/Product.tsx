@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import { AddToCartIcon, HeartEmptyIcon } from '~/components/Icons';
 import Image from '~/components/Image';
+import Config from '~/config';
 import { addToCart, getProduct, updateToCart } from '~/features/cart/cartSlice';
 import { getProducts } from '~/features/product/productSlice';
 import CartService from '~/services/CartService';
@@ -177,7 +178,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
                             <Image
                                 key={index}
                                 className={`images_${idProduct} absolute inset-0 w-full rounded-3xl object-contain bg-[#f1f1f1]`}
-                                src={item}
+                                src={`${Config.apiUrl}/upload/${item?.file_name}`}
                                 alt="Product"
                             />
                         ))}
