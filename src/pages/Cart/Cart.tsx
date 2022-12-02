@@ -70,27 +70,18 @@ function Cart() {
         }
     };
     useEffect(() => {
-        axios
-            .get('https://provinces.open-api.vn/api/p/')
-            .then((res) => {
-                setCity(res.data);
-            })
+        CartService.getCity()
+            .then((res) => setCity(res.data))
             .catch((err) => console.log(err));
     }, []);
     const getDistrict = (cityId: number) => {
-        axios
-            .get(`https://provinces.open-api.vn/api/p/${cityId}?depth=2`)
-            .then((res) => {
-                setDistrict(res.data.districts);
-            })
+        CartService.getDistrict(cityId)
+            .then((res) => setDistrict(res.data.districts))
             .catch((err) => console.log(err));
     };
     const getWard = (districtId: number) => {
-        axios
-            .get(`https://provinces.open-api.vn/api/d/${districtId}?depth=2`)
-            .then((res) => {
-                setWard(res.data.wards);
-            })
+        CartService.getWard(districtId)
+            .then((res) => setWard(res.data.wards))
             .catch((err) => console.log(err));
     };
     const feeShip = () => {
