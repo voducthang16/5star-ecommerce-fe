@@ -38,7 +38,7 @@ const MyAccount = () => {
         if (files) {
             const idAvatar = await UploadService.requestUploadImage(files);
             if (idAvatar) {
-                UserService.UpdateUser(idAvatar, 1).then((res) => {
+                UserService.UpdateUser(idAvatar, 1).then((res: any) => {
                     console.log(res);
                 });
             }
