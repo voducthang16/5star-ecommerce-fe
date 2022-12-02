@@ -1,15 +1,18 @@
+import axios from 'axios';
 import { Form, Formik, FormikProps } from 'formik';
+import { useEffect, useState } from 'react';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { IoCloseOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import images from '~/assets/images';
-import Breadcrumb from '~/components/Breadcrumb';
 import { CodIcon } from '~/components/Icons';
 import Image from '~/components/Image';
+import { getCart, getCartAsync } from '~/features/cart/cartSlice';
 import { InputField } from '~/layouts/components/CustomField';
+import CartService from '~/services/CartService';
+import { ResponseType } from '~/utils/Types';
 import './Cart.scss';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
 type ValuesForm = {
     fullname: string;
     phone: string;
@@ -30,6 +33,7 @@ function Cart() {
     const handleSubmitForm = (values: ValuesForm) => {
         console.log(values);
     };
+
     const [city, setCity] = useState([]);
     const [cityName, setCityName] = useState('');
     const [district, setDistrict] = useState([]);
@@ -38,6 +42,31 @@ function Cart() {
     const [wardName, setWardName] = useState('');
     const [typeShip, setTypeShip] = useState('');
     const [fee, setFee] = useState(0);
+    const dispatch = useAppDispatch();
+    const listCart = useAppSelector(getCart);
+
+    const totalMoney = listCart.reduce((a: any, b: any) => a + b.price, 0);
+    const handleRemoveCart = (id: number) => {
+        CartService.deleteCart(id).then((res: ResponseType) => {
+            if (res.statusCode === 200) {
+                dispatch(getCartAsync());
+            }
+        });
+    };
+
+    const changeQuantityCart = (e: any, idStock: number) => {
+        let quantity = +e.target.value;
+        if (idStock && quantity) {
+            let dataSendRequest = {
+                id_product: idStock,
+                quantity: quantity,
+            };
+            CartService.addToCart(dataSendRequest).then((res: ResponseType) => {
+                console.log(res);
+                dispatch(getCartAsync());
+            });
+        }
+    };
     useEffect(() => {
         axios
             .get('https://provinces.open-api.vn/api/p/')
@@ -72,7 +101,7 @@ function Cart() {
         const ward: string = wardName;
         const address: string = '';
         const weight: number = 1000;
-        const value: number = 300000;
+        const value: number = totalMoney;
         // fly, road
         const transport: string = typeShip;
 
@@ -269,11 +298,11 @@ function Cart() {
                                         </div>
                                     </div>
                                     <button type="submit" className="input rounded-lg !bg-black text-white">
-                                        Thanh toán{' '}
-                                        {fee.toLocaleString('it-IT', {
+                                        Thanh toán {` `}
+                                        {(totalMoney + fee).toLocaleString('it-IT', {
                                             style: 'currency',
                                             currency: 'VND',
-                                        })}{' '}
+                                        })}
                                         (COD)
                                     </button>
                                 </Form>
@@ -283,207 +312,89 @@ function Cart() {
                     <div className="col-span-12 md:col-span-5 space-y-5">
                         <h5 className="text-2xl font-bold">Giỏ hàng</h5>
                         <div className="space-y-4 max-h-[256px] overflow-y-auto pr-2">
-                            <div className="flex relative">
-                                <div className="w-[30%] flex items-center justify-center">
-                                    <Image
-                                        className="object-contain w-full"
-                                        src="https://cartzilla.createx.studio/img/shop/catalog/03.jpg"
-                                    />
-                                </div>
-                                <div className="flex-1 flex flex-col justify-between">
-                                    <div>
-                                        <h6 className="text-base font-semibold mr-6">
-                                            Quần Short Quần Short Quần Short Quần Short
-                                        </h6>
-                                        <span className="block text-base font-light">Xanh Aqua / 2XL</span>
-                                    </div>
-                                    <div className="text-base">
-                                        <div>
-                                            <select className="border border-slate-200" name="" id="">
-                                                <option value="">Xanh Aqua</option>
-                                                <option value="">Xanh</option>
-                                            </select>
-                                            <select className="border border-slate-200" name="" id="">
-                                                <option value="">XL</option>
-                                                <option value="">2XL</option>
-                                            </select>
+                            {listCart &&
+                                listCart?.map((cartItem: any) => (
+                                    <div className="flex relative">
+                                        <div className="w-[30%] flex items-center justify-center">
+                                            <Image
+                                                className="object-contain w-full"
+                                                src="https://cartzilla.createx.studio/img/shop/catalog/03.jpg"
+                                            />
                                         </div>
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex items-center w-[120px] quantity-group bg-slate-100 rounded-2xl p-2 shadow-sm mt-2">
-                                                <span className="minusBtn text-base p-1 cursor-pointer rounded-full border text-black border-gray-400 ml-2">
-                                                    <AiOutlineMinus />
-                                                </span>
-                                                <input
-                                                    className="quantity-number w-full border border-slate-200 p-1"
-                                                    type="number"
-                                                    value={1}
-                                                    min={0}
-                                                />
-                                                <span className="plusBtn text-base p-1  cursor-pointer rounded-full border text-black border-gray-400 mr-2">
-                                                    <AiOutlinePlus />
-                                                </span>
+                                        <div className="flex-1 flex flex-col justify-between">
+                                            <div>
+                                                <h6 className="text-base font-semibold mr-6">
+                                                    {cartItem?.product?.name}
+                                                </h6>
+                                                <div className="text-base font-light flex items-center space-x-2">
+                                                    <p className="color flex items-center">
+                                                        {cartItem?.classify_1 && (
+                                                            <>
+                                                                Màu sắc :
+                                                                <span className="ml-1 color-label bg-white relative inline-block w-6 h-6 border shadow-md rounded-full">
+                                                                    <span
+                                                                        style={{
+                                                                            backgroundColor: `${cartItem?.classify_1.attribute}`,
+                                                                        }}
+                                                                        className={`absolute inset-1 rounded-full`}
+                                                                    ></span>
+                                                                </span>
+                                                            </>
+                                                        )}
+                                                    </p>
+                                                    <p className="size flex items-center">
+                                                        {cartItem?.classify_2 && (
+                                                            <>
+                                                                Kích thước :
+                                                                <span>{cartItem?.classify_2.attribute}</span>
+                                                            </>
+                                                        )}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div className="text-sm">
-                                                <h6 className="font-medium">149.000đ</h6>
-                                                <del className="text-slate-400">159.000đ</del>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="absolute top-0 right-0">
-                                    <IoCloseOutline className="text-slate-400" />
-                                </div>
-                            </div>
-                            <div className="flex relative">
-                                <div className="w-[30%] flex items-center justify-center">
-                                    <Image
-                                        className="object-contain w-full"
-                                        src="https://cartzilla.createx.studio/img/shop/catalog/03.jpg"
-                                    />
-                                </div>
-                                <div className="flex-1 flex flex-col justify-between">
-                                    <div>
-                                        <h6 className="text-base font-semibold mr-6">
-                                            Quần Short Quần Short Quần Short Quần Short
-                                        </h6>
-                                        <span className="block text-base font-light">Xanh Aqua / 2XL</span>
-                                    </div>
-                                    <div className="text-base">
-                                        <div>
-                                            <select className="border border-slate-200" name="" id="">
-                                                <option value="">Xanh Aqua</option>
-                                                <option value="">Xanh</option>
-                                            </select>
-                                            <select className="border border-slate-200" name="" id="">
-                                                <option value="">XL</option>
-                                                <option value="">2XL</option>
-                                            </select>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex items-center w-2/5">
-                                                <span>
-                                                    <AiOutlineMinus />
-                                                </span>
-                                                <input
-                                                    className="w-full border border-slate-200 p-1"
-                                                    type="number"
-                                                    value={1}
-                                                />
-                                                <span>
-                                                    <AiOutlinePlus />
-                                                </span>
-                                            </div>
-                                            <div className="text-sm">
-                                                <h6 className="font-medium">149.000đ</h6>
-                                                <del className="text-slate-400">159.000đ</del>
+                                            <div className="text-base">
+                                                <div className="flex justify-between items-center">
+                                                    <div className="flex items-center w-[140px] quantity-group bg-slate-100 rounded-2xl p-2 shadow-sm mt-2">
+                                                        <span className="minusBtn text-base p-1 cursor-pointer rounded-full border text-black border-gray-400 ml-2">
+                                                            <AiOutlineMinus />
+                                                        </span>
+                                                        <input
+                                                            className="quantity-number w-full border border-slate-200 p-1 text-lg"
+                                                            type="number"
+                                                            defaultValue={+cartItem?.quantity}
+                                                            value={+cartItem?.quantity}
+                                                            onChange={(e) => changeQuantityCart(e, cartItem?.id)}
+                                                            min={0}
+                                                        />
+                                                        <span className="plusBtn text-base p-1  cursor-pointer rounded-full border text-black border-gray-400 mr-2">
+                                                            <AiOutlinePlus />
+                                                        </span>
+                                                    </div>
+                                                    <div className="text-sm">
+                                                        <h6 className="font-medium">
+                                                            {cartItem?.price.toLocaleString('it-IT', {
+                                                                style: 'currency',
+                                                                currency: 'VND',
+                                                            })}
+                                                        </h6>
+                                                        <del className="text-slate-400">
+                                                            {(cartItem?.price + 9000).toLocaleString('it-IT', {
+                                                                style: 'currency',
+                                                                currency: 'VND',
+                                                            })}
+                                                        </del>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div className="absolute top-0 right-0">
-                                    <IoCloseOutline className="text-slate-400" />
-                                </div>
-                            </div>
-                            <div className="flex relative">
-                                <div className="w-[30%] flex items-center justify-center">
-                                    <Image
-                                        className="object-contain w-full"
-                                        src="https://cartzilla.createx.studio/img/shop/catalog/03.jpg"
-                                    />
-                                </div>
-                                <div className="flex-1 flex flex-col justify-between">
-                                    <div>
-                                        <h6 className="text-base font-semibold mr-6">
-                                            Quần Short Quần Short Quần Short Quần Short
-                                        </h6>
-                                        <span className="block text-base font-light">Xanh Aqua / 2XL</span>
-                                    </div>
-                                    <div className="text-base">
-                                        <div>
-                                            <select className="border border-slate-200" name="" id="">
-                                                <option value="">Xanh Aqua</option>
-                                                <option value="">Xanh</option>
-                                            </select>
-                                            <select className="border border-slate-200" name="" id="">
-                                                <option value="">XL</option>
-                                                <option value="">2XL</option>
-                                            </select>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex items-center w-2/5">
-                                                <span>
-                                                    <AiOutlineMinus />
-                                                </span>
-                                                <input
-                                                    className="w-full border border-slate-200 p-1"
-                                                    type="number"
-                                                    value={1}
-                                                />
-                                                <span>
-                                                    <AiOutlinePlus />
-                                                </span>
-                                            </div>
-                                            <div className="text-sm">
-                                                <h6 className="font-medium">149.000đ</h6>
-                                                <del className="text-slate-400">159.000đ</del>
-                                            </div>
+                                        <div
+                                            className="absolute top-0 right-0 cursor-pointer"
+                                            onClick={() => handleRemoveCart(cartItem?.id)}
+                                        >
+                                            <IoCloseOutline className="text-slate-400" />
                                         </div>
                                     </div>
-                                </div>
-                                <div className="absolute top-0 right-0">
-                                    <IoCloseOutline className="text-slate-400" />
-                                </div>
-                            </div>
-                            <div className="flex relative">
-                                <div className="w-[30%] flex items-center justify-center">
-                                    <Image
-                                        className="object-contain w-full"
-                                        src="https://cartzilla.createx.studio/img/shop/catalog/03.jpg"
-                                    />
-                                </div>
-                                <div className="flex-1 flex flex-col justify-between">
-                                    <div>
-                                        <h6 className="text-base font-semibold mr-6">
-                                            Quần Short Quần Short Quần Short Quần Short
-                                        </h6>
-                                        <span className="block text-base font-light">Xanh Aqua / 2XL</span>
-                                    </div>
-                                    <div className="text-base">
-                                        <div>
-                                            <select className="border border-slate-200" name="" id="">
-                                                <option value="">Xanh Aqua</option>
-                                                <option value="">Xanh</option>
-                                            </select>
-                                            <select className="border border-slate-200" name="" id="">
-                                                <option value="">XL</option>
-                                                <option value="">2XL</option>
-                                            </select>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex items-center w-2/5">
-                                                <span>
-                                                    <AiOutlineMinus />
-                                                </span>
-                                                <input
-                                                    className="w-full border border-slate-200 p-1"
-                                                    type="number"
-                                                    value={1}
-                                                />
-                                                <span>
-                                                    <AiOutlinePlus />
-                                                </span>
-                                            </div>
-                                            <div className="text-sm">
-                                                <h6 className="font-medium">149.000đ</h6>
-                                                <del className="text-slate-400">159.000đ</del>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="absolute top-0 right-0">
-                                    <IoCloseOutline className="text-slate-400" />
-                                </div>
-                            </div>
+                                ))}
                         </div>
                         <div className="flex pt-4 border-t border-slate-200">
                             <input type="text" className="input input-form !rounded-2xl" placeholder="Mã giảm giá" />
@@ -493,7 +404,11 @@ function Cart() {
                             <p className="flex justify-between">
                                 <span>Tạm tính</span>
                                 <span className="text-right">
-                                    298.000đ <br /> (tiết kiệm 80k)
+                                    {totalMoney.toLocaleString('it-IT', {
+                                        style: 'currency',
+                                        currency: 'VND',
+                                    })}
+                                    {/* <br /> (tiết kiệm 80k) */}
                                 </span>
                             </p>
                             <p className="flex justify-between">
@@ -514,7 +429,13 @@ function Cart() {
                             <p className="flex justify-between text-sm">
                                 <span>Tổng</span>
                                 <span className="text-right">
-                                    <span className="!text-2xl">298.000đ</span> <br />{' '}
+                                    <span className="!text-2xl">
+                                        {(totalMoney + fee).toLocaleString('it-IT', {
+                                            style: 'currency',
+                                            currency: 'VND',
+                                        })}
+                                    </span>{' '}
+                                    <br />
                                     <span className="!text-xs text-red-500">(Đã giảm 21% trên giá gốc)</span>
                                 </span>
                             </p>

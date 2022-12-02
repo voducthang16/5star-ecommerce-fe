@@ -42,7 +42,7 @@ export const cartSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getCartAsync.fulfilled, (state, action) => {
-                state.value = action.payload;
+                state.value = action.payload ? action.payload : [];
             })
             .addCase(getCartAsync.rejected, (state) => {
                 state.status = 'failed';
