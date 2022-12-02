@@ -75,13 +75,20 @@ function ProductDetail() {
             ],
         },
     ];
+    const img = [
+        'https://i.imgur.com/zHTIVMk.jpg',
+        'https://i.imgur.com/sPnmn3M.jpg',
+        'https://i.imgur.com/TnQejuQ.jpg',
+    ];
     // custom bullets
     const pagination = {
         clickable: true,
         renderBullet: function (index: any, className: any) {
-            return `<span class=${className}>
-                    <img src="https://cartzilla.createx.studio/img/shop/catalog/0${++index}.jpg"/>
-                </span>`;
+            let string = '';
+            string += `<span class=${className}>
+                <img src="${img[index]}"/>
+            </span>`;
+            return string;
         },
     };
     const [width, setWidth] = useState(0);
@@ -107,29 +114,17 @@ function ProductDetail() {
                                 loop={true}
                                 pagination={pagination}
                                 modules={[Mousewheel, Pagination]}
-                                className="w-[500px] h-[500px]"
+                                className="md:w-full md:h-[500px]"
                             >
-                                <SwiperSlide>
-                                    <Image
-                                        className="md:mx-auto object-contain h-full"
-                                        src={'https://i.imgur.com/zHTIVMk.jpg'}
-                                        alt={'Product'}
-                                    />
-                                </SwiperSlide>
-                                <SwiperSlide>
-                                    <Image
-                                        className="md:mx-auto object-contain"
-                                        src={'https://i.imgur.com/sPnmn3M.jpg'}
-                                        alt={'Product'}
-                                    />
-                                </SwiperSlide>
-                                <SwiperSlide>
-                                    <Image
-                                        className="md:mx-auto object-contain"
-                                        src={'https://i.imgur.com/TnQejuQ.jpg'}
-                                        alt={'Product'}
-                                    />
-                                </SwiperSlide>
+                                {img.map((item: any, index) => (
+                                    <SwiperSlide>
+                                        <Image
+                                            className="md:mx-auto object-contain h-full"
+                                            src={`${item}`}
+                                            alt={'Product'}
+                                        />
+                                    </SwiperSlide>
+                                ))}
                             </Swiper>
                         </div>
                     </div>
