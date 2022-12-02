@@ -421,7 +421,7 @@ function Category() {
                                             slug={item.slug}
                                             color={item.classify_1}
                                             size={item.classify_2}
-                                            images={item.image}
+                                            images={item.images}
                                         />
                                     </div>
                                 ))}

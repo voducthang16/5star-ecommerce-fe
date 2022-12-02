@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import { FourSquaresIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Logo from '~/components/Logo';
+import Config from '~/config';
 import { getCart, getCartAsync, getProduct } from '~/features/cart/cartSlice';
 import CartService from '~/services/CartService';
 import { ResponseType } from '~/utils/Types';
@@ -231,9 +232,7 @@ function Header() {
                                                             <Link to={'/'} className="w-[30%]">
                                                                 <Image
                                                                     className="w-full object-contain"
-                                                                    src={
-                                                                        'https://cartzilla.createx.studio/img/shop/cart/widget/02.jpg'
-                                                                    }
+                                                                    src={`${Config.apiUrl}upload/${cartItem?.product?.images[0].file_name}`}
                                                                 />
                                                             </Link>
                                                             <Link
