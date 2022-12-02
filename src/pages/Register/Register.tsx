@@ -40,7 +40,7 @@ const Register = () => {
     const handleSubmitLogin = (values: RegisterType) => {
         console.log(values);
 
-        AuthService.Login(values).then((res: any) => {
+        AuthService.Register(values).then((res: any) => {
             if (res.statusCode === 201) {
                 toast({
                     position: 'top-right',

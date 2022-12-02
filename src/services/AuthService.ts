@@ -8,13 +8,13 @@ const signIn = (data: LoginType) => {
     return AxiosInstance.post(Config.apiUrl + url + '/login', data);
 };
 
-const Login = (data: RegisterType) => {
+const Register = (data: RegisterType) => {
     return AxiosInstance.post(Config.apiUrl + 'internalaccount', data);
 };
 
 const AuthService = {
     signIn,
-    Login,
+    Register,
 };
 
 export default AuthService;
