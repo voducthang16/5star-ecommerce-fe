@@ -177,7 +177,7 @@ function Header() {
                                             <div className="icon relative text-2xl">
                                                 <AiOutlineShoppingCart />
                                                 <span className="badge-notif-header">
-                                                    {listCart.length > 0 ? listCart.length : 0}{' '}
+                                                    {listCart?.length > 0 ? listCart?.length : 0}{' '}
                                                 </span>
                                             </div>
                                         </Button>
@@ -186,7 +186,7 @@ function Header() {
                                         <div className="bg-white rounded-xl p-4 cart-hover-wrapper cursor-default">
                                             <div className="flex justify-between text-sm mb-2">
                                                 <span className="cursor-text">
-                                                    {listCart.length > 0 ? listCart.length : 0} Sản phẩm
+                                                    {listCart?.length > 0 ? listCart?.length : 0} Sản phẩm
                                                 </span>
                                                 <Link className="text-[#2f5acf]" to={'/cart'}>
                                                     Xem tất cả
@@ -194,8 +194,8 @@ function Header() {
                                             </div>
                                             {/* list product in cart */}
                                             <div className="max-h-[250px] overflow-y-auto">
-                                                {listCart &&
-                                                    listCart.map((cartItem: any) => (
+                                                {listCart?.length > 0 &&
+                                                    listCart?.map((cartItem: any) => (
                                                         <div
                                                             key={cartItem?.id}
                                                             className="flex space-x-2 py-4 mr-2 border-b border-slate-200"

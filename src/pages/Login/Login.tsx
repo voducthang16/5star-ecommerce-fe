@@ -49,7 +49,7 @@ const Login = () => {
                         toast({
                             position: 'top-right',
                             title: 'Đăng nhập thành công',
-                            duration: 2000,
+                            duration: 1000,
                             status: 'success',
                         });
                     }
@@ -57,7 +57,7 @@ const Login = () => {
                     toast({
                         position: 'top-right',
                         title: 'Đăng nhập thất bại',
-                        duration: 2000,
+                        duration: 1000,
                         status: 'error',
                     });
                 }

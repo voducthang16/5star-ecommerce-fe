@@ -60,7 +60,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
                     title: 'Thông báo',
                     description: 'Thêm vào giỏ hàng',
                     status: 'success',
-                    position: 'top-right',
+                    position: 'bottom-right',
                     duration: 3000,
                     isClosable: true,
                 });
