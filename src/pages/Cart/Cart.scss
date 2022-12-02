@@ -1,4 +1,5 @@
-input[name='type_payment'] {
+input[name='type_payment'],
+input[name='type_ship'] {
     &:checked {
         ~ label {
             opacity: 1;
