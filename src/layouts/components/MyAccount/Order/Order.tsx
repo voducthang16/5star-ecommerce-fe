@@ -6,7 +6,7 @@ const Order = () => {
     return (
         <div className="tab-order bg-[#f8f8f8] p-6 rounded-md shadow-sm">
             <div className="title inline-block">
-                <h3 className="font-semibold">Danh sách đơn hàng</h3>
+                <h3 className="font-bold text-3xl text-tblack">Danh sách đơn hàng</h3>
                 <span
                     className="line w-full text-center relative  mt-[-10px] 
                 before:absolute before:top-1/2 before:-translate-y-1/2 before:w-full before:h-[1px] before:left-0 before:bg-primary"
