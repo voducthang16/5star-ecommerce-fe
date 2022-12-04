@@ -85,34 +85,37 @@ function Cart() {
             .catch((err) => console.log(err));
     };
     const feeShip = () => {
-        // noi giao hang
-        const pick_province: string = 'Thành phố Hồ Chí Minh';
-        const pick_district: string = 'Thành phố Thủ Đức';
-        // noi nhan hang
-        const province: string = cityName;
-        const district: string = districtName;
-        const ward: string = wardName;
-        const address: string = '';
-        const weight: number = 1000;
-        const value: number = totalMoney;
-        // fly, road
-        const transport: string = typeShip;
+        if (cityName === '' || districtName === '' || wardName === '') {
+            alert('Vui long chon day du dia chi');
+        } else {
+            // noi giao hang
+            const pick_province: string = 'Thành phố Hồ Chí Minh';
+            const pick_district: string = 'Thành phố Thủ Đức';
+            // noi nhan hang
+            const province: string = cityName;
+            const district: string = districtName;
+            const ward: string = wardName;
+            const address: string = '';
+            const weight: number = 1000;
+            const value: number = totalMoney;
+            // fly, road
+            const transport: string = typeShip;
 
-        axios
-            .get(
-                `https://services.giaohangtietkiem.vn/services/shipment/fee?pick_province=${pick_province}&pick_district=${pick_province}&province=${province}&district=${district}&ward=${ward}&weight=${weight}&value=${value}&transport=${transport}`,
-                {
-                    headers: {
-                        Token: 'Cc65e79D3581e92767Da2D58bC49936E04486383',
-                        'Access-Control-Allow-Origin': true,
+            axios
+                .get(
+                    `https://services.giaohangtietkiem.vn/services/shipment/fee?pick_province=${pick_province}&pick_district=${pick_province}&province=${province}&district=${district}&ward=${ward}&weight=${weight}&value=${value}&transport=${transport}`,
+                    {
+                        headers: {
+                            Token: 'Cc65e79D3581e92767Da2D58bC49936E04486383',
+                            'Access-Control-Allow-Origin': true,
+                        },
                     },
-                },
-            )
-            .then((res) => {
-                console.log(res.data);
-                setFee(res.data.fee.fee);
-            })
-            .catch((err) => console.log(err));
+                )
+                .then((res) => {
+                    setFee(res.data.fee.fee);
+                })
+                .catch((err) => console.log(err));
+        }
     };
     return (
         <div className="cart-page">
@@ -160,7 +163,18 @@ function Cart() {
                                                     setCityName(e.target.options[e.target.selectedIndex].text);
                                                     setDistrict([]);
                                                     setWard([]);
+                                                    setDistrictName('');
+                                                    setWardName('');
                                                     getDistrict(+e.target.value);
+                                                    setFee(0);
+                                                    const element = document.querySelectorAll(
+                                                        "input[name='type_ship']",
+                                                    ) as any;
+                                                    element.forEach((item: any) => {
+                                                        if (item.checked) {
+                                                            item.checked = false;
+                                                        }
+                                                    });
                                                 }}
                                             >
                                                 <option hidden>Tỉnh, Thành Phố</option>
@@ -174,6 +188,7 @@ function Cart() {
                                                 onChange={(e) => {
                                                     setDistrictName(e.target.options[e.target.selectedIndex].text);
                                                     setWard([]);
+                                                    setWardName('');
                                                     getWard(+e.target.value);
                                                 }}
                                                 className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
@@ -206,13 +221,15 @@ function Cart() {
                                     <div className="order_method">
                                         <h5 className="text-2xl font-bold mb-4">Hình thức giao hàng:</h5>
                                         <div className="space-y-4">
-                                            <div className="group">
+                                            <div
+                                                onClick={() => {
+                                                    setTypeShip('road');
+                                                    feeShip();
+                                                }}
+                                                className="group"
+                                            >
                                                 <input className="hidden" type="radio" name="type_ship" id="save" />
                                                 <label
-                                                    onClick={() => {
-                                                        setTypeShip('road');
-                                                        feeShip();
-                                                    }}
                                                     htmlFor="save"
                                                     className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-[#2f5acf] cursor-pointer 
                                         border border-slate-300 rounded-lg text-base space-x-8 transition-all"
@@ -227,13 +244,15 @@ function Cart() {
                                                     <span>Giao hàng tiết kiệm</span>
                                                 </label>
                                             </div>
-                                            <div className="group">
+                                            <div
+                                                onClick={() => {
+                                                    setTypeShip('fly');
+                                                    feeShip();
+                                                }}
+                                                className="group"
+                                            >
                                                 <input className="hidden" type="radio" name="type_ship" id="fast" />
                                                 <label
-                                                    onClick={() => {
-                                                        setTypeShip('fly');
-                                                        feeShip();
-                                                    }}
                                                     htmlFor="fast"
                                                     className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-[#2f5acf] cursor-pointer 
                                         border border-slate-300 rounded-lg text-base space-x-8 transition-all"
