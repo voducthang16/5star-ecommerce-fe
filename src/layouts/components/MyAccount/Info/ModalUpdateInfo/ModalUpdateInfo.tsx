@@ -8,25 +8,27 @@ import {
     ModalCloseButton,
     useDisclosure,
     Button,
+    FormLabel,
 } from '@chakra-ui/react';
 import { FiEdit3 } from 'react-icons/fi';
 import { Form, Formik, FormikProps } from 'formik';
-import { InputField } from '~/layouts/components/CustomField';
+import { InputField, RadioField } from '~/layouts/components/CustomField';
+import { updateInfoSchema } from '~/utils/validationSchema';
 
 type ValuesForm = {
-    fullname: string;
+    first_name: string;
+    last_name: string;
     phone: string;
-    email: string;
-    address: string;
-    note: string;
+    birthday: string;
+    gender: string;
 };
 
 const initCheckoutForm = {
-    fullname: '',
+    first_name: '',
+    last_name: '',
     phone: '',
-    email: '',
-    address: '',
-    note: '',
+    birthday: '',
+    gender: 'Nam',
 };
 
 const ModalUpdateInfo = () => {
@@ -42,7 +44,11 @@ const ModalUpdateInfo = () => {
             </Button>
             <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} size="xl">
                 <ModalOverlay />
-                <Formik initialValues={initCheckoutForm} onSubmit={(values: ValuesForm) => handleSubmitForm(values)}>
+                <Formik
+                    initialValues={initCheckoutForm}
+                    validationSchema={updateInfoSchema}
+                    onSubmit={(values: ValuesForm) => handleSubmitForm(values)}
+                >
                     {(formik: FormikProps<ValuesForm>) => (
                         <Form>
                             <ModalContent>
@@ -51,28 +57,36 @@ const ModalUpdateInfo = () => {
                                 <ModalBody>
                                     <div className="form-group grid gird-cols-1 md:grid-cols-2 gap-2">
                                         <InputField
-                                            name="fullname"
-                                            placeholder="Họ & tên"
+                                            name="first_name"
+                                            placeholder="Nhập họ của bạn"
                                             className="flex-1"
-                                            label="Họ tên đầy đủ"
+                                            label="Họ"
                                         />
-                                        <InputField name="phone" placeholder="Số điện thoại" label="Số điện thoại" />
+                                        <InputField name="last_name" placeholder="Nhập tên của bạn" label="Tên" />
                                     </div>
                                     <div className="form-group mt-2">
                                         <InputField
-                                            type="email"
-                                            name="email"
-                                            placeholder="Nhập email của bạn"
-                                            label="Email"
+                                            type="date"
+                                            name="birthday"
+                                            placeholder="Ngày sinh"
+                                            label="Ngày sinh"
                                         />
                                     </div>
                                     <div className="form-group mt-2">
                                         <InputField
                                             type="text"
-                                            name="address"
-                                            placeholder="Nhập địa chỉ"
-                                            label="Địa chỉ"
+                                            name="phone"
+                                            placeholder="Nhập số điện thoại của bạn"
+                                            label="Số điện thoại"
                                         />
+                                    </div>
+                                    <div className="form-group mt-3">
+                                        <FormLabel>Giới tính</FormLabel>
+                                        <div className=" flex gap-2">
+                                            <RadioField label="Nam" name="gender" value="Nam" id="gender-3" />
+                                            <RadioField label="Nữ" name="gender" value="Nữ" id="gender-4" />
+                                            <RadioField label="Khác" name="gender" value="Khác" id="gender-5" />
+                                        </div>
                                     </div>
                                 </ModalBody>
 

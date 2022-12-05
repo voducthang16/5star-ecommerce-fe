@@ -54,6 +54,6 @@ export const { addToCart, updateToCart } = cartSlice.actions;
 
 export const getCart = (state: RootState) => state.cart.value;
 
-export const getProduct = (state: RootState) => state.cart.product;
+export const getProductInCart = (state: RootState) => state.cart.product;
 
 export default cartSlice.reducer;

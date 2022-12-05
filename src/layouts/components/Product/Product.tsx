@@ -1,10 +1,11 @@
 import { useToast } from '@chakra-ui/react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import { AddToCartIcon, HeartEmptyIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Config from '~/config';
-import { addToCart, getProduct, updateToCart } from '~/features/cart/cartSlice';
+import { addToCart, getProductInCart, updateToCart } from '~/features/cart/cartSlice';
 import { getProducts } from '~/features/product/productSlice';
 import CartService from '~/services/CartService';
 import { ResponseType } from '~/utils/Types';
@@ -21,21 +22,24 @@ interface ProductProps {
 }
 
 function Product({ idProduct, name, slug, color, size, images, type = 0 }: ProductProps) {
+    const [imageInCart, setImageInCart] = useState('');
+
     const dispatch = useAppDispatch();
     const products = useAppSelector(getProducts);
-    const productAddCart = useAppSelector(getProduct);
+    const productAddCart = useAppSelector(getProductInCart);
     const colorArray: any = color ? Object?.entries(color) : '';
     const sizeArray: any = size ? Object?.entries(size) : '';
     const handleChangeImage = (id: number, index: any) => {
         const indexImage = index;
         const element = document.querySelector(`#product_${id}`);
         const images = element?.querySelectorAll(`.images_${id}`);
-        images?.forEach((item, index) => {
+        images?.forEach((item: any, index) => {
             if (item.classList.contains('z-20')) {
                 item.classList.remove('z-20');
             }
             if (index === indexImage) {
                 item.classList.add('z-20');
+                setImageInCart(item?.src);
             }
         });
     };
@@ -44,6 +48,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
         let dataSendRequest = {
             id_product: idStock,
             quantity: 1,
+            image: imageInCart.split('/')[4],
         };
         CartService.addToCart(dataSendRequest).then((res: ResponseType) => {
             if (res.statusCode === 201) {
@@ -178,7 +183,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
                             <Image
                                 key={index}
                                 className={`images_${idProduct} absolute inset-0 w-full rounded-3xl object-contain bg-[#f1f1f1]`}
-                                src={`${Config.apiUrl}/upload/${item?.file_name}`}
+                                src={`${Config.apiUrl}upload/${item?.file_name}`}
                                 alt="Product"
                             />
                         ))}

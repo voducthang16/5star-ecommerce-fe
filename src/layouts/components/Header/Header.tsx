@@ -13,7 +13,8 @@ import { FourSquaresIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Logo from '~/components/Logo';
 import Config from '~/config';
-import { getCart, getCartAsync, getProduct } from '~/features/cart/cartSlice';
+import { getCart, getCartAsync, getProductInCart } from '~/features/cart/cartSlice';
+import { getProducts } from '~/features/product/productSlice';
 import CartService from '~/services/CartService';
 import { ResponseType } from '~/utils/Types';
 import Search from '../Search';
@@ -21,7 +22,10 @@ import './Header.scss';
 function Header() {
     const dispatch = useAppDispatch();
     const listCart = useAppSelector(getCart);
-    const listProduct = useAppSelector(getProduct);
+    const products = useAppSelector(getProducts);
+    console.log('products: ', products);
+    const productInCart = useAppSelector(getProductInCart);
+    console.log('listCart: ', listCart);
 
     useEffect(() => {
         handleScroll();
@@ -30,7 +34,7 @@ function Header() {
     useEffect(() => {
         dispatch(getCartAsync());
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [listProduct]);
+    }, [productInCart]);
 
     const handleRemoveCart = (id: number) => {
         CartService.deleteCart(id).then((res: ResponseType) => {
@@ -232,7 +236,11 @@ function Header() {
                                                             <Link to={'/'} className="w-[30%]">
                                                                 <Image
                                                                     className="w-full object-contain"
-                                                                    src={`${Config.apiUrl}upload/${cartItem?.product?.images[0].file_name}`}
+                                                                    src={
+                                                                        cartItem?.image
+                                                                            ? `${Config.apiUrl}upload/${cartItem?.image}`
+                                                                            : `${Config.apiUrl}upload/${cartItem?.product?.images[0].file_name}`
+                                                                    }
                                                                 />
                                                             </Link>
                                                             <Link
