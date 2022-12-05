@@ -194,7 +194,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
                             {/* size */}
                             {sizeArray.length > 0 ? (
                                 <div className="flex justify-around items-center text-sm mb-[10px]">
-                                    {sizeArray?.map(([key, value]: any, index: any) => (
+                                    {sizeArray?.reverse().map(([key, value]: any, index: any) => (
                                         <div key={index}>
                                             <input
                                                 className="size w-px h-px appearance-none"
@@ -231,7 +231,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
                     {/* color */}
                     {colorArray.length > 0 ? (
                         <div className="flex space-x-4 items-center text-sm h-10 mt-4">
-                            {colorArray?.map(([key, value]: any, index: any) => (
+                            {colorArray?.reverse().map(([key, value]: any, index: any) => (
                                 <div key={index}>
                                     <input
                                         className="color w-px h-px appearance-none"
