@@ -15,6 +15,7 @@ import { InputField } from '~/layouts/components/CustomField';
 import CartService from '~/services/CartService';
 import { ResponseType } from '~/utils/Types';
 import './Cart.scss';
+import Config from '~/config';
 type ValuesForm = {
     fullname: string;
     phone: string;
@@ -32,10 +33,6 @@ const initCheckoutForm = {
 };
 
 function Cart() {
-    const handleSubmitForm = (values: ValuesForm) => {
-        console.log(values);
-    };
-
     const [city, setCity] = useState([]);
     const [cityName, setCityName] = useState('');
     const [district, setDistrict] = useState([]);
@@ -56,19 +53,49 @@ function Cart() {
         });
     };
 
-    const changeQuantityCart = (e: any, idStock: number) => {
+    const changeQuantityCart = (e: any, idStock: number, currentQuantity: number, image: string) => {
         let quantity = +e.target.value;
+        let newQuantity = quantity - currentQuantity;
         if (idStock && quantity) {
             let dataSendRequest = {
                 id_product: idStock,
-                quantity: quantity,
+                quantity: newQuantity,
+                image,
             };
             CartService.addToCart(dataSendRequest).then((res: ResponseType) => {
-                console.log(res);
                 dispatch(getCartAsync());
             });
         }
     };
+
+    const handleSubmitForm = (values: ValuesForm) => {
+        console.log(values);
+    };
+
+    const changeQuantityBtn = (idStock: number, currentQuantity: number, type: string, image: string) => {
+        if (idStock && currentQuantity) {
+            if (type === 'plus') {
+                let dataSendRequest = {
+                    id_product: idStock,
+                    quantity: 1,
+                    image,
+                };
+                CartService.addToCart(dataSendRequest).then((res: ResponseType) => {
+                    dispatch(getCartAsync());
+                });
+            } else {
+                let dataSendRequest = {
+                    id_product: idStock,
+                    quantity: -1,
+                    image,
+                };
+                CartService.addToCart(dataSendRequest).then((res: ResponseType) => {
+                    dispatch(getCartAsync());
+                });
+            }
+        }
+    };
+
     useEffect(() => {
         CartService.getCity()
             .then((res) => setCity(res.data))
@@ -86,7 +113,6 @@ function Cart() {
     };
     const feeShip = () => {
         if (cityName === '' || districtName === '' || wardName === '') {
-            alert('Vui long chon day du dia chi');
         } else {
             // noi giao hang
             const pick_province: string = 'Thành phố Hồ Chí Minh';
@@ -342,16 +368,22 @@ function Cart() {
                             )}
                         </Formik>
                     </div>
+                    {/* src={`${cartItem?.image}${Config.apiUrl}upload/${cartItem?.image}`} */}
+
                     <div className="col-span-12 md:col-span-5 space-y-5">
                         <h5 className="text-2xl font-bold">Giỏ hàng</h5>
                         <div className="space-y-4 max-h-[256px] overflow-y-auto pr-2">
                             {listCart &&
                                 listCart?.map((cartItem: any) => (
-                                    <div className="flex relative">
+                                    <div className="flex relative" key={cartItem.id}>
                                         <div className="w-[30%] flex items-center justify-center">
                                             <Image
                                                 className="object-contain w-full"
-                                                src="https://cartzilla.createx.studio/img/shop/catalog/03.jpg"
+                                                src={
+                                                    cartItem?.image
+                                                        ? `${Config.apiUrl}upload/${cartItem?.image}`
+                                                        : `${Config.apiUrl}upload/${cartItem?.product?.images[0].file_name}`
+                                                }
                                             />
                                         </div>
                                         <div className="flex-1 flex flex-col justify-between">
@@ -388,18 +420,46 @@ function Cart() {
                                             <div className="text-base">
                                                 <div className="flex justify-between items-center">
                                                     <div className="flex items-center w-[140px] quantity-group bg-slate-100 rounded-2xl p-2 shadow-sm mt-2">
-                                                        <span className="minusBtn text-base p-1 cursor-pointer rounded-full border text-black border-gray-400 ml-2">
+                                                        <span
+                                                            className="minusBtn text-base p-1 cursor-pointer 
+                                                        rounded-full border text-black border-gray-400 ml-2"
+                                                            onClick={() =>
+                                                                changeQuantityBtn(
+                                                                    cartItem?.id,
+                                                                    +cartItem.quantity,
+                                                                    'minus',
+                                                                    cartItem?.image,
+                                                                )
+                                                            }
+                                                        >
                                                             <AiOutlineMinus />
                                                         </span>
                                                         <input
                                                             className="quantity-number w-full border border-slate-200 p-1 text-lg"
                                                             type="number"
-                                                            defaultValue={+cartItem?.quantity}
                                                             value={+cartItem?.quantity}
-                                                            onChange={(e) => changeQuantityCart(e, cartItem?.id)}
+                                                            onChange={(e) =>
+                                                                changeQuantityCart(
+                                                                    e,
+                                                                    cartItem?.id,
+                                                                    +cartItem.quantity,
+                                                                    cartItem?.image,
+                                                                )
+                                                            }
                                                             min={0}
                                                         />
-                                                        <span className="plusBtn text-base p-1  cursor-pointer rounded-full border text-black border-gray-400 mr-2">
+                                                        <span
+                                                            className="plusBtn text-base p-1  cursor-pointer 
+                                                        rounded-full border text-black border-gray-400 mr-2"
+                                                            onClick={(e) =>
+                                                                changeQuantityBtn(
+                                                                    cartItem?.id,
+                                                                    +cartItem.quantity,
+                                                                    'plus',
+                                                                    cartItem?.image,
+                                                                )
+                                                            }
+                                                        >
                                                             <AiOutlinePlus />
                                                         </span>
                                                     </div>

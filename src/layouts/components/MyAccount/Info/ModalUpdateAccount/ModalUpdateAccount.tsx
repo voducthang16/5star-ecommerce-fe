@@ -12,6 +12,7 @@ import {
 import { FiEdit3 } from 'react-icons/fi';
 import { Form, Formik, FormikProps } from 'formik';
 import { InputField } from '~/layouts/components/CustomField';
+import { updateAccountSchema } from '~/utils/validationSchema';
 type ValuesForm = {
     password: string;
     newPassword: string;
@@ -36,7 +37,11 @@ const ModalUpdateAccount = () => {
             </Button>
             <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} size="xl">
                 <ModalOverlay />
-                <Formik initialValues={initCheckoutForm} onSubmit={(values: ValuesForm) => handleSubmitForm(values)}>
+                <Formik
+                    initialValues={initCheckoutForm}
+                    validationSchema={updateAccountSchema}
+                    onSubmit={(values: ValuesForm) => handleSubmitForm(values)}
+                >
                     {(formik: FormikProps<ValuesForm>) => (
                         <Form>
                             <ModalContent>
