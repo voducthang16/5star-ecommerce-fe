@@ -1,34 +1,64 @@
 import {
+    Button,
     Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
     ModalBody,
     ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
     useDisclosure,
-    Button,
+    useToast,
 } from '@chakra-ui/react';
-import { FiEdit3 } from 'react-icons/fi';
 import { Form, Formik, FormikProps } from 'formik';
+import { FiEdit3 } from 'react-icons/fi';
+import { useAppSelector } from '~/app/hooks';
+import { getUser } from '~/features/user/userSlice';
 import { InputField } from '~/layouts/components/CustomField';
+import { AuthService } from '~/services';
+import { ResponseType } from '~/utils/Types';
 import { updateAccountSchema } from '~/utils/validationSchema';
 type ValuesForm = {
     password: string;
     newPassword: string;
-    confirmNewPassword: string;
+    confirmPassword: string;
 };
 
 const initCheckoutForm = {
     password: '',
     newPassword: '',
-    confirmNewPassword: '',
+    confirmPassword: '',
 };
 const ModalUpdateAccount = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const infoUser: any = useAppSelector(getUser);
+    const toast = useToast();
 
     const handleSubmitForm = (values: ValuesForm) => {
-        console.log(values);
+        let dataPost = {
+            ...values,
+            username: infoUser.email,
+        };
+
+        AuthService.updatePassword(dataPost).then((res: ResponseType) => {
+            console.log('res: ', res);
+            if (res.statusCode === 201) {
+                toast({
+                    position: 'top-right',
+                    title: 'Đổi mật khẩu thành công',
+                    duration: 2000,
+                    status: 'success',
+                });
+                onClose();
+            } else {
+                toast({
+                    position: 'top-right',
+                    title: 'Mật khẩu cũ không chính xác',
+                    duration: 2000,
+                    status: 'warning',
+                });
+            }
+        });
     };
     return (
         <>
@@ -69,7 +99,7 @@ const ModalUpdateAccount = () => {
                                     <div className="form-group">
                                         <InputField
                                             label="Xác nhận mật khẩu mới"
-                                            name="confirmNewPassword"
+                                            name="confirmPassword"
                                             type="password"
                                             placeholder="Xác nhận mật khẩu mới"
                                             className="flex-1"

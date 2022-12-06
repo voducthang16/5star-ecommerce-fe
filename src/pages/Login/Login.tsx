@@ -15,10 +15,12 @@ import { HiEye, HiEyeOff } from 'react-icons/hi';
 import { MdOutlineFacebook } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '~/app/hooks';
 import images from '~/assets/images';
 
 import Image from '~/components/Image';
 import Logo from '~/components/Logo';
+import { addUser } from '~/features/user/userSlice';
 import InputFieldIcon from '~/layouts/components/CustomField/InputFieldIcon';
 import { AuthService } from '~/services';
 import { LoginType } from '~/utils/Types';
@@ -33,7 +35,7 @@ const initLoginForm = {
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     // END STATE
-
+    const dispatch = useAppDispatch();
     const Navigate = useNavigate();
     const toast = useToast();
 
@@ -44,8 +46,11 @@ const Login = () => {
                 if (res.statusCode === 200) {
                     let accessToken = res?.data?.accessToken;
                     if (accessToken) {
+                        console.log(res);
+
                         localStorage.setItem('access_token', accessToken);
                         Navigate('/');
+                        dispatch(addUser(res?.data?.user_info.profile));
                         toast({
                             position: 'top-right',
                             title: 'Đăng nhập thành công',
@@ -111,7 +116,7 @@ const Login = () => {
                                             icon={<FiUserCheck />}
                                             borderRadius="10px"
                                             paddingY={7}
-                                            placeholder="Tên đăng nhập.."
+                                            placeholder="Nhập email của bạn.."
                                         />
                                     </div>
                                     <div className="form-group my-3">
@@ -179,7 +184,7 @@ const Login = () => {
                                             }}
                                         </Field> */}
                                         <div className="forgot text-primary text-base font-semibold">
-                                            <Link to="">Quên mật khẩu ?</Link>
+                                            <Link to="/forgot-password">Quên mật khẩu ?</Link>
                                         </div>
                                     </div>
                                     <div className="button-action w-full mt-5">

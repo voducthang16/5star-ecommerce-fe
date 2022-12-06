@@ -14,7 +14,6 @@ import Image from '~/components/Image';
 import Logo from '~/components/Logo';
 import Config from '~/config';
 import { getCart, getCartAsync, getProductInCart } from '~/features/cart/cartSlice';
-import { getProducts } from '~/features/product/productSlice';
 import CartService from '~/services/CartService';
 import { ResponseType } from '~/utils/Types';
 import Search from '../Search';
@@ -22,10 +21,7 @@ import './Header.scss';
 function Header() {
     const dispatch = useAppDispatch();
     const listCart = useAppSelector(getCart);
-    const products = useAppSelector(getProducts);
-    console.log('products: ', products);
     const productInCart = useAppSelector(getProductInCart);
-    console.log('listCart: ', listCart);
 
     useEffect(() => {
         handleScroll();

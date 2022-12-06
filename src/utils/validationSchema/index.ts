@@ -44,6 +44,6 @@ export const updateAccountSchema = () => {
     return Yup.object({
         password: Yup.string().required('Vui lòng nhập mật khẩu cũ').min(6, 'Mật khẩu phải lớn hơn 6 kí tự'),
         newPassword: Yup.string().required('Vui lòng nhập mật khẩu mới').min(6, 'Mật khẩu phải lớn hơn 6 kí tự'),
-        confirmNewPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Mật khẩu không khớp'),
+        confirmPassword: Yup.string().oneOf([Yup.ref('newPassword'), null], 'Mật khẩu không khớp'),
     });
 };
