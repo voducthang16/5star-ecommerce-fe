@@ -1,19 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '../../app/store';
-
-export interface UserProps {
-    id: number;
-    name: string;
-    description: string;
-    info_detail: Array<any>;
-    image: Array<any>;
-    slug: string;
-    sold: number;
-    status: number;
-}
+import { createSlice } from '@reduxjs/toolkit';
+import { RootState } from '../../app/store';
 
 export interface UserState {
-    value: Array<UserProps>;
+    value: Array<any>;
     status: 'idle' | 'loading' | 'failed';
 }
 
@@ -26,15 +15,9 @@ export const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        // increment: (state) => {
-        //     state.value += 1;
-        // },
-        // decrement: (state) => {
-        //     state.value -= 1;
-        // },
-        // incrementByAmount: (state, action: PayloadAction<number>) => {
-        //     state.value += action.payload;
-        // },
+        addUser: (state, action: any) => {
+            state.value = action.payload;
+        },
     },
     extraReducers: (builder) => {
         // builder
@@ -51,9 +34,9 @@ export const userSlice = createSlice({
     },
 });
 
-// export const { increment, decrement, incrementByAmount } = productSlice.actions;
+export const { addUser } = userSlice.actions;
 
-export const getProducts = (state: RootState) => state.product.value;
+export const getUser = (state: RootState) => state.user.value;
 
 // export const incrementIfOdd =
 //     (amount: number): AppThunk =>

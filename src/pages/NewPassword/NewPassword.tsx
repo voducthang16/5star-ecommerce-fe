@@ -9,8 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { ErrorMessage, Field, Form, Formik, FormikProps } from 'formik';
 import { useState } from 'react';
-import { BiUserCircle } from 'react-icons/bi';
-import { FiUserCheck } from 'react-icons/fi';
+import { AiOutlineKey } from 'react-icons/ai';
 import { HiEye, HiEyeOff } from 'react-icons/hi';
 import { RiLockPasswordFill, RiLockPasswordLine } from 'react-icons/ri';
 import { Link, useNavigate } from 'react-router-dom';
@@ -19,42 +18,43 @@ import Image from '~/components/Image';
 import Logo from '~/components/Logo';
 import InputFieldIcon from '~/layouts/components/CustomField/InputFieldIcon';
 import { AuthService } from '~/services';
-import { RegisterType } from '~/utils/Types';
 import { registerSchema } from '~/utils/validationSchema';
-import './Register.scss';
+import './NewPassword.scss';
 
-const initLoginForm = {
-    email: '',
-    password: '',
-    confirmPassword: '',
-    first_name: '',
-    last_name: '',
+const initNewPassword = {
+    code: '',
+    newPass: '',
+    confirmPass: '',
 };
 
-const Register = () => {
+const NewPassword = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPw, setShowConfirmPw] = useState(false);
 
     const Navigate = useNavigate();
     const toast = useToast();
 
-    const handleSubmitLogin = (values: RegisterType) => {
-        console.log(values);
+    const handleSubmit = (values: any) => {
+        let email = localStorage.getItem('emailActive');
+        let dataPost = {
+            ...values,
+            email: email,
+        };
 
-        AuthService.Register(values).then((res: any) => {
+        AuthService.ResetPassword(dataPost).then((res: any) => {
             if (res.statusCode === 201) {
                 toast({
                     position: 'top-right',
-                    title: 'Vui lòng kiểm tra email để kích hoạt tài khoản',
+                    title: 'Lấy lại mật khẩu thành công',
                     duration: 2000,
                     status: 'success',
                 });
-                localStorage.setItem('emailActive', values.email);
-                Navigate('/active-account');
+                localStorage.removeItem('emailActive');
+                Navigate('/login');
             } else {
                 toast({
                     position: 'top-right',
-                    title: 'Đăng ký thất bại',
+                    title: 'Sai mã kích hoạt',
                     duration: 2000,
                     status: 'error',
                 });
@@ -84,54 +84,27 @@ const Register = () => {
                                 <Logo />
                             </div>
                             <div className="login-text my-4 m-auto">
-                                <h1 className="title font-bold text-3xl text-center my-5">Đăng ký</h1>
+                                <h1 className="title font-bold text-3xl text-center my-5">Lấy lại mật khẩu</h1>
                             </div>
                         </div>
-                        <Formik
-                            initialValues={initLoginForm}
-                            validationSchema={registerSchema}
-                            onSubmit={(values: RegisterType) => handleSubmitLogin(values)}
-                        >
-                            {(formik: FormikProps<RegisterType>) => (
+                        <Formik initialValues={initNewPassword} onSubmit={(values: any) => handleSubmit(values)}>
+                            {(formik: FormikProps<any>) => (
                                 <Form className=" max-w-[400px] m-auto">
                                     <div className="form-group">
                                         <InputFieldIcon
                                             type="text"
-                                            name="email"
+                                            name="code"
                                             size="md"
-                                            icon={<FiUserCheck />}
+                                            icon={<AiOutlineKey />}
                                             borderRadius="10px"
                                             paddingY={7}
-                                            placeholder="Email.."
+                                            placeholder="Nhập mã kích hoạt.."
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div className="form-group my-3 col-span-1">
-                                            <InputFieldIcon
-                                                type="text"
-                                                name="first_name"
-                                                size="md"
-                                                icon={<BiUserCircle />}
-                                                borderRadius="10px"
-                                                paddingY={7}
-                                                placeholder="Nhập họ.."
-                                            />
-                                        </div>
-                                        <div className="form-group my-3 col-span-1">
-                                            <InputFieldIcon
-                                                type="text"
-                                                name="last_name"
-                                                size="md"
-                                                icon={<BiUserCircle />}
-                                                borderRadius="10px"
-                                                paddingY={7}
-                                                placeholder="Nhập tên.."
-                                            />
-                                        </div>
-                                    </div>
+
                                     <div className="form-group my-3 password">
                                         <FormControl>
-                                            <Field name="password">
+                                            <Field name="newPass">
                                                 {(props: any) => {
                                                     const { field, meta } = props;
                                                     return (
@@ -187,7 +160,7 @@ const Register = () => {
                                     </div>
                                     <div className="form-group my-3 password">
                                         <FormControl>
-                                            <Field name="confirmPassword">
+                                            <Field name="confirmPass">
                                                 {(props: any) => {
                                                     const { field, meta } = props;
                                                     return (
@@ -241,21 +214,15 @@ const Register = () => {
                                             </Field>
                                         </FormControl>
                                     </div>
-                                    <div className="forgot-box flex justify-end">
-                                        <div className="forgot text-primary text-base font-semibold">
-                                            <Link to="/forgot-password">Quên mật khẩu ?</Link>
-                                        </div>
-                                    </div>
                                     <div className="button-action w-full mt-5">
                                         <Button type="submit" colorScheme="twitter" className="w-full py-6">
-                                            Đăng ký
+                                            Đổi mật khẩu
                                         </Button>
                                     </div>
                                     <div className="sign-up mt-3 text-right">
                                         <p className="text-base">
-                                            Nếu bạn đã có tài khoản ? <br />
                                             <Link to="/login" className="text-primary font-semibold underline ml-2">
-                                                Hãy đăng nhập
+                                                Đăng nhập
                                             </Link>
                                         </p>
                                     </div>
@@ -269,4 +236,4 @@ const Register = () => {
     );
 };
 
-export default Register;
+export default NewPassword;
