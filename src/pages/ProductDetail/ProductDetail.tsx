@@ -13,11 +13,19 @@ import Image from '~/components/Image';
 import Loading from '~/components/Loading';
 import Rate from '~/layouts/components/Rate';
 import './ProductDetail.scss';
+import { fetchDetailProductAsync, getDetail } from '~/features/product/productSlice';
+import { useAppDispatch, useAppSelector } from '~/app/hooks';
+
 function ProductDetail() {
+    const dispatch = useAppDispatch();
+    const detail = useAppSelector(getDetail);
     const [loading, setLoading] = useState(true);
     const [filled, setFilled] = useState(0);
     const [quantity, setQuantity] = useState(1);
-
+    const { slug } = useParams();
+    useEffect(() => {
+        dispatch(fetchDetailProductAsync(slug!));
+    }, []);
     const handleQuantity = (type: string) => {
         if (type === 'asc') {
             setQuantity(quantity + 1);
@@ -36,7 +44,6 @@ function ProductDetail() {
             setLoading(false);
         }, 1000);
     }, []);
-    const { slug } = useParams();
     const productFakeData = [
         {
             id: 'product_1',
@@ -92,7 +99,14 @@ function ProductDetail() {
         },
     };
     const [width, setWidth] = useState(0);
-
+    useEffect(() => {
+        const windowWidth = window.innerWidth;
+        if (windowWidth < 1024) {
+            setWidth(0);
+        } else {
+            setWidth(1);
+        }
+    }, []);
     return loading ? (
         <Loading />
     ) : (

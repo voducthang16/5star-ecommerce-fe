@@ -15,17 +15,24 @@ export interface ProductProps {
 
 export interface ProductState {
     value: Array<ProductProps>;
+    detail: any;
     status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: ProductState = {
     value: [],
+    detail: {},
     status: 'idle',
 };
 
 export const fetchProductAsync = createAsyncThunk('product/fetchProducts', async () => {
     const response = await ProductService.getAllProduct();
     return response.data;
+});
+
+export const fetchDetailProductAsync = createAsyncThunk('product/fetchDetailProducts', async (slug: string) => {
+    const response = await ProductService.getOneProduct(slug);
+    return response;
 });
 
 export const productSlice = createSlice({
@@ -53,6 +60,10 @@ export const productSlice = createSlice({
             })
             .addCase(fetchProductAsync.rejected, (state) => {
                 state.status = 'failed';
+            })
+            .addCase(fetchDetailProductAsync.fulfilled, (state, action) => {
+                state.status = 'idle';
+                state.detail = action.payload;
             });
     },
 });
@@ -60,14 +71,5 @@ export const productSlice = createSlice({
 // export const { increment, decrement, incrementByAmount } = productSlice.actions;
 
 export const getProducts = (state: RootState) => state.product.value;
-
-// export const incrementIfOdd =
-//     (amount: number): AppThunk =>
-//     (dispatch, getState) => {
-//         const currentValue = getProducts(getState());
-//         if (currentValue % 2 === 1) {
-//             dispatch(incrementByAmount(amount));
-//         }
-//     };
-
+export const getDetail = (state: RootState) => state.product.detail;
 export default productSlice.reducer;
