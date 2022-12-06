@@ -54,8 +54,18 @@ const getAllProduct = async () => {
     return dataAllProduct;
 };
 
+const getOneProduct = async (slug: string) => {
+    let result = await AxiosInstance.get(Config.apiUrl + url + '/' + slug).then((res: any) => {
+        if (res.statusCode === 200) {
+            console.log(res);
+        }
+    });
+    return result;
+};
+
 const ProductService = {
     getAllProduct,
+    getOneProduct,
 };
 
 export default ProductService;
