@@ -40,7 +40,6 @@ function Home() {
                                 {[1, 2, 3].map((index) => (
                                     <div
                                         key={index}
-                                        data-aos="fade-left"
                                         className="flex items-center bg-[#ffcca2] px-4 pt-4 my-1 rounded-lg w-[80%]"
                                     >
                                         <Image className="w-2/5" src={images.banner_sm01} alt={'Small Banner'} />
@@ -208,6 +207,7 @@ function Home() {
                                     size={item.classify_2}
                                     type={item.classify_n}
                                     images={item.images}
+                                    stocks={item.stocks}
                                 />
                             </div>
                         ))}

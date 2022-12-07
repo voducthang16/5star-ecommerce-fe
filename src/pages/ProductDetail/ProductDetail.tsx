@@ -38,55 +38,23 @@ function ProductDetail() {
         }
     };
 
-    const length = 3;
+    const length = detail.images.length;
+
+    const color = Object.entries(detail.classify_1);
+    const size = Object.entries(detail.classify_2);
+    const money: any = [];
+
+    detail.stocks.forEach((item: any) => {
+        money.push(item.price);
+    });
+    console.log(money);
     useEffect(() => {
         setTimeout(() => {
             setLoading(false);
         }, 1000);
     }, []);
-    const productFakeData = [
-        {
-            id: 'product_1',
-            color: ['#a78bfa', '#facc15', '#2c3b54'],
-            images: [
-                'https://cartzilla.createx.studio/img/shop/catalog/01.jpg',
-                'https://cartzilla.createx.studio/img/shop/catalog/02.jpg',
-                'https://cartzilla.createx.studio/img/shop/catalog/03.jpg',
-            ],
-        },
-        {
-            id: 'product_2',
-            color: ['#fb923c', '#38bdf8', '#4ade80'],
-            images: [
-                'https://cartzilla.createx.studio/img/shop/catalog/01.jpg',
-                'https://cartzilla.createx.studio/img/shop/catalog/02.jpg',
-                'https://cartzilla.createx.studio/img/shop/catalog/03.jpg',
-            ],
-        },
-        {
-            id: 'product_3',
-            color: ['#fb923c', '#38bdf8', '#4ade80'],
-            images: [
-                'https://cartzilla.createx.studio/img/shop/catalog/01.jpg',
-                'https://cartzilla.createx.studio/img/shop/catalog/02.jpg',
-                'https://cartzilla.createx.studio/img/shop/catalog/03.jpg',
-            ],
-        },
-        {
-            id: 'product_4',
-            color: ['#fb923c', '#38bdf8', '#4ade80'],
-            images: [
-                'https://cartzilla.createx.studio/img/shop/catalog/01.jpg',
-                'https://cartzilla.createx.studio/img/shop/catalog/02.jpg',
-                'https://cartzilla.createx.studio/img/shop/catalog/03.jpg',
-            ],
-        },
-    ];
-    const img = [
-        'https://i.imgur.com/zHTIVMk.jpg',
-        'https://i.imgur.com/sPnmn3M.jpg',
-        'https://i.imgur.com/TnQejuQ.jpg',
-    ];
+    const img = detail.images;
+    console.log(img);
     // custom bullets
     const pagination = {
         clickable: true,
@@ -130,8 +98,8 @@ function ProductDetail() {
                                 modules={[Mousewheel, Pagination]}
                                 className="md:w-full md:h-[500px]"
                             >
-                                {img.map((item: any, index) => (
-                                    <SwiperSlide>
+                                {img.map((item: any, index: number) => (
+                                    <SwiperSlide key={index}>
                                         <Image
                                             className="md:mx-auto object-contain h-full"
                                             src={`${item}`}
@@ -144,7 +112,7 @@ function ProductDetail() {
                     </div>
                     <div className="col-span-12 lg:col-span-5">
                         <div className="space-y-4 mt-4 lg:mt-0 px-2 lg:px-0">
-                            <h3 className="text-2xl font-bold">Áo Polo Nam thời trang mát mẻ</h3>
+                            <h3 className="text-2xl font-bold">{detail.name}</h3>
                             <h4 className="text-base font-normal flex items-center space-x-2">
                                 <PackageIcon width={16} height={16} className="mr-2" />
                                 Tình trạng:<span className="inline-block text-[#29b474]">Còn hàng</span>
@@ -152,47 +120,82 @@ function ProductDetail() {
                             <div className="flex items-center">
                                 <Rate className="flex space-x-1" average={3.7} />
                                 <span className="ml-1 inline-block text-sm text-[#aeb4be]">(17)</span>
-                                <span className="ml-2 inline-block text-sm text-[#aeb4be]">Đã bán(web): 12345</span>
+                                <span className="ml-2 inline-block text-sm text-[#aeb4be]">
+                                    Đã bán(web): {detail.sold}
+                                </span>
                             </div>
                             <div className="flex space-x-4 text-base items-end">
-                                <span className="font-semibold">289.000 VND</span>
-                                <del className="text-[#c4c4c4]">329.000 VND</del>
-                                <span className="text-[#ff3102] text-sm">-50%</span>
+                                <span className="font-semibold">
+                                    {Math.min(...money).toLocaleString('it-IT', {
+                                        style: 'currency',
+                                        currency: 'VND',
+                                    })}
+                                </span>
+                                {/* <del className="text-[#c4c4c4]">329.000 VND</del>
+                                <span className="text-[#ff3102] text-sm">-50%</span> */}
                             </div>
-                            <div className="text-base">
-                                <span>Màu sắc: ĐỎ</span>
-                                <div className="mt-2 flex space-x-2">
-                                    <span className="inline-block w-16 h-16 border border-slate-200 p-1 rounded-lg">
-                                        <Image
-                                            className="object-contain w-full h-full"
-                                            src="https://levents.asia/wp-content/uploads/2022/08/z3745138708990_ae6f522e0a05800faa5a33c159841f4b-1536x1536.jpg"
-                                        />
-                                    </span>
-                                    <span className="inline-block w-16 h-16 border border-slate-200 p-1 rounded-lg">
-                                        <Image
-                                            className="object-contain w-full h-full"
-                                            src="https://levents.asia/wp-content/uploads/2022/08/z3745138708990_ae6f522e0a05800faa5a33c159841f4b-1536x1536.jpg"
-                                        />
-                                    </span>
+
+                            {color.length > 0 ? (
+                                <div>
+                                    <p className="mb-2">Màu sắc</p>
+                                    <div className="flex space-x-4 items-center text-sm h-10 mt-4">
+                                        {color?.reverse().map(([key, value]: any, index: any) => (
+                                            <div key={index}>
+                                                <input
+                                                    className="color w-px h-px appearance-none"
+                                                    type="radio"
+                                                    name="color"
+                                                    id={`c_${detail.id}_${value}`}
+                                                    value={value}
+                                                />
+                                                <label
+                                                    onClick={() => {
+                                                        console.log(img[index]);
+                                                    }}
+                                                    className="color-label bg-white relative inline-block w-8 h-8 border border-slate-200 rounded-full"
+                                                    htmlFor={`c_${detail.id}_${value}`}
+                                                >
+                                                    <span
+                                                        style={{ backgroundColor: `${key}` }}
+                                                        className={`absolute inset-1 rounded-full`}
+                                                    ></span>
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="text-base">
-                                <span>Kích thước</span>
-                                <div className="mt-2 flex items-center space-x-4">
-                                    <div className="py-2 rounded-lg bg-slate-700 text-white min-w-[60px] text-center">
-                                        S
-                                    </div>
-                                    <div className="py-2 rounded-lg bg-slate-700 text-white min-w-[60px] text-center">
-                                        M
-                                    </div>
-                                    <div className="py-2 rounded-lg bg-slate-700 text-white min-w-[60px] text-center">
-                                        L
-                                    </div>
-                                    <div className="py-2 rounded-lg bg-slate-700 text-white min-w-[60px] text-center">
-                                        XL
+                            ) : (
+                                <></>
+                            )}
+
+                            {size.length > 0 ? (
+                                <div>
+                                    <p className="mb-2">Kích thước</p>
+                                    <div className="flex space-x-4 text-sm">
+                                        {size?.map(([key, value]: any, index: any) => (
+                                            <div key={index}>
+                                                <input
+                                                    className="size w-px h-px appearance-none"
+                                                    type="radio"
+                                                    value={value}
+                                                    name="size"
+                                                    id={`s_${detail.id}_${value}`}
+                                                />
+                                                <label
+                                                    className="size-label bg-white w-8 h-8 text-center 
+                                                leading-8 inline-block border border-slate-200 rounded-lg"
+                                                    htmlFor={`s_${detail.id}_${value}`}
+                                                >
+                                                    {key}
+                                                </label>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
-                            </div>
+                            ) : (
+                                <></>
+                            )}
+
                             <div className="flex items-center space-x-4">
                                 <div className="flex items-center w-[150px] quantity-group bg-slate-100 rounded-2xl p-2 py-3 shadow-sm">
                                     <span
@@ -246,9 +249,7 @@ function ProductDetail() {
                                     </AccordionButton>
                                 </h2>
                                 <AccordionPanel pb={4} className="text-base">
-                                    Giới thiệu đến bạn chiếc áo polo nam chiếc áo sẽ giúp cho các chàng trai trở nên
-                                    lịch lãm, sang trọng và trẻ trung hơn. Với collection này thì Coolmate sẽ mang cho
-                                    bạn một mẫu áo polo nam với nhưng họa tiết đơn giản nhưng rất trẻ trung và dễ mix đồ
+                                    <p dangerouslySetInnerHTML={{ __html: detail.description }}></p>
                                 </AccordionPanel>
                             </AccordionItem>
                             <AccordionItem>
@@ -261,12 +262,9 @@ function ProductDetail() {
                                     </AccordionButton>
                                 </h2>
                                 <AccordionPanel pb={4} className="text-base">
-                                    <p>- Chất liệu: 97% Cotton USA + 3% Spandex </p>
-                                    <p>
-                                        - Với chất liệu Cotton USA chất lượng cao, mang lại sự mềm mại và thấm hút mồ
-                                        hôi tốt
-                                    </p>
-                                    <p>- Co giãn 4 chiều mang lại sự thoải mái khi mặc</p>
+                                    {detail.info_detail.map((item: any, index: number) => (
+                                        <p key={index}>- {item}</p>
+                                    ))}
                                 </AccordionPanel>
                             </AccordionItem>
                         </Accordion>

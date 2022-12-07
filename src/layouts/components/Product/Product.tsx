@@ -19,9 +19,10 @@ interface ProductProps {
     size?: any;
     images?: any;
     type?: number;
+    stocks?: any;
 }
 
-function Product({ idProduct, name, slug, color, size, images, type = 0 }: ProductProps) {
+function Product({ idProduct, name, slug, color, size, images, type = 0, stocks }: ProductProps) {
     const [imageInCart, setImageInCart] = useState('');
 
     const dispatch = useAppDispatch();
@@ -29,6 +30,10 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
     const productAddCart = useAppSelector(getProductInCart);
     const colorArray: any = color ? Object?.entries(color) : '';
     const sizeArray: any = size ? Object?.entries(size) : '';
+    const moneyArray: any = [];
+    stocks.forEach((item: any) => {
+        moneyArray.push(item.price);
+    });
     const handleChangeImage = (id: number, index: any) => {
         const indexImage = index;
         const element = document.querySelector(`#product_${id}`);
@@ -39,6 +44,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
             }
             if (index === indexImage) {
                 item.classList.add('z-20');
+                console.log(item);
                 setImageInCart(item?.src);
             }
         });
@@ -259,13 +265,20 @@ function Product({ idProduct, name, slug, color, size, images, type = 0 }: Produ
                         <></>
                     )}
                     <div className="mt-4">
-                        <span className="block mb-2 text-sm font-medium text-[#7d879c]">Thể thao</span>
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="block text-sm font-medium text-[#7d879c]">Thể thao</span>
+                            <Rate className="flex space-x-1" average={3.7} />
+                        </div>
                         <Link className="block text-base font-semibold text-[#373f50]" to={`/product/${slug}`}>
                             {name}
                         </Link>
-                        <div className="mt-4 flex justify-between items-center">
-                            <span className="text-sm">200.000 VND</span>
-                            <Rate className="flex space-x-1" average={3.7} />
+                        <div className="mt-4 flex items-center">
+                            <span className="text-sm money-change">
+                                {Math.min(...moneyArray).toLocaleString('it-IT', {
+                                    style: 'currency',
+                                    currency: 'VND',
+                                })}
+                            </span>
                         </div>
                     </div>
                 </div>

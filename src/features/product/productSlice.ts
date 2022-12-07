@@ -32,7 +32,7 @@ export const fetchProductAsync = createAsyncThunk('product/fetchProducts', async
 
 export const fetchDetailProductAsync = createAsyncThunk('product/fetchDetailProducts', async (slug: string) => {
     const response = await ProductService.getOneProduct(slug);
-    return response;
+    return response.data;
 });
 
 export const productSlice = createSlice({
