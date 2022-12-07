@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import Breadcrumb from '~/components/Breadcrumb';
 import { AccessoriesIcon, BagIcon, JeansIcon, ShirtIcon, ShoesIcon, WatchIcon } from '~/components/Icons';
 import { fetchProductAsync, getProducts } from '~/features/product/productSlice';
+import { fetchCategoryAsync, getCategory } from '~/features/category/categorySlice';
 import Product from '~/layouts/components/Product';
 import './Category.scss';
 function Category() {
@@ -13,10 +14,19 @@ function Category() {
 
     const dispatch = useAppDispatch();
     const products = useAppSelector(getProducts);
-
+    const getCategoryRedux = useAppSelector(getCategory);
+    const category: any = getCategoryRedux[0];
+    category.forEach((item: any) => {
+        console.log(!item.parent_id);
+    });
     useEffect(() => {
         dispatch(fetchProductAsync());
     }, [dispatch]);
+    useEffect(() => {
+        dispatch(fetchCategoryAsync());
+    }, [dispatch]);
+
+    const icons: any = [AccessoriesIcon, BagIcon, JeansIcon, ShirtIcon, ShoesIcon, WatchIcon];
 
     return (
         <div className="category-page">
@@ -39,287 +49,71 @@ function Category() {
                             <div className="pb-4 px-6 border-b border-slate-200" data-aos="fade-up">
                                 <h6 className="text-lg font-semibold pt-4">Danh mục</h6>
                                 <Accordion allowToggle px={5}>
-                                    <AccordionItem borderTop={0}>
-                                        <AccordionButton
-                                            _hover={{
-                                                background: 'white',
-                                                color: 'teal.500',
-                                            }}
-                                            px={0}
-                                            py={1}
-                                        >
-                                            <ShirtIcon className="mr-2" width={48} height={48} />
-                                            <Box display={'flex'} justifyContent={'space-between'} width={'100%'}>
-                                                Áo
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
+                                    {category.map((item: any, index: number) => (
+                                        <>
+                                            {!item.parent_id ? (
+                                                <AccordionItem key={index} borderTop={0}>
+                                                    <AccordionButton
+                                                        _hover={{
+                                                            background: 'white',
+                                                            color: 'teal.500',
+                                                        }}
+                                                        px={0}
+                                                        py={1}
+                                                    >
+                                                        <ShirtIcon className="mr-2" width={48} height={48} />
+                                                        <Box
+                                                            display={'flex'}
+                                                            justifyContent={'space-between'}
+                                                            width={'100%'}
+                                                        >
+                                                            {item.name}
+                                                        </Box>
+                                                        <AccordionIcon />
+                                                    </AccordionButton>
 
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-500">
-                                                <span>Xem Tất Cả</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-500">
-                                                <span>T-Shirt</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-500">
-                                                <span>Sơ Mi</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-500">
-                                                <span>Thể Thao</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-500">
-                                                <span>Khoác</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-500">
-                                                <span>Polo</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                    </AccordionItem>
-                                    <AccordionItem borderTop={0}>
-                                        <AccordionButton
-                                            _hover={{
-                                                background: 'white',
-                                                color: 'teal.500',
-                                            }}
-                                            px={0}
-                                            py={1}
-                                        >
-                                            <JeansIcon className="mr-2" width={48} height={48} />
-                                            <Box display={'flex'} justifyContent={'space-between'} width={'100%'}>
-                                                Quần
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
-
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-500">
-                                                <span>Xem Tất Cả</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-500">
-                                                <span>Shorts</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-500">
-                                                <span>Jeans</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-500">
-                                                <span>Thể Thao</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-500">
-                                                <span>Tây</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                    </AccordionItem>
-                                    <AccordionItem borderTop={0}>
-                                        <AccordionButton
-                                            _hover={{
-                                                background: 'white',
-                                                color: 'teal.500',
-                                            }}
-                                            px={0}
-                                            py={1}
-                                        >
-                                            <ShoesIcon className="mr-2" width={48} height={48} />
-                                            <Box display={'flex'} justifyContent={'space-between'} width={'100%'}>
-                                                Giày
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Xem Tất Cả</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span> Thể thao</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span> Scandals</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span> Sneakers</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span> Dép</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                    </AccordionItem>
-                                    <AccordionItem borderTop={0}>
-                                        <AccordionButton
-                                            _hover={{
-                                                background: 'white',
-                                                color: 'teal.500',
-                                            }}
-                                            px={0}
-                                            py={1}
-                                        >
-                                            <BagIcon className="mr-2" width={48} height={48} />
-                                            <Box display={'flex'} justifyContent={'space-between'} width={'100%'}>
-                                                Túi Xách
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
-
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Xem Tất Cả</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Balo</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Túi Tote</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Túi Đeo Chéo</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Ví</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                    </AccordionItem>
-                                    <AccordionItem borderTop={0}>
-                                        <AccordionButton
-                                            _hover={{
-                                                background: 'white',
-                                                color: 'teal.500',
-                                            }}
-                                            px={0}
-                                            py={1}
-                                        >
-                                            <WatchIcon className="mr-2" width={48} height={48} />
-                                            <Box display={'flex'} justifyContent={'space-between'} width={'100%'}>
-                                                Đồng hồ
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
-
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Xem Tất Cả</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Nam</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Nữ</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Thông Minh</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                    </AccordionItem>
-                                    <AccordionItem borderTop={0} borderBottom={0}>
-                                        <AccordionButton
-                                            _hover={{
-                                                background: 'white',
-                                                color: 'teal.500',
-                                            }}
-                                            px={0}
-                                            py={1}
-                                        >
-                                            <AccessoriesIcon className="mr-2" width={48} height={48} />
-                                            <Box display={'flex'} justifyContent={'space-between'} width={'100%'}>
-                                                Phụ Kiện
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
-
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Xem Tất Cả</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Móc khóa</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Mắt kính</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Mũ (Nón)</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                        <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                            <p className="flex justify-between text-gray-400">
-                                                <span>Tất (Vớ)</span>
-                                                <span>20</span>
-                                            </p>
-                                        </AccordionPanel>
-                                    </AccordionItem>
+                                                    <AccordionPanel fontSize={14} py={2} pl={'44px'}>
+                                                        <p className="flex justify-between text-gray-500">
+                                                            <span>Xem Tất Cả</span>
+                                                            <span>20</span>
+                                                        </p>
+                                                    </AccordionPanel>
+                                                    <AccordionPanel fontSize={14} py={2} pl={'44px'}>
+                                                        <p className="flex justify-between text-gray-500">
+                                                            <span>T-Shirt</span>
+                                                            <span>20</span>
+                                                        </p>
+                                                    </AccordionPanel>
+                                                    <AccordionPanel fontSize={14} py={2} pl={'44px'}>
+                                                        <p className="flex justify-between text-gray-500">
+                                                            <span>Sơ Mi</span>
+                                                            <span>20</span>
+                                                        </p>
+                                                    </AccordionPanel>
+                                                    <AccordionPanel fontSize={14} py={2} pl={'44px'}>
+                                                        <p className="flex justify-between text-gray-500">
+                                                            <span>Thể Thao</span>
+                                                            <span>20</span>
+                                                        </p>
+                                                    </AccordionPanel>
+                                                    <AccordionPanel fontSize={14} py={2} pl={'44px'}>
+                                                        <p className="flex justify-between text-gray-500">
+                                                            <span>Khoác</span>
+                                                            <span>20</span>
+                                                        </p>
+                                                    </AccordionPanel>
+                                                    <AccordionPanel fontSize={14} py={2} pl={'44px'}>
+                                                        <p className="flex justify-between text-gray-500">
+                                                            <span>Polo</span>
+                                                            <span>20</span>
+                                                        </p>
+                                                    </AccordionPanel>
+                                                </AccordionItem>
+                                            ) : (
+                                                <></>
+                                            )}
+                                        </>
+                                    ))}
                                 </Accordion>
                             </div>
                             <div
@@ -422,6 +216,7 @@ function Category() {
                                             color={item.classify_1}
                                             size={item.classify_2}
                                             images={item.images}
+                                            stocks={item.stocks}
                                         />
                                     </div>
                                 ))}

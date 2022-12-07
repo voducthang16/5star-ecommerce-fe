@@ -25,21 +25,6 @@ const getAllProduct = async () => {
                 Object.keys(res.classify_2).forEach(
                     (key) => res.classify_2[key] === null && delete res.classify_2[key],
                 );
-                // console.log(
-                //     `${res.id}: ${Object.entries(res.classify_1).length} - ${JSON.stringify(res.classify_1)} - ${
-                //         Object.entries(res.classify_1).length > 0
-                //     }`,
-                // );
-                // console.log(
-                //     `${res.id}: ${Object.entries(res.classify_2).length} - ${JSON.stringify(res.classify_2)} - ${
-                //         Object.entries(res.classify_2).length > 0
-                //     }`,
-                // );
-                // console.log(
-                //     `${res.id}: ${
-                //         Object.entries(res.classify_1).length > 0 && Object.entries(res.classify_2).length > 0
-                //     }`,
-                // );
                 if (Object.entries(res.classify_1).length > 0 && Object.entries(res.classify_2).length > 0) {
                     res.classify_n = 2;
                 } else if (Object.entries(res.classify_1).length === 0 && Object.entries(res.classify_2).length === 0) {
@@ -57,8 +42,36 @@ const getAllProduct = async () => {
 const getOneProduct = async (slug: string) => {
     let result = await AxiosInstance.get(Config.apiUrl + url + '/' + slug).then((res: any) => {
         if (res.statusCode === 200) {
-            console.log(res);
+            let hash: any = {};
+            let hash2: any = {};
+            res.data.stocks.forEach((stock: any) => {
+                if (!hash[stock?.classify_1?.attribute]) {
+                    hash[stock?.classify_1?.attribute] = stock.id_classify_1;
+                }
+                if (!hash2[stock?.classify_2?.attribute]) {
+                    hash2[stock?.classify_2?.attribute] = stock.id_classify_2;
+                }
+            });
+            res.data.classify_1 = hash;
+            Object.keys(res.data.classify_1).forEach(
+                (key) => res.data.classify_1[key] === null && delete res.data.classify_1[key],
+            );
+            res.data.classify_2 = hash2;
+            Object.keys(res.data.classify_2).forEach(
+                (key) => res.data.classify_2[key] === null && delete res.data.classify_2[key],
+            );
+            if (Object.entries(res.data.classify_1).length > 0 && Object.entries(res.data.classify_2).length > 0) {
+                res.data.classify_n = 2;
+            } else if (
+                Object.entries(res.data.classify_1).length === 0 &&
+                Object.entries(res.data.classify_2).length === 0
+            ) {
+                res.data.classify_n = 0;
+            } else {
+                res.data.classify_n = 1;
+            }
         }
+        return res;
     });
     return result;
 };
