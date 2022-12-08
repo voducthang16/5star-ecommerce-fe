@@ -46,8 +46,6 @@ const Login = () => {
                 if (res.statusCode === 200) {
                     let accessToken = res?.data?.accessToken;
                     if (accessToken) {
-                        console.log(res);
-
                         localStorage.setItem('access_token', accessToken);
                         Navigate('/');
                         dispatch(addUser(res?.data?.user_info.profile));

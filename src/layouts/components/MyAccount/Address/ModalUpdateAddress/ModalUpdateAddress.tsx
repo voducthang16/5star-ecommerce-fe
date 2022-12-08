@@ -32,7 +32,7 @@ const initCheckoutForm = {
     phone: 0,
 };
 
-const ModalAddAddress = () => {
+const ModalUpdateAddress = ({ children }: any) => {
     const [city, setCity] = useState([]);
     const [cityName, setCityName] = useState('');
     const [district, setDistrict] = useState([]);
@@ -69,11 +69,8 @@ const ModalAddAddress = () => {
                 status: 'warning',
             });
         } else {
-            let idAddress = infoUser?.address ? infoUser?.address.length + 1 : 1;
-
-            const dataSendRequest = {
+            let dataSendRequest = {
                 address: {
-                    id: idAddress,
                     districtName,
                     cityName,
                     wardName,
@@ -90,8 +87,8 @@ const ModalAddAddress = () => {
     };
     return (
         <>
-            <Button rightIcon={<BsPlus />} onClick={onOpen} colorScheme="teal" variant="outline">
-                Thêm địa chỉ
+            <Button onClick={onOpen} p={1} className="p-2 rounded-md border" colorScheme="blue">
+                {children}
             </Button>
             <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} size="xl">
                 <ModalOverlay />
@@ -103,7 +100,7 @@ const ModalAddAddress = () => {
                     {(formik: FormikProps<ValuesForm>) => (
                         <Form>
                             <ModalContent>
-                                <ModalHeader>Thêm địa chỉ giao hàng</ModalHeader>
+                                <ModalHeader>Cập nhật địa chỉ giao hàng</ModalHeader>
                                 <ModalCloseButton />
                                 <ModalBody>
                                     <FormLabel>Địa chỉ</FormLabel>
@@ -193,4 +190,4 @@ const ModalAddAddress = () => {
     );
 };
 
-export default ModalAddAddress;
+export default ModalUpdateAddress;

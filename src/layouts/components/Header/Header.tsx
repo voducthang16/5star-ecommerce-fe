@@ -14,6 +14,7 @@ import Image from '~/components/Image';
 import Logo from '~/components/Logo';
 import Config from '~/config';
 import { getCart, getCartAsync, getProductInCart } from '~/features/cart/cartSlice';
+import { getUser } from '~/features/user/userSlice';
 import CartService from '~/services/CartService';
 import { ResponseType } from '~/utils/Types';
 import Search from '../Search';
@@ -22,7 +23,7 @@ function Header() {
     const dispatch = useAppDispatch();
     const listCart = useAppSelector(getCart);
     const productInCart = useAppSelector(getProductInCart);
-
+    const infoUser: any = useAppSelector(getUser);
     useEffect(() => {
         handleScroll();
     }, []);
@@ -150,20 +151,22 @@ function Header() {
                                                                 <h3 className="text-base font-medium">Tài khoản</h3>
                                                             </div>
                                                             <ul className="list-menu p-2 py-3 z-50">
-                                                                <li>
-                                                                    <Link
-                                                                        to="/my-account"
-                                                                        className="link-icon-header"
-                                                                        onClick={onClose}
-                                                                    >
-                                                                        <span className="icon text-primary p-1 text-2xl mr-2">
-                                                                            <MdOutlineManageAccounts />
-                                                                        </span>
-                                                                        <span className="title font-medium">
-                                                                            Tài khoản của tôi
-                                                                        </span>
-                                                                    </Link>
-                                                                </li>
+                                                                {infoUser.length !== 0 && (
+                                                                    <li>
+                                                                        <Link
+                                                                            to="/my-account"
+                                                                            className="link-icon-header"
+                                                                            onClick={onClose}
+                                                                        >
+                                                                            <span className="icon text-primary p-1 text-2xl mr-2">
+                                                                                <MdOutlineManageAccounts />
+                                                                            </span>
+                                                                            <span className="title font-medium">
+                                                                                Tài khoản của tôi
+                                                                            </span>
+                                                                        </Link>
+                                                                    </li>
+                                                                )}
                                                                 <li>
                                                                     <Link
                                                                         to="/login"

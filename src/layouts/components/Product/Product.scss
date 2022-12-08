@@ -5,31 +5,22 @@
 }
 
 .product-hover {
+    .action-cart,
+    .action-wishlist {
+        &:hover {
+            transition: all 0.3s ease;
+            background: var(--primary);
+            svg {
+                color: white;
+            }
+        }
+    }
     .product-size-hover {
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
         transform: translateY(-20px);
         transition: all ease 0.4s;
-    }
-    .wishlist-wrapper {
-        .wishlist-text {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            left: 50%;
-            transform: translate(-50%, -20px);
-            transition: all ease 0.4s;
-        }
-        &:hover {
-            .wishlist-text {
-                transform: translate(-50%, 0px);
-                opacity: 1;
-                visibility: visible;
-                pointer-events: visible;
-                transition: all ease 0.4s;
-            }
-        }
     }
     &:hover {
         .product-size-hover {

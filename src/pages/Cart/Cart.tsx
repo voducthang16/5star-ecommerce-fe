@@ -1,6 +1,7 @@
-import { Input } from '@chakra-ui/react';
+import { Button, FormLabel, Input } from '@chakra-ui/react';
 import axios from 'axios';
 import { Form, Formik, FormikProps } from 'formik';
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { IoCloseOutline } from 'react-icons/io5';
@@ -9,30 +10,37 @@ import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import images from '~/assets/images';
 import { CodIcon, FastDeliveryIcon, SaveDeliveryIcon } from '~/components/Icons';
 import Image from '~/components/Image';
-import { getCart, getCartAsync } from '~/features/cart/cartSlice';
-import { motion } from 'framer-motion';
-import { InputField } from '~/layouts/components/CustomField';
-import CartService from '~/services/CartService';
-import { ResponseType } from '~/utils/Types';
-import './Cart.scss';
 import Config from '~/config';
+import { getCart, getCartAsync } from '~/features/cart/cartSlice';
+import { getUser } from '~/features/user/userSlice';
+import { InputField, TextareaField } from '~/layouts/components/CustomField';
+import CartService from '~/services/CartService';
+import { FormatPriceVND } from '~/utils/FormatPriceVND';
+import { ResponseType } from '~/utils/Types';
+import { orderCartSchema } from '~/utils/validationSchema';
+import './Cart.scss';
 type ValuesForm = {
-    fullname: string;
+    fullName: string;
     phone: string;
     email: string;
     address: string;
     note: string;
+    orderMethod: string;
+    payment: string;
 };
 
 const initCheckoutForm = {
-    fullname: '',
+    fullName: '',
     phone: '',
     email: '',
     address: '',
     note: '',
+    orderMethod: '',
+    payment: '',
 };
 
 function Cart() {
+    const [defaultValue, setDefaultValue] = useState<any>(initCheckoutForm);
     const [city, setCity] = useState([]);
     const [cityName, setCityName] = useState('');
     const [district, setDistrict] = useState([]);
@@ -43,7 +51,7 @@ function Cart() {
     const [fee, setFee] = useState(0);
     const dispatch = useAppDispatch();
     const listCart = useAppSelector(getCart);
-
+    const infoUser: any = useAppSelector(getUser);
     const totalMoney = listCart.reduce((a: any, b: any) => a + b.price, 0);
     const handleRemoveCart = (id: number) => {
         CartService.deleteCart(id).then((res: ResponseType) => {
@@ -53,11 +61,20 @@ function Cart() {
         });
     };
 
+    useEffect(() => {
+        let fullName = infoUser?.first_name + ' ' + infoUser?.last_name;
+        let email = infoUser.email;
+        let newDefaultValues = { fullName, email };
+        console.log('newDefaultValues: ', newDefaultValues);
+        setDefaultValue(newDefaultValues);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [infoUser]);
+
     const changeQuantityCart = (e: any, idStock: number, currentQuantity: number, image: string) => {
         let quantity = +e.target.value;
         let newQuantity = quantity - currentQuantity;
         if (idStock && quantity) {
-            let dataSendRequest = {
+            let dataSendRequest: any = {
                 id_product: idStock,
                 quantity: newQuantity,
                 image,
@@ -68,14 +85,10 @@ function Cart() {
         }
     };
 
-    const handleSubmitForm = (values: ValuesForm) => {
-        console.log(values);
-    };
-
     const changeQuantityBtn = (idStock: number, currentQuantity: number, type: string, image: string) => {
         if (idStock && currentQuantity) {
             if (type === 'plus') {
-                let dataSendRequest = {
+                let dataSendRequest: any = {
                     id_product: idStock,
                     quantity: 1,
                     image,
@@ -84,7 +97,7 @@ function Cart() {
                     dispatch(getCartAsync());
                 });
             } else {
-                let dataSendRequest = {
+                let dataSendRequest: any = {
                     id_product: idStock,
                     quantity: -1,
                     image,
@@ -111,17 +124,18 @@ function Cart() {
             .then((res) => setWard(res.data.wards))
             .catch((err) => console.log(err));
     };
+
     const feeShip = () => {
         if (cityName === '' || districtName === '' || wardName === '') {
         } else {
             // noi giao hang
             const pick_province: string = 'Thành phố Hồ Chí Minh';
-            const pick_district: string = 'Thành phố Thủ Đức';
+            // const pick_district: string = 'Thành phố Thủ Đức';
             // noi nhan hang
             const province: string = cityName;
             const district: string = districtName;
             const ward: string = wardName;
-            const address: string = '';
+            // const address: string = '';
             const weight: number = 1000;
             const value: number = totalMoney;
             // fly, road
@@ -143,6 +157,18 @@ function Cart() {
                 .catch((err) => console.log(err));
         }
     };
+
+    const handleSubmitForm = (values: ValuesForm) => {
+        console.log(values);
+        let dataSendRequest = {
+            ...values,
+            districtName,
+            cityName,
+            wardName,
+        };
+        console.log('dataSendRequest: ', dataSendRequest);
+    };
+
     return (
         <div className="cart-page">
             {/* <Breadcrumb name={'Sản phẩm'} /> */}
@@ -154,218 +180,291 @@ function Cart() {
                     after:top-0 after:bottom-0 after:-right-5"
                     >
                         <Formik
-                            initialValues={initCheckoutForm}
+                            initialValues={defaultValue}
+                            validationSchema={orderCartSchema}
                             onSubmit={(values: ValuesForm) => handleSubmitForm(values)}
                         >
-                            {(formik: FormikProps<ValuesForm>) => (
-                                <Form className="space-y-5">
-                                    <div className="flex flex-wrap space-y-4 lg:space-y-0 flex-col-reverse lg:flex-row justify-between items-center">
-                                        <h5 className="text-2xl font-bold">Thông tin vận chuyển</h5>
-                                        <p className="text-base">
-                                            Bạn đã có tài khoản?{' '}
-                                            <Link className="text-[#2659ff] font-semibold" to={'/login'}>
-                                                Đăng nhập ngay
-                                            </Link>
-                                        </p>
-                                    </div>
+                            {(formik: FormikProps<ValuesForm>) => {
+                                return (
+                                    <Form className="space-y-5">
+                                        <div className="flex flex-wrap space-y-4 lg:space-y-0 flex-col-reverse lg:flex-row justify-between items-center">
+                                            <h5 className="text-2xl font-bold">Thông tin vận chuyển</h5>
+                                            <p className="text-base">
+                                                Bạn đã có tài khoản?{' '}
+                                                <Link className="text-primary font-semibold" to={'/login'}>
+                                                    Đăng nhập ngay
+                                                </Link>
+                                            </p>
+                                        </div>
 
-                                    <div className="space-y-5">
-                                        <div className="form-group grid gird-cols-1 md:grid-cols-2 gap-2">
-                                            <InputField
-                                                name="fullname"
-                                                placeholder="Họ & Tên"
-                                                className="flex-1"
-                                                p="20px"
-                                            />
-                                            <InputField name="phone" placeholder="Số Điện Thoại" />
-                                        </div>
-                                        <div className="form-group">
-                                            <InputField type="email" name="email" placeholder="Nhập Email Của Bạn" />
-                                        </div>
-                                        <div className="flex justify-between space-x-4">
-                                            <select
-                                                className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
-                                                onChange={(e) => {
-                                                    setCityName(e.target.options[e.target.selectedIndex].text);
-                                                    setDistrict([]);
-                                                    setWard([]);
-                                                    setDistrictName('');
-                                                    setWardName('');
-                                                    getDistrict(+e.target.value);
-                                                    setFee(0);
-                                                    const element = document.querySelectorAll(
-                                                        "input[name='type_ship']",
-                                                    ) as any;
-                                                    element.forEach((item: any) => {
-                                                        if (item.checked) {
-                                                            item.checked = false;
-                                                        }
-                                                    });
-                                                }}
-                                            >
-                                                <option hidden>Tỉnh, Thành Phố</option>
-                                                {city?.map((item: any, index) => (
-                                                    <option key={index} value={item.code}>
-                                                        {item.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <select
-                                                onChange={(e) => {
-                                                    setDistrictName(e.target.options[e.target.selectedIndex].text);
-                                                    setWard([]);
-                                                    setWardName('');
-                                                    getWard(+e.target.value);
-                                                }}
-                                                className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
-                                            >
-                                                <option hidden>Quận, Huyện</option>
-                                                {district?.map((item: any, index) => (
-                                                    <option key={index} value={item.code}>
-                                                        {item.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <select
-                                                onChange={(e) => {
-                                                    setWardName(e.target.options[e.target.selectedIndex].text);
-                                                }}
-                                                className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
-                                            >
-                                                <option hidden>Xã, Phường</option>
-                                                {ward?.map((item: any, index) => (
-                                                    <option key={index} value={item.code}>
-                                                        {item.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <InputField type="text" name="address" placeholder="Nhập địa chỉ cụ thể" />
-                                        </div>
-                                    </div>
-                                    <div className="order_method">
-                                        <h5 className="text-2xl font-bold mb-4">Hình thức giao hàng:</h5>
-                                        <div className="space-y-4">
-                                            <div
-                                                onClick={() => {
-                                                    setTypeShip('road');
-                                                    feeShip();
-                                                }}
-                                                className="group"
-                                            >
-                                                <input className="hidden" type="radio" name="type_ship" id="save" />
-                                                <label
-                                                    htmlFor="save"
-                                                    className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-[#2f5acf] cursor-pointer 
-                                        border border-slate-300 rounded-lg text-base space-x-8 transition-all"
-                                                >
-                                                    <span className="relative block w-5 h-5 rounded-full border border-[#d9d9d9] group-hover:border-[#2f5acf]">
-                                                        <span
-                                                            className="checkmark hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-                                        w-[10px] h-[10px] bg-[#2f5acf] rounded-full"
-                                                        ></span>
-                                                    </span>
-                                                    <SaveDeliveryIcon width={40} height={40} fillColor1="#319795" />
-                                                    <span>Giao hàng tiết kiệm</span>
-                                                </label>
-                                            </div>
-                                            <div
-                                                onClick={() => {
-                                                    setTypeShip('fly');
-                                                    feeShip();
-                                                }}
-                                                className="group"
-                                            >
-                                                <input className="hidden" type="radio" name="type_ship" id="fast" />
-                                                <label
-                                                    htmlFor="fast"
-                                                    className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-[#2f5acf] cursor-pointer 
-                                        border border-slate-300 rounded-lg text-base space-x-8 transition-all"
-                                                >
-                                                    <span className="relative block w-5 h-5 rounded-full border border-[#d9d9d9] group-hover:border-[#2f5acf]">
-                                                        <span
-                                                            className="checkmark hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-                                        w-[10px] h-[10px] bg-[#2f5acf] rounded-full"
-                                                        ></span>
-                                                    </span>
-                                                    <FastDeliveryIcon width={40} height={40} fillColor1="red" />
-                                                    <span>Giao hàng nhanh</span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="order_payment">
-                                        <h5 className="text-2xl font-bold mb-4">Hình thức thanh toán</h5>
-                                        <div className="space-y-4">
-                                            <div className="group">
-                                                <input className="hidden" type="radio" name="type_payment" id="cod" />
-                                                <label
-                                                    htmlFor="cod"
-                                                    className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-[#2f5acf] cursor-pointer 
-                                        border border-slate-300 rounded-lg text-base space-x-8 transition-all"
-                                                >
-                                                    <span className="relative block w-5 h-5 rounded-full border border-[#d9d9d9] group-hover:border-[#2f5acf]">
-                                                        <span
-                                                            className="checkmark hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-                                        w-[10px] h-[10px] bg-[#2f5acf] rounded-full"
-                                                        ></span>
-                                                    </span>
-                                                    <CodIcon width={35} height={30} />
-                                                    <span>Thanh toán khi nhận hàng</span>
-                                                </label>
-                                            </div>
-                                            <div className="group">
-                                                <input className="hidden" type="radio" name="type_payment" id="momo" />
-                                                <label
-                                                    htmlFor="momo"
-                                                    className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-[#2f5acf] cursor-pointer 
-                                        border border-slate-300 rounded-lg text-base space-x-8 transition-all"
-                                                >
-                                                    <span className="relative block w-5 h-5 rounded-full border border-[#d9d9d9] group-hover:border-[#2f5acf]">
-                                                        <span
-                                                            className="checkmark hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-                                        w-[10px] h-[10px] bg-[#2f5acf] rounded-full"
-                                                        ></span>
-                                                    </span>
-                                                    <Image src={images.momo} className="w-[35px] h-[35px]" />
-                                                    <span>Thanh toán MoMo</span>
-                                                </label>
-                                            </div>
-                                            <div className="group">
-                                                <input
-                                                    className="hidden"
-                                                    type="radio"
-                                                    name="type_payment"
-                                                    id="shopee"
+                                        <div className="space-y-5">
+                                            <div className="form-group grid gird-cols-1 md:grid-cols-2 gap-2">
+                                                <InputField
+                                                    name="fullName"
+                                                    label="Họ và tên"
+                                                    placeholder="Vd: Nguyễn Văn A"
+                                                    className="flex-1"
+                                                    p="20px"
                                                 />
-                                                <label
-                                                    htmlFor="shopee"
-                                                    className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-[#2f5acf] cursor-pointer 
-                                        border border-slate-300 rounded-lg text-base space-x-8 transition-all"
-                                                >
-                                                    <span className="relative block w-5 h-5 rounded-full border border-[#d9d9d9] group-hover:border-[#2f5acf]">
-                                                        <span
-                                                            className="checkmark hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-                                        w-[10px] h-[10px] bg-[#2f5acf] rounded-full"
-                                                        ></span>
-                                                    </span>
-                                                    <Image src={images.spepay} className="w-[35px] h-[35px]" />
-                                                    <span>Ví điện tử ShopeePay</span>
-                                                </label>
+                                                <InputField
+                                                    name="phone"
+                                                    placeholder="Vd: 0345678989"
+                                                    label="Số điện thoại"
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <InputField
+                                                    type="email"
+                                                    name="email"
+                                                    label="Email"
+                                                    placeholder="Vd: nguyenvana@gmail.com"
+                                                />
+                                            </div>
+                                            <div className="form-address">
+                                                <FormLabel>Địa chỉ</FormLabel>
+
+                                                <div className="flex justify-between space-x-4">
+                                                    <select
+                                                        className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
+                                                        onChange={(e) => {
+                                                            setCityName(e.target.options[e.target.selectedIndex].text);
+                                                            setDistrict([]);
+                                                            setWard([]);
+                                                            setDistrictName('');
+                                                            setWardName('');
+                                                            getDistrict(+e.target.value);
+                                                            setFee(0);
+                                                            const element = document.querySelectorAll(
+                                                                "input[name='type_ship']",
+                                                            ) as any;
+                                                            element.forEach((item: any) => {
+                                                                if (item.checked) {
+                                                                    item.checked = false;
+                                                                }
+                                                            });
+                                                        }}
+                                                    >
+                                                        <option hidden>Tỉnh, Thành Phố</option>
+                                                        {city?.map((item: any, index) => (
+                                                            <option key={index} value={item.code}>
+                                                                {item.name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    <select
+                                                        onChange={(e) => {
+                                                            setDistrictName(
+                                                                e.target.options[e.target.selectedIndex].text,
+                                                            );
+                                                            setWard([]);
+                                                            setWardName('');
+                                                            getWard(+e.target.value);
+                                                        }}
+                                                        className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
+                                                    >
+                                                        <option hidden>Quận, Huyện</option>
+                                                        {district?.map((item: any, index) => (
+                                                            <option key={index} value={item.code}>
+                                                                {item.name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    <select
+                                                        onChange={(e) => {
+                                                            setWardName(e.target.options[e.target.selectedIndex].text);
+                                                        }}
+                                                        className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
+                                                    >
+                                                        <option hidden>Xã, Phường</option>
+                                                        {ward?.map((item: any, index) => (
+                                                            <option key={index} value={item.code}>
+                                                                {item.name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div className="form-group">
+                                                <InputField
+                                                    type="text"
+                                                    name="address"
+                                                    label="Nhập địa chỉ cụ thể"
+                                                    placeholder="Vd: Ấp 3 Đường Tân Thời"
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <TextareaField
+                                                    type="text"
+                                                    name="note"
+                                                    label="Ghi chú"
+                                                    placeholder="Điền ghi chú của bạn vào đây...."
+                                                />
                                             </div>
                                         </div>
-                                    </div>
-                                    <button type="submit" className="input rounded-lg !bg-black text-white">
-                                        Thanh toán {` `}
-                                        {(totalMoney + fee).toLocaleString('it-IT', {
-                                            style: 'currency',
-                                            currency: 'VND',
-                                        })}
-                                        (COD)
-                                    </button>
-                                </Form>
-                            )}
+                                        <div className="order_method">
+                                            <h5 className="text-2xl font-bold mb-4">Hình thức giao hàng:</h5>
+                                            <div className="space-y-4">
+                                                <div
+                                                    onClick={() => {
+                                                        setTypeShip('road');
+                                                        feeShip();
+                                                    }}
+                                                    className="group"
+                                                >
+                                                    <input
+                                                        className="hidden"
+                                                        type="radio"
+                                                        value="save"
+                                                        name="type_ship"
+                                                        id="save"
+                                                        onChange={(e) =>
+                                                            formik.setFieldValue('orderMethod', e.target.value)
+                                                        }
+                                                    />
+                                                    <label
+                                                        htmlFor="save"
+                                                        className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-primary cursor-pointer 
+                                        border border-slate-300 rounded-lg text-base space-x-8 transition-all"
+                                                    >
+                                                        <span className="relative block w-5 h-5 rounded-full border border-[#d9d9d9] group-hover:border-primary">
+                                                            <span
+                                                                className="checkmark hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                                        w-[10px] h-[10px] bg-primary rounded-full"
+                                                            ></span>
+                                                        </span>
+                                                        <SaveDeliveryIcon width={40} height={40} fillColor1="#319795" />
+                                                        <span>Giao hàng tiết kiệm</span>
+                                                    </label>
+                                                </div>
+                                                <div
+                                                    onClick={() => {
+                                                        setTypeShip('fly');
+                                                        feeShip();
+                                                    }}
+                                                    className="group"
+                                                >
+                                                    <input
+                                                        className="hidden"
+                                                        type="radio"
+                                                        name="type_ship"
+                                                        id="fast"
+                                                        value="fast"
+                                                        onChange={(e) =>
+                                                            formik.setFieldValue('orderMethod', e.target.value)
+                                                        }
+                                                    />
+                                                    <label
+                                                        htmlFor="fast"
+                                                        className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-primary cursor-pointer 
+                                        border border-slate-300 rounded-lg text-base space-x-8 transition-all"
+                                                    >
+                                                        <span className="relative block w-5 h-5 rounded-full border border-[#d9d9d9] group-hover:border-primary">
+                                                            <span
+                                                                className="checkmark hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                                        w-[10px] h-[10px] bg-primary rounded-full"
+                                                            ></span>
+                                                        </span>
+                                                        <FastDeliveryIcon width={40} height={40} fillColor1="red" />
+                                                        <span>Giao hàng nhanh</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="order_payment">
+                                            <h5 className="text-2xl font-bold mb-4">Hình thức thanh toán</h5>
+                                            <div className="space-y-4">
+                                                <div className="group">
+                                                    <input
+                                                        className="hidden"
+                                                        type="radio"
+                                                        name="type_payment"
+                                                        value="cod"
+                                                        id="cod"
+                                                        onChange={(e) =>
+                                                            formik.setFieldValue('payment', e.target.value)
+                                                        }
+                                                    />
+                                                    <label
+                                                        htmlFor="cod"
+                                                        className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-primary cursor-pointer 
+                                        border border-slate-300 rounded-lg text-base space-x-8 transition-all"
+                                                    >
+                                                        <span className="relative block w-5 h-5 rounded-full border border-[#d9d9d9] group-hover:border-primary">
+                                                            <span
+                                                                className="checkmark hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                                        w-[10px] h-[10px] bg-primary rounded-full"
+                                                            ></span>
+                                                        </span>
+                                                        <CodIcon width={35} height={30} />
+                                                        <span>Thanh toán khi nhận hàng</span>
+                                                    </label>
+                                                </div>
+                                                <div className="group">
+                                                    <input
+                                                        className="hidden"
+                                                        type="radio"
+                                                        name="type_payment"
+                                                        id="momo"
+                                                        value="momo"
+                                                        onChange={(e) =>
+                                                            formik.setFieldValue('payment', e.target.value)
+                                                        }
+                                                    />
+                                                    <label
+                                                        htmlFor="momo"
+                                                        className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-primary cursor-pointer 
+                                        border border-slate-300 rounded-lg text-base space-x-8 transition-all"
+                                                    >
+                                                        <span className="relative block w-5 h-5 rounded-full border border-[#d9d9d9] group-hover:border-primary">
+                                                            <span
+                                                                className="checkmark hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                                        w-[10px] h-[10px] bg-primary rounded-full"
+                                                            ></span>
+                                                        </span>
+                                                        <Image src={images.momo} className="w-[35px] h-[35px]" />
+                                                        <span>Thanh toán MoMo</span>
+                                                    </label>
+                                                </div>
+                                                <div className="group">
+                                                    <input
+                                                        className="hidden"
+                                                        type="radio"
+                                                        name="type_payment"
+                                                        id="shopee"
+                                                        value="shopee"
+                                                        onChange={(e) =>
+                                                            formik.setFieldValue('payment', e.target.value)
+                                                        }
+                                                    />
+                                                    <label
+                                                        htmlFor="shopee"
+                                                        className="flex items-center p-4 opacity-80 hover:opacity-100 hover:border-primary cursor-pointer 
+                                        border border-slate-300 rounded-lg text-base space-x-8 transition-all"
+                                                    >
+                                                        <span className="relative block w-5 h-5 rounded-full border border-[#d9d9d9] group-hover:border-primary">
+                                                            <span
+                                                                className="checkmark hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                                        w-[10px] h-[10px] bg-primary rounded-full"
+                                                            ></span>
+                                                        </span>
+                                                        <Image src={images.spepay} className="w-[35px] h-[35px]" />
+                                                        <span>Ví điện tử ShopeePay</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <Button colorScheme="teal" type="submit" className="!w-full !py-6">
+                                            Thanh toán {` `}
+                                            {(totalMoney + fee).toLocaleString('it-IT', {
+                                                style: 'currency',
+                                                currency: 'VND',
+                                            })}
+                                            (COD)
+                                        </Button>
+                                    </Form>
+                                );
+                            }}
                         </Formik>
                     </div>
                     {/* src={`${cartItem?.image}${Config.apiUrl}upload/${cartItem?.image}`} */}
@@ -465,16 +564,10 @@ function Cart() {
                                                     </div>
                                                     <div className="text-sm">
                                                         <h6 className="font-medium">
-                                                            {cartItem?.price.toLocaleString('it-IT', {
-                                                                style: 'currency',
-                                                                currency: 'VND',
-                                                            })}
+                                                            {FormatPriceVND(cartItem?.price)}
                                                         </h6>
                                                         <del className="text-slate-400">
-                                                            {(cartItem?.price + 9000).toLocaleString('it-IT', {
-                                                                style: 'currency',
-                                                                currency: 'VND',
-                                                            })}
+                                                            {FormatPriceVND(cartItem?.price + 9000)}
                                                         </del>
                                                     </div>
                                                 </div>
@@ -509,10 +602,8 @@ function Cart() {
                             <p className="flex justify-between">
                                 <span>Tạm tính</span>
                                 <span className="text-right">
-                                    {totalMoney.toLocaleString('it-IT', {
-                                        style: 'currency',
-                                        currency: 'VND',
-                                    })}
+                                    {FormatPriceVND(totalMoney)}
+
                                     {/* <br /> (tiết kiệm 80k) */}
                                 </span>
                             </p>
@@ -522,25 +613,14 @@ function Cart() {
                             </p>
                             <p className="flex justify-between">
                                 <span>Phí giao hàng</span>
-                                <span className="text-right">
-                                    {fee.toLocaleString('it-IT', {
-                                        style: 'currency',
-                                        currency: 'VND',
-                                    })}
-                                </span>
+                                <span className="text-right">{FormatPriceVND(fee)}</span>
                             </p>
                         </div>
                         <div>
                             <p className="flex justify-between text-sm">
                                 <span>Tổng</span>
                                 <span className="text-right">
-                                    <span className="!text-2xl">
-                                        {(totalMoney + fee).toLocaleString('it-IT', {
-                                            style: 'currency',
-                                            currency: 'VND',
-                                        })}
-                                    </span>{' '}
-                                    <br />
+                                    <span className="!text-2xl">{FormatPriceVND(totalMoney + fee)}</span> <br />
                                     <span className="!text-xs text-red-500">(Đã giảm 21% trên giá gốc)</span>
                                 </span>
                             </p>

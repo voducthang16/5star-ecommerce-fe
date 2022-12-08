@@ -1,14 +1,16 @@
 import { useToast } from '@chakra-ui/react';
 import { useState } from 'react';
+import { FaRegHeart } from 'react-icons/fa';
+import { RiShoppingCart2Fill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
-import { AddToCartIcon, HeartEmptyIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Config from '~/config';
 import { addToCart, getProductInCart, updateToCart } from '~/features/cart/cartSlice';
 import { getProducts } from '~/features/product/productSlice';
 import CartService from '~/services/CartService';
 import { ResponseType } from '~/utils/Types';
+import { motion, useAnimation } from 'framer-motion';
 import Rate from '../Rate';
 import './Product.scss';
 interface ProductProps {
@@ -21,7 +23,16 @@ interface ProductProps {
     type?: number;
     stocks?: any;
 }
-
+const variants = {
+    hover: {
+        x: 0,
+        scale: [1.1, 1],
+    },
+    initial: {
+        x: 200,
+        scale: 1,
+    },
+};
 function Product({ idProduct, name, slug, color, size, images, type = 0, stocks }: ProductProps) {
     const [imageInCart, setImageInCart] = useState('');
 
@@ -44,7 +55,6 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
             }
             if (index === indexImage) {
                 item.classList.add('z-20');
-                console.log(item);
                 setImageInCart(item?.src);
             }
         });
@@ -165,26 +175,49 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
             }
         }
     };
+
+    // HANDLE ANIMATIONS
+
+    // Imperative
+    const controls = useAnimation();
+    function handleMouseEnterControls() {
+        controls.start('hover');
+    }
+
+    function handleMouseLeaveControls() {
+        controls.start('initial');
+    }
     return (
-        <div id={`product_${idProduct}`} className="group product-hover">
+        <div
+            id={`product_${idProduct}`}
+            className="group product-hover overflow-hidden"
+            onMouseEnter={handleMouseEnterControls}
+            onMouseLeave={handleMouseLeaveControls}
+        >
             <div className="relative">
-                <div className="wishlist-wrapper absolute z-[21] p-2 top-2 left-2 cursor-pointer bg-[#ffffff] rounded-full">
-                    <HeartEmptyIcon width={16} height={16} />
-                    <span className="wishlist-text absolute -top-8 block p-1 bg-[#f5deb3] rounded-lg text-sm w-[66px]">
-                        Yêu thích
-                    </span>
-                </div>
-                <div
-                    onClick={(e) => handleAddToCart(e, idProduct, type)}
-                    className="wishlist-wrapper absolute z-[21] p-2 top-2 right-2 cursor-pointer bg-[#ffffff] rounded-full"
-                >
-                    <AddToCartIcon width={16} height={16} />
-                    <span className="wishlist-text absolute -top-8 block p-1 bg-[#f5deb3] rounded-lg text-sm w-[114px]">
-                        Thêm sản phẩm
-                    </span>
+                <div className="action-product absolute z-[21] top-[22%] right-2">
+                    <motion.div
+                        className="action-wishlist w-[40px] h-[40px] text-center bg-white leading-[38px] rounded-full shadow-md cursor-pointer"
+                        initial="initial"
+                        variants={variants}
+                        animate={controls}
+                        transition={{ type: 'spring', damping: 12, stiffness: 90 }}
+                    >
+                        <FaRegHeart className="text-xl inline-block text-primary" />
+                    </motion.div>
+                    <motion.div
+                        onClick={(e) => handleAddToCart(e, idProduct, type)}
+                        className="action-cart w-[40px] h-[40px] text-center bg-white leading-[38px] rounded-full shadow-md mt-2 cursor-pointer"
+                        variants={variants}
+                        initial="initial"
+                        animate={controls}
+                        transition={{ type: 'spring', damping: 12, stiffness: 100 }}
+                    >
+                        <RiShoppingCart2Fill className="text-xl inline-block text-primary" />
+                    </motion.div>
                 </div>
                 <div className="relative">
-                    <div className="relative w-full p-[50%] rounded-3xl">
+                    <div className="relative w-full p-[50%] rounded-3xl overflow-hidden">
                         {images?.map((item: any, index: any) => (
                             <Image
                                 key={index}
@@ -199,7 +232,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
                         >
                             {/* size */}
                             {sizeArray.length > 0 ? (
-                                <div className="flex justify-around items-center text-sm mb-[10px]">
+                                <div className="flex justify-center space-x-4 items-center text-sm mb-[10px]">
                                     {sizeArray?.reverse().map(([key, value]: any, index: any) => (
                                         <div key={index}>
                                             <input

@@ -1,10 +1,15 @@
+import { Badge } from '@chakra-ui/react';
 import { RiVipCrown2Line } from 'react-icons/ri';
+import { useAppSelector } from '~/app/hooks';
 import images from '~/assets/images';
 import Image from '~/components/Image';
+import { getUser } from '~/features/user/userSlice';
 import './Info.scss';
 import ModalUpdateAccount from './ModalUpdateAccount';
 import ModalUpdateInfo from './ModalUpdateInfo';
 const Info = () => {
+    const infoUser: any = useAppSelector(getUser);
+
     return (
         <div className="tab-info bg-[#f8f8f8] p-6 rounded-md shadow-sm">
             <div className="title inline-block">
@@ -29,22 +34,44 @@ const Info = () => {
                                     <table className="w-full">
                                         <tbody>
                                             <tr>
-                                                <td>Họ & tên: </td>
-                                                <td>Nguyễn Văn A</td>
+                                                <td width={20}>Họ & tên: </td>
+                                                <td>{infoUser && infoUser?.first_name + ' ' + infoUser?.last_name}</td>
                                             </tr>
 
                                             <tr>
                                                 <td>Ngày sinh: </td>
-                                                <td>21/05/1997</td>
+                                                <td>
+                                                    {infoUser?.birthday ? (
+                                                        infoUser?.birthday
+                                                    ) : (
+                                                        <Badge variant="subtle" colorScheme="teal">
+                                                            Chưa có
+                                                        </Badge>
+                                                    )}
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td>Số điện thoại: </td>
-                                                <td>012345678</td>
+                                                <td>
+                                                    {infoUser?.phone ? (
+                                                        infoUser?.phone
+                                                    ) : (
+                                                        <Badge variant="subtle" colorScheme="teal">
+                                                            Chưa có
+                                                        </Badge>
+                                                    )}
+                                                </td>
                                             </tr>
                                             <tr>
-                                                <td>Địa chỉ: </td>
+                                                <td>Giới tính: </td>
                                                 <td>
-                                                    <span className="no-fill text-primary">Không có</span>
+                                                    {infoUser?.gender ? (
+                                                        infoUser?.gender
+                                                    ) : (
+                                                        <Badge variant="subtle" colorScheme="teal">
+                                                            Chưa có
+                                                        </Badge>
+                                                    )}
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -62,7 +89,13 @@ const Info = () => {
                                             <tbody>
                                                 <tr>
                                                     <td>Tên đăng nhập: </td>
-                                                    <td className="text-primary">nguyenvana@gmail.com</td>
+                                                    <td className="text-primary">
+                                                        {infoUser?.email ? (
+                                                            infoUser?.email
+                                                        ) : (
+                                                            <span className="no-fill text-primary">Không có</span>
+                                                        )}
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td>Mật khẩu: </td>

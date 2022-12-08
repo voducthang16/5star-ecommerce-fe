@@ -9,33 +9,66 @@ import {
     useDisclosure,
     Button,
     FormLabel,
+    useToast,
 } from '@chakra-ui/react';
 import { FiEdit3 } from 'react-icons/fi';
 import { Form, Formik, FormikProps } from 'formik';
 import { InputField, RadioField } from '~/layouts/components/CustomField';
 import { updateInfoSchema } from '~/utils/validationSchema';
+import UserService from '~/services/UserService';
+import { ResponseType } from '~/utils/Types';
+import { useAppDispatch, useAppSelector } from '~/app/hooks';
+import { getOneInfoUser, getUser } from '~/features/user/userSlice';
+import { useEffect, useState } from 'react';
 
 type ValuesForm = {
     first_name: string;
     last_name: string;
     phone: string;
-    birthday: string;
+    // birthday: string;
     gender: string;
 };
 
-const initCheckoutForm = {
+let initCheckoutForm = {
     first_name: '',
     last_name: '',
     phone: '',
-    birthday: '',
+    // birthday: '',
     gender: 'Nam',
 };
 
 const ModalUpdateInfo = () => {
+    const [initField, setInitField] = useState<ValuesForm>(initCheckoutForm);
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const dispatch = useAppDispatch();
+    const toast = useToast();
+
+    const infoUser: any = useAppSelector(getUser);
+
+    useEffect(() => {
+        let newValue = {
+            first_name: infoUser?.first_name || '',
+            last_name: infoUser?.last_name || '',
+            phone: infoUser?.phone || '',
+            // birthday: infoUser?.birthday || '',
+            gender: infoUser?.gender || 'Nam',
+        };
+        setInitField(newValue);
+    }, [infoUser]);
 
     const handleSubmitForm = (values: ValuesForm) => {
-        console.log(values);
+        UserService.UpdateUser(values, infoUser?.id).then((res: ResponseType) => {
+            if (res.statusCode === 200) {
+                dispatch(getOneInfoUser(infoUser?.id));
+                onClose();
+                toast({
+                    position: 'top-right',
+                    title: 'Cập nhật thành công',
+                    duration: 1000,
+                    status: 'success',
+                });
+            }
+        });
     };
     return (
         <>
@@ -45,7 +78,7 @@ const ModalUpdateInfo = () => {
             <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} size="xl">
                 <ModalOverlay />
                 <Formik
-                    initialValues={initCheckoutForm}
+                    initialValues={initField}
                     validationSchema={updateInfoSchema}
                     onSubmit={(values: ValuesForm) => handleSubmitForm(values)}
                 >
@@ -64,14 +97,14 @@ const ModalUpdateInfo = () => {
                                         />
                                         <InputField name="last_name" placeholder="Nhập tên của bạn" label="Tên" />
                                     </div>
-                                    <div className="form-group mt-2">
+                                    {/* <div className="form-group mt-2">
                                         <InputField
                                             type="date"
                                             name="birthday"
                                             placeholder="Ngày sinh"
                                             label="Ngày sinh"
                                         />
-                                    </div>
+                                    </div> */}
                                     <div className="form-group mt-2">
                                         <InputField
                                             type="text"

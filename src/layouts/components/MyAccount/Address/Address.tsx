@@ -4,6 +4,7 @@ import { MdDeleteOutline } from 'react-icons/md';
 import { RiVipCrown2Line } from 'react-icons/ri';
 import { TbEdit } from 'react-icons/tb';
 import ModalAddAddress from './ModalAddAddress';
+import ModalUpdateAddress from './ModalUpdateAddress';
 
 const Address = () => {
     return (
@@ -48,9 +49,9 @@ const Address = () => {
                             </div>
                         </div>
                         <div className="action-edit flex gap-2 mt-2 text-xl">
-                            <Button p={1} className="p-2 rounded-md border" colorScheme="blue">
+                            <ModalUpdateAddress>
                                 <TbEdit />
-                            </Button>
+                            </ModalUpdateAddress>
                             <Button p={1} className="p-2 rounded-md border" colorScheme="red">
                                 <MdDeleteOutline />
                             </Button>

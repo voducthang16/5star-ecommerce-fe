@@ -41,7 +41,6 @@ const ModalUpdateAccount = () => {
         };
 
         AuthService.updatePassword(dataPost).then((res: ResponseType) => {
-            console.log('res: ', res);
             if (res.statusCode === 201) {
                 toast({
                     position: 'top-right',

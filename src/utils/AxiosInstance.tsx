@@ -5,7 +5,6 @@ const baseURL = Config.apiUrl;
 
 const AxiosInstance = axios.create({
     baseURL: baseURL,
-    withCredentials: true,
 });
 
 // Add a request interceptor
@@ -32,17 +31,24 @@ AxiosInstance.interceptors.response.use(
     async function (error) {
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response error
+        const urlRefreshToken = error.config.url.split('/')[4];
         const { statusCode, message } = error.response.data;
+        // GET API CALL REFRESHTOKEN
+
         if (statusCode === 401 && message === 'Unauthorized') {
-            //TOKEN EXPIRED
-            const accessToken = await refreshToken(); // GET API CALL REFRESHTOKEN
-            if (accessToken) {
-                const config: AxiosRequestConfig<any> | any = error.config;
-                //SET HEADERS ACCESS TOKEN NEW
-                config.headers['Authorization'] = `Bearer ${accessToken}`;
-                // SET CLIENT ACCESS TOKEN NEW
-                localStorage.setItem('access_token', accessToken);
-                return AxiosInstance(config);
+            if (urlRefreshToken === 'resettoken') {
+                return;
+            } else {
+                const accessToken = await refreshToken();
+                //TOKEN EXPIRED
+                if (accessToken) {
+                    const config: AxiosRequestConfig<any> | any = error.config;
+                    //SET HEADERS ACCESS TOKEN NEW
+                    config.headers['Authorization'] = `Bearer ${accessToken}`;
+                    // SET CLIENT ACCESS TOKEN NEW
+                    localStorage.setItem('access_token', accessToken);
+                    return AxiosInstance(config);
+                }
             }
         }
         return error && error.response && error.response.data ? error.response.data : Promise.reject(error);
