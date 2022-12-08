@@ -11,7 +11,7 @@ export const LoginSchema = () => {
 
 export const ForgotPasswordSchema = () => {
     return Yup.object({
-        email: Yup.string().email('Please enter correct email').required('Email is required'),
+        email: Yup.string().email('Please enter correct email').required('Vui lòng nhập email chính xác'),
     });
 };
 
@@ -35,8 +35,10 @@ export const updateInfoSchema = () => {
     return Yup.object({
         first_name: Yup.string().required('Vui lòng nhập họ của bạn'),
         last_name: Yup.string().required('Vui lòng  nhập tên của bạn'),
-        birthday: Yup.string().required('Vui lòng nhập ngày sinh của bạn'),
-        phone: Yup.string().required('Vui lòng nhập số điện thoại của bạn'),
+        // birthday: Yup.string().required('Vui lòng nhập ngày sinh của bạn'),
+        phone: Yup.string()
+            .required('Vui lòng nhập số điện thoại của bạn')
+            .matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/, 'Vui lòng nhập đúng số điện thoại của bạn'),
     });
 };
 
@@ -45,5 +47,25 @@ export const updateAccountSchema = () => {
         password: Yup.string().required('Vui lòng nhập mật khẩu cũ').min(6, 'Mật khẩu phải lớn hơn 6 kí tự'),
         newPassword: Yup.string().required('Vui lòng nhập mật khẩu mới').min(6, 'Mật khẩu phải lớn hơn 6 kí tự'),
         confirmPassword: Yup.string().oneOf([Yup.ref('newPassword'), null], 'Mật khẩu không khớp'),
+    });
+};
+
+export const updateAddressAccountSchema = () => {
+    return Yup.object({
+        phone: Yup.string()
+            .required('Vui lòng nhập số điện thoại của bạn')
+            .matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/, 'Vui lòng nhập đúng số điện thoại của bạn'),
+        address: Yup.string().required('Vui lòng nhập địa chỉ của bạn'),
+    });
+};
+
+export const orderCartSchema = () => {
+    return Yup.object({
+        fullname: Yup.string().required('Vui lòng nhập họ tên của bạn'),
+        phone: Yup.string()
+            .required('Vui lòng nhập số điện thoại của bạn')
+            .matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/, 'Vui lòng nhập đúng số điện thoại của bạn'),
+        email: Yup.string().email('Please enter correct email').required('Vui lòng nhập email chính xác'),
+        address: Yup.string().required('Vui lòng nhập địa chỉ của bạn'),
     });
 };

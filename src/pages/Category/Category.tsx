@@ -11,6 +11,7 @@ import {
     getCategory,
     getSubCategory,
 } from '~/features/category/categorySlice';
+import { motion } from 'framer-motion';
 import { fetchProductAsync, getProducts } from '~/features/product/productSlice';
 import Product from '~/layouts/components/Product';
 import './Category.scss';
@@ -32,9 +33,18 @@ function Category() {
         dispatch(fetchSubCategoryAsync());
     }, [dispatch]);
 
-    const fetchCategoryNoParent = (id: number) => {};
+    const fetchCategoryNoParent = (id: number) => {
+        let subCategoryNew: any = [];
+        const result = subCategory?.filter((item: any) => {
+            if (item.parent_id === id) {
+                subCategoryNew.push(item);
+                return subCategory;
+            }
+        });
+        return result;
+    };
 
-    const icons: any = [AccessoriesIcon, BagIcon, JeansIcon, ShirtIcon, ShoesIcon, WatchIcon];
+    const icons: any = [<JeansIcon />, <ShoesIcon />, <BagIcon />, <ShirtIcon />, <WatchIcon />, <AccessoriesIcon />];
 
     return (
         <div className="category-page">
@@ -56,7 +66,7 @@ function Category() {
                             </div>
                             <div className="pb-4 px-6 border-b border-slate-200" data-aos="fade-up">
                                 <h6 className="text-lg font-semibold pt-4">Danh mục</h6>
-                                <Accordion allowToggle px={5}>
+                                <Accordion allowToggle px={5} borderBottom="transparent">
                                     {category?.map((item: any, index: number) => (
                                         <AccordionItem key={index} borderTop={0}>
                                             <AccordionButton
@@ -67,49 +77,39 @@ function Category() {
                                                 px={0}
                                                 py={1}
                                             >
-                                                {/* <ShirtIcon className="mr-2" width={48} height={48} /> */}
+                                                <span className="icon w-[40px] h-[40px] mr-2">{icons[index]}</span>
                                                 <Box display={'flex'} justifyContent={'space-between'} width={'100%'}>
                                                     {item.name}
                                                 </Box>
                                                 <AccordionIcon />
                                             </AccordionButton>
 
-                                            <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                                <p className="flex justify-between text-gray-500">
-                                                    <span>Xem Tất Cả</span>
-                                                    <span>20</span>
-                                                </p>
-                                            </AccordionPanel>
-                                            <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                                <p className="flex justify-between text-gray-500">
-                                                    <span>T-Shirt</span>
-                                                    <span>20</span>
-                                                </p>
-                                            </AccordionPanel>
-                                            <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                                <p className="flex justify-between text-gray-500">
-                                                    <span>Sơ Mi</span>
-                                                    <span>20</span>
-                                                </p>
-                                            </AccordionPanel>
-                                            <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                                <p className="flex justify-between text-gray-500">
-                                                    <span>Thể Thao</span>
-                                                    <span>20</span>
-                                                </p>
-                                            </AccordionPanel>
-                                            <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                                <p className="flex justify-between text-gray-500">
-                                                    <span>Khoác</span>
-                                                    <span>20</span>
-                                                </p>
-                                            </AccordionPanel>
-                                            <AccordionPanel fontSize={14} py={2} pl={'44px'}>
-                                                <p className="flex justify-between text-gray-500">
-                                                    <span>Polo</span>
-                                                    <span>20</span>
-                                                </p>
-                                            </AccordionPanel>
+                                            <div className="sub-category border-l-2 border-primary ml-[44px]">
+                                                <AccordionPanel py="4px">
+                                                    <p
+                                                        className="flex justify-between text-gray-500 hover:text-primary transition-all 
+                                                        duration-300 cursor-pointer text-base"
+                                                    >
+                                                        <span>Xem Tất Cả</span>
+                                                    </p>
+                                                </AccordionPanel>
+                                                {fetchCategoryNoParent(item.id)?.map((sub: any, index: number) => (
+                                                    <AccordionPanel py="4px" key={index}>
+                                                        <p className="flex justify-between text-gray-500  cursor-pointer text-base">
+                                                            <motion.span
+                                                                whileHover={{
+                                                                    color: '#319795',
+                                                                    scale: 1.1,
+                                                                    transition: { duration: 0.2 },
+                                                                }}
+                                                                whileTap={{ scale: 0.9 }}
+                                                            >
+                                                                {sub.name}
+                                                            </motion.span>
+                                                        </p>
+                                                    </AccordionPanel>
+                                                ))}
+                                            </div>
                                         </AccordionItem>
                                     ))}
                                 </Accordion>

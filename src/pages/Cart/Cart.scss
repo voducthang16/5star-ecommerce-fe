@@ -3,9 +3,9 @@ input[name='type_ship'] {
     &:checked {
         ~ label {
             opacity: 1;
-            border-color: #2f5acf;
+            border-color: var(--primary);
             span {
-                border-color: #2f5acf;
+                border-color: var(--primary);
                 > .checkmark {
                     display: block;
                 }

@@ -1,6 +1,6 @@
 import { FormControl, FormLabel, Textarea } from '@chakra-ui/react';
 import { ErrorMessage, FastField } from 'formik';
-const TextareaField = ({ label, name, ...props }: any) => {
+const TextareaField = ({ label, name, ...propsFieldInput }: any) => {
     return (
         <FormControl>
             {label && <FormLabel className="text-tbase">{label}</FormLabel>}
@@ -10,7 +10,7 @@ const TextareaField = ({ label, name, ...props }: any) => {
                     return (
                         <>
                             <Textarea
-                                {...props}
+                                {...propsFieldInput}
                                 {...field}
                                 className={`${meta.touched && meta.error && 'is-invalid'}`}
                             />

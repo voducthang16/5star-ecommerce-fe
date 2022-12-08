@@ -55,7 +55,7 @@ export const categorySlice = createSlice({
             })
             .addCase(fetchSubCategoryAsync.fulfilled, (state, action) => {
                 state.status = 'idle';
-                state.value = action.payload;
+                state.subCategory = action.payload;
             })
             .addCase(fetchSubCategoryAsync.rejected, (state) => {
                 state.status = 'failed';
