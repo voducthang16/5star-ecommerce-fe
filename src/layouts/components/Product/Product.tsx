@@ -51,7 +51,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
     };
 
     const requestAddToCart = (idStock: number) => {
-        let dataSendRequest = {
+        let dataSendRequest: any = {
             id_product: idStock,
             quantity: 1,
             image: imageInCart.split('/')[4],
@@ -60,7 +60,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
             if (res.statusCode === 201) {
                 const existProduct = productAddCart.find((item: any) => item.id_product === idStock);
                 if (existProduct) {
-                    let dataRedux = {
+                    let dataRedux: any = {
                         id_product: idStock,
                         quantity: existProduct.quantity + 1,
                     };

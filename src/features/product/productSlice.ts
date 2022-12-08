@@ -38,17 +38,7 @@ export const fetchDetailProductAsync = createAsyncThunk('product/fetchDetailProd
 export const productSlice = createSlice({
     name: 'product',
     initialState,
-    reducers: {
-        // increment: (state) => {
-        //     state.value += 1;
-        // },
-        // decrement: (state) => {
-        //     state.value -= 1;
-        // },
-        // incrementByAmount: (state, action: PayloadAction<number>) => {
-        //     state.value += action.payload;
-        // },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(fetchProductAsync.pending, (state) => {
