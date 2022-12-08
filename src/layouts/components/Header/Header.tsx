@@ -48,7 +48,7 @@ function Header() {
                     <div className="grid grid-cols-2 lg:grid-cols-8 gap-4 h-20">
                         <div className="col-span-1 lg:col-span-2 flex items-center">
                             <Link to={'/'}>
-                                <Logo />
+                                <Logo className="w-[150px] h-auto" />
                             </Link>
                         </div>
                         <div className="hidden lg:col-span-4 lg:flex lg:items-center">
@@ -247,21 +247,26 @@ function Header() {
                                                                 className="flex-1 text-base flex flex-col justify-around"
                                                             >
                                                                 <h6>{cartItem?.product?.name}</h6>
-                                                                {cartItem?.classify_1 && (
-                                                                    <span className="color-label bg-white relative inline-block w-6 h-6 border shadow-md rounded-full">
-                                                                        <span
-                                                                            style={{
-                                                                                backgroundColor: `${cartItem?.classify_1.attribute}`,
-                                                                            }}
-                                                                            className={`absolute inset-1 rounded-full`}
-                                                                        ></span>
-                                                                    </span>
-                                                                )}
-                                                                {cartItem?.classify_2 && (
-                                                                    <>
-                                                                        <span>{cartItem?.classify_2.attribute}</span>
-                                                                    </>
-                                                                )}
+                                                                <div className="flex items-center">
+                                                                    {cartItem?.classify_1 && (
+                                                                        <span className="color-label bg-white relative inline-block w-6 h-6 border shadow-md rounded-full">
+                                                                            <span
+                                                                                style={{
+                                                                                    backgroundColor: `${cartItem?.classify_1.attribute}`,
+                                                                                }}
+                                                                                className={`absolute inset-1 rounded-full`}
+                                                                            ></span>
+                                                                        </span>
+                                                                    )}
+                                                                    {cartItem?.classify_2 && (
+                                                                        <>
+                                                                            <span className="ml-1 font-semibold">
+                                                                                - {cartItem?.classify_2.attribute}
+                                                                            </span>
+                                                                        </>
+                                                                    )}
+                                                                </div>
+
                                                                 <p className="flex items-center space-x-2">
                                                                     <span className="text-[#2f5acf]">
                                                                         {cartItem?.price.toLocaleString('it-IT', {

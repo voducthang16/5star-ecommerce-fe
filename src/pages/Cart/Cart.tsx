@@ -61,12 +61,17 @@ function Cart() {
         });
     };
 
-    useEffect(() => {
+    const handlePatchValueOrder = () => {
+        setCityName('Tỉnh Long An');
         let fullName = infoUser?.first_name + ' ' + infoUser?.last_name;
         let email = infoUser.email;
-        let newDefaultValues = { fullName, email };
-        console.log('newDefaultValues: ', newDefaultValues);
+        let phone = infoUser.phone;
+        let newDefaultValues = { ...defaultValue, fullName, email, phone };
         setDefaultValue(newDefaultValues);
+    };
+
+    useEffect(() => {
+        handlePatchValueOrder();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [infoUser]);
 
@@ -115,6 +120,7 @@ function Cart() {
             .catch((err) => console.log(err));
     }, []);
     const getDistrict = (cityId: number) => {
+        console.log('cityId: ', cityId);
         CartService.getDistrict(cityId)
             .then((res) => setDistrict(res.data.districts))
             .catch((err) => console.log(err));
@@ -181,6 +187,7 @@ function Cart() {
                     >
                         <Formik
                             initialValues={defaultValue}
+                            enableReinitialize={true}
                             validationSchema={orderCartSchema}
                             onSubmit={(values: ValuesForm) => handleSubmitForm(values)}
                         >
@@ -232,7 +239,7 @@ function Cart() {
                                                             setWard([]);
                                                             setDistrictName('');
                                                             setWardName('');
-                                                            getDistrict(+e.target.value);
+                                                            getDistrict(+e.target.options[e.target.selectedIndex].id);
                                                             setFee(0);
                                                             const element = document.querySelectorAll(
                                                                 "input[name='type_ship']",
@@ -243,10 +250,11 @@ function Cart() {
                                                                 }
                                                             });
                                                         }}
+                                                        value={cityName}
                                                     >
                                                         <option hidden>Tỉnh, Thành Phố</option>
                                                         {city?.map((item: any, index) => (
-                                                            <option key={index} value={item.code}>
+                                                            <option key={index} id={item.code} value={item.name}>
                                                                 {item.name}
                                                             </option>
                                                         ))}
@@ -258,13 +266,13 @@ function Cart() {
                                                             );
                                                             setWard([]);
                                                             setWardName('');
-                                                            getWard(+e.target.value);
+                                                            getWard(+e.target.options[e.target.selectedIndex].id);
                                                         }}
                                                         className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
                                                     >
                                                         <option hidden>Quận, Huyện</option>
                                                         {district?.map((item: any, index) => (
-                                                            <option key={index} value={item.code}>
+                                                            <option key={index} id={item.code} value={item.name}>
                                                                 {item.name}
                                                             </option>
                                                         ))}
@@ -277,7 +285,7 @@ function Cart() {
                                                     >
                                                         <option hidden>Xã, Phường</option>
                                                         {ward?.map((item: any, index) => (
-                                                            <option key={index} value={item.code}>
+                                                            <option key={index} id={item.code} value={item.name}>
                                                                 {item.name}
                                                             </option>
                                                         ))}
@@ -400,7 +408,7 @@ function Cart() {
                                                         <span>Thanh toán khi nhận hàng</span>
                                                     </label>
                                                 </div>
-                                                <div className="group">
+                                                {/* <div className="group">
                                                     <input
                                                         className="hidden"
                                                         type="radio"
@@ -425,7 +433,7 @@ function Cart() {
                                                         <Image src={images.momo} className="w-[35px] h-[35px]" />
                                                         <span>Thanh toán MoMo</span>
                                                     </label>
-                                                </div>
+                                                </div> */}
                                                 <div className="group">
                                                     <input
                                                         className="hidden"
@@ -448,8 +456,8 @@ function Cart() {
                                         w-[10px] h-[10px] bg-primary rounded-full"
                                                             ></span>
                                                         </span>
-                                                        <Image src={images.spepay} className="w-[35px] h-[35px]" />
-                                                        <span>Ví điện tử ShopeePay</span>
+                                                        <Image src={images.vnpay} className="w-[40px] h-[40px]" />
+                                                        <span>Ví điện tử VNPay</span>
                                                     </label>
                                                 </div>
                                             </div>
@@ -477,7 +485,7 @@ function Cart() {
                                     <div className="flex relative" key={cartItem.id}>
                                         <div className="w-[30%] flex items-center justify-center">
                                             <Image
-                                                className="object-contain w-full"
+                                                className="object-contain w-full mr-3"
                                                 src={
                                                     cartItem?.image
                                                         ? `${Config.apiUrl}upload/${cartItem?.image}`
@@ -510,7 +518,9 @@ function Cart() {
                                                         {cartItem?.classify_2 && (
                                                             <>
                                                                 Kích thước :
-                                                                <span>{cartItem?.classify_2.attribute}</span>
+                                                                <span className="font-semibold">
+                                                                    {cartItem?.classify_2.attribute}
+                                                                </span>
                                                             </>
                                                         )}
                                                     </p>
@@ -581,6 +591,7 @@ function Cart() {
                                         </div>
                                     </div>
                                 ))}
+                            {listCart.length === 0 && <p>Chưa có sản phẩm nào trong giỏ hàng</p>}
                         </div>
                         <div className="flex pt-4 border-t border-slate-200 gap-2">
                             <Input type="text" placeholder="Mã giảm giá" />

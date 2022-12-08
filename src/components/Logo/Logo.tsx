@@ -8,7 +8,7 @@ interface LogoProps {
 }
 
 function Logo({ className }: LogoProps) {
-    return <Image src={images.logoBlack2} alt="Logo 5Star" className={`${className} w-3/5`} />;
+    return <Image src={images.logoBlack2} alt="Logo 5Star" className={`${className}`} />;
 }
 
 export default Logo;
