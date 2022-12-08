@@ -213,6 +213,7 @@ function Category() {
                                             slug={item.slug}
                                             color={item.classify_1}
                                             size={item.classify_2}
+                                            type={item.classify_n}
                                             images={item.images}
                                             stocks={item.stocks}
                                         />

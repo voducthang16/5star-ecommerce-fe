@@ -136,7 +136,7 @@ function Footer() {
                         <div className="flex flex-col md:flex-row justify-between space-y-4 lg:space-y-0">
                             <div className="flex-1">
                                 <div className="logo w-full lg:w-2/5 lg:h-16">
-                                    <Logo className="mx-auto md:mx-0" />
+                                    <Logo className="mx-auto md:mx-0 w-[150px] h-auto" />
                                 </div>
                                 <ul className="flex flex-wrap justify-center md:justify-start mt-6 text-sm space-x-4 leading-6">
                                     <li className="cursor-pointer hover:opacity-80 transition-all duration-200">

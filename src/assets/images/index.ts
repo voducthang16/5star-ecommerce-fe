@@ -1,6 +1,7 @@
 const images: any = {
     logoBlack: require('~/assets/images/Logo5Star.png'),
     logoBlack2: require('~/assets/images/Logo5Star2.png'),
+    logoMobile: require('~/assets/images/LogoMobile.png'),
     noImage: require('~/assets/images/no-image.png'),
     LoadingGif: require('./loading-gif.gif'),
     step1: require('~/assets/images/step1.png'),
@@ -16,6 +17,7 @@ const images: any = {
     vector_login: require('~/assets/images/vector-login.png'),
     vector_register: require('~/assets/images/vector-signup.png'),
     spepay: require('~/assets/images/spepay.png'),
+    vnpay: require('~/assets/images/vnpay.webp'),
     momo: require('~/assets/images/momo.png'),
     avatarDefault: require('~/assets/images/avatar-default.png'),
     profile_account: require('~/assets/images/profile-myaccount.png'),
