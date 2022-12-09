@@ -13,6 +13,7 @@ import { ResponseType } from '~/utils/Types';
 import { motion, useAnimation } from 'framer-motion';
 import Rate from '../Rate';
 import './Product.scss';
+import { getUser } from '~/features/user/userSlice';
 interface ProductProps {
     idProduct: number;
     name?: string;
@@ -42,6 +43,8 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
     const colorArray: any = color ? Object?.entries(color) : '';
     const sizeArray: any = size ? Object?.entries(size) : '';
     const moneyArray: any = [];
+    const infoUser: any = useAppSelector(getUser);
+
     stocks.forEach((item: any) => {
         moneyArray.push(item.price);
     });
@@ -94,6 +97,18 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
 
     const handleAddToCart = (e: any, idProduct: number, type: number) => {
         e.preventDefault();
+        console.log(infoUser.length === 0);
+        if (infoUser.length === 0) {
+            toast({
+                title: 'Thông báo',
+                description: 'Vui lòng đăng nhập',
+                status: 'warning',
+                position: 'top-right',
+                duration: 3000,
+                isClosable: true,
+            });
+            return;
+        }
         const idProductParent = idProduct;
         const productParent = document.querySelector(`#product_${idProductParent}`);
         let idColor: number = 0;

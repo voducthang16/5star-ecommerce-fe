@@ -88,7 +88,7 @@ function Home() {
                                                 </span>
                                                 <h2
                                                     className="title-active mt-6 font-semibold text-3xl sm:text-4xl md:text-5xl w-[70%]
-                                                    xl:text-6xl 2xl:text-7xl !leading-[114%] text-slate-900 relative z-10 break-words"
+                                                    xl:text-5xl 2xl:text-6xl !leading-[114%] text-slate-900 relative z-10 break-words"
                                                 >
                                                     {slide.title}
                                                 </h2>
@@ -236,7 +236,7 @@ function Home() {
                                 className={`lookbook-item relative col-span-2 h-fit
                                 text-right overflow-hidden rounded-md cursor-pointer ${item.column}`}
                             >
-                                <Link to="" className="">
+                                <Link to={item.link} className="">
                                     <div
                                         className="content absolute bottom-6 left-2/4 -translate-x-2/4 w-[90%] p-3 
                                     shadow-md text-center bg-white opacity-80"
@@ -246,14 +246,14 @@ function Home() {
                                             data-aos="fade-down"
                                             data-aos-delay="200"
                                         >
-                                            {item.title}
+                                            {/* {item.title} */}
                                         </h3>
                                         <h2
                                             className="text-xl text-tblack font-bold"
                                             data-aos="fade-up"
                                             data-aos-delay="200"
                                         >
-                                            Thời trang Nam phong độ
+                                            {item.title}
                                         </h2>
                                     </div>
                                     <Image src={item.image} className="h-auto w-full object-cover object-center" />
@@ -342,7 +342,7 @@ function Home() {
                                 <div className="mb-4 sm:mb-6 max-w-[140px] mx-auto">
                                     <Image src={item.image} alt="Step 1" />
                                 </div>
-                                <div className="text-center mt-auto space-y-5">
+                                <div className="text-center space-y-5">
                                     <span
                                         className={`inline-flex px-2.5 py-1 rounded-full font-medium text-base relative ${item.color}`}
                                     >
