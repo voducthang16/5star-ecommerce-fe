@@ -78,15 +78,18 @@ export const productFakeData = [
 export const configSlide = [
     {
         logo: `${images.hero1}`,
+        subTitle: '',
         title: 'Sản phẩm độc đáo',
     },
     {
         logo: `${images.hero2}`,
-        title: 'Nhiều ưu đãi hấp dẫn',
+        subTitle: '',
+        title: 'Giảm sốc tới 50%',
     },
     {
         logo: `${images.hero3}`,
-        title: 'Ưu đãi lớn chưa từng có',
+        subTitle: '',
+        title: 'Siêu sale hấp dẫn',
     },
 ];
 
@@ -119,14 +122,14 @@ export const fourStep = [
 
 export const specialProduct = [
     {
-        title: '',
+        title: 'Đồng Hồ Nam',
         sub_title: '',
         image: `${images.special_1}`,
         column: 'row-span-1',
         link: '',
     },
     {
-        title: 'Hình 2',
+        title: 'Áo Khoác',
         sub_title: '',
         image: `${images.special_2}`,
         column: 'row-span-2',
@@ -134,31 +137,31 @@ export const specialProduct = [
         link: '',
     },
     {
-        title: 'Hình 3',
+        title: 'Đồng Hồ Nữ',
         sub_title: '',
-        image: `${images.special_1}`,
+        image: `${images.special_3}`,
         column: 'row-span-auto',
         link: '',
     },
     {
-        title: '',
+        title: 'Quần Jeans',
         sub_title: '',
         image: `${images.special_4}`,
         column: 'row-span-2',
         link: '',
     },
     {
-        title: '',
+        title: 'Quần Tây',
         sub_title: '',
-        image: `${images.special_4}`,
+        image: `${images.special_6}`,
 
         column: 'row-span-2',
         link: '',
     },
     {
-        title: '',
+        title: 'Giày Sneaker',
         sub_title: '',
-        image: `${images.special_1}`,
+        image: `${images.special_5}`,
         column: 'row-span-1',
         link: '',
     },

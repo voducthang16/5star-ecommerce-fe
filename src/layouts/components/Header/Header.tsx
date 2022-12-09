@@ -2,6 +2,7 @@ import { Button, Popover, PopoverContent, PopoverTrigger, Tooltip } from '@chakr
 import { useEffect } from 'react';
 import { AiOutlineHeart, AiOutlineShoppingCart, AiOutlineUser } from 'react-icons/ai';
 import { BiMessageSquareCheck } from 'react-icons/bi';
+import { FiLogOut } from 'react-icons/fi';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { IoReorderThreeSharp } from 'react-icons/io5';
 import { MdOutlineDelete, MdOutlineManageAccounts } from 'react-icons/md';
@@ -27,7 +28,6 @@ function Header() {
     useEffect(() => {
         handleScroll();
     }, []);
-
     useEffect(() => {
         dispatch(getCartAsync());
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,7 +139,6 @@ function Header() {
                                                             <Tooltip label="Tài khoản">
                                                                 <div className="icon relative text-2xl">
                                                                     <AiOutlineUser />
-                                                                    <span className="badge-notif-header">9</span>
                                                                 </div>
                                                             </Tooltip>
                                                         </Button>
@@ -167,34 +166,48 @@ function Header() {
                                                                         </Link>
                                                                     </li>
                                                                 )}
-                                                                <li>
-                                                                    <Link
-                                                                        to="/login"
-                                                                        className="link-icon-header"
-                                                                        onClick={onClose}
-                                                                    >
+                                                                {infoUser.length === 0 && (
+                                                                    <li>
+                                                                        <Link
+                                                                            to="/login"
+                                                                            className="link-icon-header"
+                                                                            onClick={onClose}
+                                                                        >
+                                                                            <span className="icon text-primary p-1 text-2xl mr-2">
+                                                                                <TbUserCircle />
+                                                                            </span>
+                                                                            <span className="title font-medium">
+                                                                                Đăng nhập
+                                                                            </span>
+                                                                        </Link>
+                                                                    </li>
+                                                                )}
+                                                                {infoUser.length === 0 && (
+                                                                    <li>
+                                                                        <Link
+                                                                            to="/register"
+                                                                            className="link-icon-header"
+                                                                            onClick={onClose}
+                                                                        >
+                                                                            <span className="icon text-primary p-1 text-2xl mr-2">
+                                                                                <RiUserSharedLine />
+                                                                            </span>
+                                                                            <span className="title font-medium">
+                                                                                Đăng ký
+                                                                            </span>
+                                                                        </Link>
+                                                                    </li>
+                                                                )}
+                                                                {infoUser.length !== 0 && (
+                                                                    <li className="link-icon-header" onClick={onClose}>
                                                                         <span className="icon text-primary p-1 text-2xl mr-2">
-                                                                            <TbUserCircle />
+                                                                            <FiLogOut />
                                                                         </span>
                                                                         <span className="title font-medium">
-                                                                            Đăng nhập
+                                                                            Đăng xuất
                                                                         </span>
-                                                                    </Link>
-                                                                </li>
-                                                                <li>
-                                                                    <Link
-                                                                        to="/register"
-                                                                        className="link-icon-header"
-                                                                        onClick={onClose}
-                                                                    >
-                                                                        <span className="icon text-primary p-1 text-2xl mr-2">
-                                                                            <RiUserSharedLine />
-                                                                        </span>
-                                                                        <span className="title font-medium">
-                                                                            Đăng ký
-                                                                        </span>
-                                                                    </Link>
-                                                                </li>
+                                                                    </li>
+                                                                )}
                                                             </ul>
                                                         </div>
                                                     </PopoverContent>
@@ -354,18 +367,28 @@ function Header() {
                             <ul className="flex flex-col text-base space-y-2 mt-2">
                                 <li className="py-2 px-4 bg-slate-50 rounded-md">
                                     <a className="transition-all" href="/">
-                                        Departments
+                                        Loại
                                     </a>
                                 </li>
                                 <li className="py-2 px-4 bg-slate-50 rounded-md">
-                                    <a className="transition-all" href="/">
-                                        Home
-                                    </a>
+                                    <Link to={'/'} className="transition-all">
+                                        Trang chủ
+                                    </Link>
                                 </li>
                                 <li className="py-2 px-4 bg-slate-50 rounded-md">
-                                    <a className="transition-all" href="/">
-                                        About
-                                    </a>
+                                    <Link to={'/about'} className="transition-all">
+                                        Giới thiệu
+                                    </Link>
+                                </li>
+                                <li className="py-2 px-4 bg-slate-50 rounded-md">
+                                    <Link to={'/category'} className="transition-all">
+                                        Danh mục
+                                    </Link>
+                                </li>
+                                <li className="py-2 px-4 bg-slate-50 rounded-md">
+                                    <Link to={'/contact'} className="transition-all">
+                                        Liên hệ
+                                    </Link>
                                 </li>
                             </ul>
                         </div>
