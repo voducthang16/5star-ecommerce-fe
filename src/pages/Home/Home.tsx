@@ -15,7 +15,7 @@ import { Vector } from '~/components/Icons';
 import Image from '~/components/Image';
 import Product from '~/layouts/components/Product';
 // import ProductService from '~/services/ProductService';
-import { configSlide, fourStep, specialProduct } from '~/utils/DataMockup/HomePageData';
+import { configSlide, fourStep, specialProduct, threeSmallSlide, sixSmallSlide } from '~/utils/DataMockup/HomePageData';
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import { fetchProductAsync, getProducts } from '~/features/product/productSlice';
@@ -37,17 +37,20 @@ function Home() {
                     <div className="grid grid-cols-9 lg:gap-x-6">
                         <div className="hidden lg:block lg:col-span-2">
                             <div className="py-8 flex flex-col h-full justify-around items-center">
-                                {[1, 2, 3].map((index) => (
+                                {threeSmallSlide.map((item: any, index) => (
                                     <div
                                         key={index}
-                                        className="flex items-center bg-[#ffcca2] px-4 pt-4 my-1 rounded-lg w-[80%]"
+                                        className="flex items-center justify-between bg-[#ffcca2] px-4 pt-4 my-1 rounded-lg w-[80%]"
                                     >
-                                        <Image className="w-2/5" src={images.banner_sm01} alt={'Small Banner'} />
+                                        <Image className="w-2/5" src={item.img} alt={'Small Banner'} />
                                         <div>
-                                            <h4 className="text-lg">Với nhiều sản phẩm hấp dẫn</h4>
-                                            <a className="inline-flex items-center text-base text-pink-500" href="/">
+                                            <h4 className="text-lg">{item.title}</h4>
+                                            <Link
+                                                to={item.link}
+                                                className="inline-flex items-center text-base text-pink-500"
+                                            >
                                                 Xem thêm <AiOutlineArrowRight className="ml-2" />
-                                            </a>
+                                            </Link>
                                         </div>
                                     </div>
                                 ))}
@@ -147,7 +150,7 @@ function Home() {
                         }}
                         className="h-60"
                     >
-                        {[1, 2, 3, 4, 5, 6].map((index) => (
+                        {sixSmallSlide.map((item: any, index: number) => (
                             <SwiperSlide key={index}>
                                 <div
                                     className="relative h-full box-border overflow-hidden rounded-2xl group"
@@ -157,22 +160,21 @@ function Home() {
                                     <div className="absolute inset-0 opacity-0 bg-black/10 group-hover:opacity-40 cursor-pointer transition-opacity"></div>
                                     <div className="h-full p-6 flex justify-between bg-[#fefce8]">
                                         <div>
-                                            <span className="block mb-2 text-sm text-slate-700">
-                                                Khám phá những sản phẩm mới
-                                            </span>
-                                            <h2 className="text-xl md:text-2xl text-slate-900 font-semibold">
-                                                Mua sắm từ các thương hiệu hàng đầu
+                                            <span className="block mb-2 text-sm text-slate-700">{item.brand}</span>
+                                            <h2 className="text-lg md:text-2xl text-slate-900 font-semibold">
+                                                {item.title}
                                             </h2>
-                                            <button className="relative z-20 px-6 py-3 mt-4 bg-white text-sm font-medium rounded-full shadow-lg hover:bg-gray-100">
+                                            <Link
+                                                to={item.link}
+                                                className="inline-block relative z-20 px-6 py-3 mt-4 bg-white text-sm font-medium rounded-full shadow-lg hover:bg-gray-100"
+                                            >
                                                 Xem tất cả
-                                            </button>
+                                            </Link>
                                         </div>
-                                        <div className="min-w-[45%] flex items-center justify-center">
+                                        <div className="min-w-[50%] flex items-center justify-center">
                                             <Image
                                                 className="w-full object-contain md:w-1/2"
-                                                src={
-                                                    'https://chisnghiax.com/ciseco/static/media/1.a586787f3de7735e65d3.png'
-                                                }
+                                                src={item.img}
                                                 alt="Product"
                                             />
                                         </div>
@@ -183,6 +185,7 @@ function Home() {
                     </Swiper>
                 </div>
             </section>
+
             {/* List Product */}
             <section className="container ">
                 <div className="py-10">

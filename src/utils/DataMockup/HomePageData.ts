@@ -166,3 +166,60 @@ export const specialProduct = [
         link: '',
     },
 ];
+
+export const threeSmallSlide = [
+    {
+        title: 'Giảm 20%',
+        link: '',
+        img: images.sm1,
+    },
+    {
+        title: 'Giảnm 50%',
+        link: '',
+        img: images.sm2,
+    },
+    {
+        title: 'Giảm 40%',
+        link: '',
+        img: images.sm3,
+    },
+];
+
+export const sixSmallSlide = [
+    {
+        brand: 'Thời trang nam',
+        title: 'Giá bùng nổ áo Polo giảm sốc 35%',
+        link: '/ao-po-lo',
+        img: images.s1,
+    },
+    {
+        brand: 'Đồng hồ nam',
+        title: 'Nhận ưu đãi lớn trong hôm nay',
+        link: '/dong-ho-thong-minh',
+        img: images.s2,
+    },
+    {
+        brand: 'Áo khoác nam',
+        title: 'Bớt lạnh khi mùa đông về chỉ hơn 200k',
+        link: '/ao-khoac-nam',
+        img: images.s3,
+    },
+    {
+        brand: 'Áo sơ mi',
+        title: 'Ưu đãi giảm 20% trong hôm nay',
+        link: '/ao-so-mi',
+        img: images.s4,
+    },
+    {
+        brand: 'Giày Sneaker',
+        title: 'Giảm 20% khi mua 2 sản phẩm trở lên',
+        link: '/giay-sneaker',
+        img: images.s5,
+    },
+    {
+        brand: 'Thời trang nữ',
+        title: 'Phụ kiện phải có cho dịp cuối năm',
+        link: '/thoi-trang-nu',
+        img: images.s6,
+    },
+];
