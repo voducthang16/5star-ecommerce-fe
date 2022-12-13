@@ -21,7 +21,7 @@
             width: 4px;
             height: 0;
             transition: height 0.5s;
-            background-color: #47474c;
+            background-color: var(--primary);
             z-index: 6;
             border-radius: 4px;
         }
@@ -53,7 +53,7 @@
         }
 
         .swiper-pagination-bullet-active {
-            border-color: #fe696a;
+            border-color: var(--primary);
             opacity: 1;
         }
     }

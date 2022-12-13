@@ -1,31 +1,45 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box } from '@chakra-ui/react';
+import {
+    Accordion,
+    AccordionButton,
+    AccordionIcon,
+    AccordionItem,
+    AccordionPanel,
+    Box,
+    Button,
+} from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { AiFillHeart, AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
-import { IoNotifications } from 'react-icons/io5';
+import { HiOutlineShoppingCart } from 'react-icons/hi';
 import { useParams } from 'react-router-dom';
 import { Mousewheel, Pagination } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import Breadcrumb from '~/components/Breadcrumb';
 import { PackageIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Loading from '~/components/Loading';
-import Rate from '~/layouts/components/Rate';
-import './ProductDetail.scss';
+import Config from '~/config';
 import { fetchDetailProductAsync, getDetail } from '~/features/product/productSlice';
-import { useAppDispatch, useAppSelector } from '~/app/hooks';
+import Rate from '~/layouts/components/Rate';
+import { FormatPriceVND } from '~/utils/FormatPriceVND';
+import './ProductDetail.scss';
 
 function ProductDetail() {
     const dispatch = useAppDispatch();
     const detail = useAppSelector(getDetail);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [filled, setFilled] = useState(0);
     const [quantity, setQuantity] = useState(1);
+    const [paginationImage, setPaginationImage] = useState<any>('');
     const { slug } = useParams();
     useEffect(() => {
         dispatch(fetchDetailProductAsync(slug!));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    console.log('detail: ', detail);
+
     const handleQuantity = (type: string) => {
         if (type === 'asc') {
             setQuantity(quantity + 1);
@@ -38,34 +52,23 @@ function ProductDetail() {
         }
     };
 
-    const length = detail.images.length;
+    const changeQuantity = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let quantity = +e.target.value;
+        setQuantity(quantity);
+    };
+    const lengthImage = detail?.images?.length;
 
-    const color = Object.entries(detail.classify_1);
-    const size = Object.entries(detail.classify_2);
-    const money: any = [];
+    const color = Object.entries(detail?.classify_1 || {});
+    const size = Object.entries(detail?.classify_2 || {});
+    const money: Array<any> = [];
 
-    detail.stocks.forEach((item: any) => {
+    detail?.stocks?.forEach((item: any) => {
         money.push(item.price);
     });
-    console.log(money);
-    useEffect(() => {
-        setTimeout(() => {
-            setLoading(false);
-        }, 1000);
-    }, []);
+
     const img = detail.images;
-    console.log(img);
     // custom bullets
-    const pagination = {
-        clickable: true,
-        renderBullet: function (index: any, className: any) {
-            let string = '';
-            string += `<span class=${className}>
-                <img src="${img[index]}"/>
-            </span>`;
-            return string;
-        },
-    };
+
     const [width, setWidth] = useState(0);
     useEffect(() => {
         const windowWidth = window.innerWidth;
@@ -75,6 +78,18 @@ function ProductDetail() {
             setWidth(1);
         }
     }, []);
+
+    const pagination = {
+        clickable: true,
+        renderBullet: function (index: number, className: any) {
+            let string = '';
+            string += `<span class=${className}>
+                <img src='${Config.apiUrl}upload/${img[index].file_name}'/>
+            </span>`;
+            return string;
+        },
+    };
+
     return loading ? (
         <Loading />
     ) : (
@@ -87,7 +102,7 @@ function ProductDetail() {
                             <div style={{ height: `${filled}%` }} className={`progressbar`}></div>
                             <Swiper
                                 onSlideChange={(item) => {
-                                    setFilled(+(((1 + item.realIndex) / length) * 100).toFixed(2));
+                                    setFilled(+(((1 + item.realIndex) / lengthImage) * 100).toFixed(2));
                                 }}
                                 direction={width > 0 ? 'vertical' : 'horizontal'}
                                 slidesPerView={1}
@@ -98,11 +113,11 @@ function ProductDetail() {
                                 modules={[Mousewheel, Pagination]}
                                 className="md:w-full md:h-[500px]"
                             >
-                                {img.map((item: any, index: number) => (
+                                {img?.map((item: any, index: number) => (
                                     <SwiperSlide key={index}>
                                         <Image
                                             className="md:mx-auto object-contain h-full"
-                                            src={`${item}`}
+                                            src={`${Config.apiUrl}upload/${item.file_name}`}
                                             alt={'Product'}
                                         />
                                     </SwiperSlide>
@@ -111,7 +126,7 @@ function ProductDetail() {
                         </div>
                     </div>
                     <div className="col-span-12 lg:col-span-5">
-                        <div className="space-y-4 mt-4 lg:mt-0 px-2 lg:px-0">
+                        <div className="space-y-4 mt-4 lg:mt-0 px-7 lg:px-0">
                             <h3 className="text-2xl font-bold">{detail.name}</h3>
                             <h4 className="text-base font-normal flex items-center space-x-2">
                                 <PackageIcon width={16} height={16} className="mr-2" />
@@ -125,21 +140,16 @@ function ProductDetail() {
                                 </span>
                             </div>
                             <div className="flex space-x-4 text-base items-end">
-                                <span className="font-semibold">
-                                    {Math.min(...money).toLocaleString('it-IT', {
-                                        style: 'currency',
-                                        currency: 'VND',
-                                    })}
-                                </span>
+                                <span className="font-semibold">{FormatPriceVND(Math.min(...money))}</span>
                                 {/* <del className="text-[#c4c4c4]">329.000 VND</del>
                                 <span className="text-[#ff3102] text-sm">-50%</span> */}
                             </div>
 
-                            {color.length > 0 ? (
+                            {color?.length > 0 ? (
                                 <div>
                                     <p className="mb-2">Màu sắc</p>
                                     <div className="flex space-x-4 items-center text-sm h-10 mt-4">
-                                        {color?.reverse().map(([key, value]: any, index: any) => (
+                                        {color?.reverse()?.map(([key, value]: any, index: any) => (
                                             <div key={index}>
                                                 <input
                                                     className="color w-px h-px appearance-none"
@@ -152,7 +162,7 @@ function ProductDetail() {
                                                     onClick={() => {
                                                         console.log(img[index]);
                                                     }}
-                                                    className="color-label bg-white relative inline-block w-8 h-8 border border-slate-200 rounded-full"
+                                                    className="color-label bg-white relative inline-block w-8 h-8 border-[3px] border-slate-400 shadow-sm rounded-full"
                                                     htmlFor={`c_${detail.id}_${value}`}
                                                 >
                                                     <span
@@ -168,7 +178,7 @@ function ProductDetail() {
                                 <></>
                             )}
 
-                            {size.length > 0 ? (
+                            {size?.length > 0 ? (
                                 <div>
                                     <p className="mb-2">Kích thước</p>
                                     <div className="flex space-x-4 text-sm">
@@ -208,6 +218,7 @@ function ProductDetail() {
                                         className="quantity-number w-full border border-slate-200 p-1"
                                         type="number"
                                         value={quantity}
+                                        onChange={(e) => changeQuantity(e)}
                                         min={0}
                                     />
                                     <span
@@ -219,15 +230,17 @@ function ProductDetail() {
                                 </div>
                                 <span className="text-sm text-gray-600/90">100 sản phẩm</span>
                             </div>
-                            <div className="flex items-center space-x-4">
-                                <button className="text-base py-3 px-5 bg-pink-400 rounded-lg text-white">
+                            <div className="flex items-center space-x-4 pb-6">
+                                <Button
+                                    rightIcon={<HiOutlineShoppingCart />}
+                                    colorScheme="teal"
+                                    size="lg"
+                                    className="text-base py-3 px-5 rounded-lg text-white"
+                                >
                                     Thêm vào giỏ hàng
-                                </button>
+                                </Button>
                                 <span>
-                                    <AiFillHeart className="fill-[#cccccc]" />
-                                </span>
-                                <span>
-                                    <IoNotifications className="fill-[#cccccc]" />
+                                    <AiFillHeart className="fill-[#cccccc] text-3xl" />
                                 </span>
                             </div>
                         </div>
@@ -239,7 +252,7 @@ function ProductDetail() {
                     <div className="mx-4 lg:mx-20">
                         <h5 className="text-4xl mb-4 font-bold text-gray-900">Chi tiết sản phẩm</h5>
                         <Accordion defaultIndex={[0]} allowMultiple>
-                            <AccordionItem>
+                            <AccordionItem border="none">
                                 <h2>
                                     <AccordionButton>
                                         <Box flex="1" textAlign="left" className="text-2xl font-semibold">
@@ -248,11 +261,11 @@ function ProductDetail() {
                                         <AccordionIcon />
                                     </AccordionButton>
                                 </h2>
-                                <AccordionPanel pb={4} className="text-base">
+                                <AccordionPanel pb={4} className="text-base bg-gray-100 rounded-md text-left !p-4">
                                     <p dangerouslySetInnerHTML={{ __html: detail.description }}></p>
                                 </AccordionPanel>
                             </AccordionItem>
-                            <AccordionItem>
+                            <AccordionItem border="none">
                                 <h2>
                                     <AccordionButton>
                                         <Box flex="1" textAlign="left" className="text-2xl font-semibold">
@@ -262,7 +275,7 @@ function ProductDetail() {
                                     </AccordionButton>
                                 </h2>
                                 <AccordionPanel pb={4} className="text-base">
-                                    {detail.info_detail.map((item: any, index: number) => (
+                                    {detail?.info_detail?.map((item: any, index: number) => (
                                         <p key={index}>- {item}</p>
                                     ))}
                                 </AccordionPanel>
