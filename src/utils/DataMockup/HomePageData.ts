@@ -174,7 +174,7 @@ export const threeSmallSlide = [
         img: images.sm1,
     },
     {
-        title: 'Giảnm 50%',
+        title: 'Giảm 50%',
         link: '',
         img: images.sm2,
     },

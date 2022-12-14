@@ -41,6 +41,10 @@ function Header() {
         });
     };
 
+    const handleSearch = (values: any) => {
+        console.log(values);
+    };
+
     return (
         <header className="header-wrapper relative z-[100]">
             <div className="header bg-white border-b border-slate-200 shadow max-h-36">
@@ -52,7 +56,7 @@ function Header() {
                             </Link>
                         </div>
                         <div className="hidden lg:col-span-4 lg:flex lg:items-center">
-                            <Search />
+                            <Search placeholder="Nhập từ khóa để tìm kiếm sản phẩm..." handleSearch={handleSearch} />
                         </div>
                         <div className="col-span-1 lg:col-span-2 flex items-center">
                             <ul className="flex-1 flex justify-end lg:space-x-2 xl:space-x-6">

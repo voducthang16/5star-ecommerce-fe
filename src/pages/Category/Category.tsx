@@ -1,8 +1,12 @@
 import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet';
 import { IoMdClose } from 'react-icons/io';
+import ReactPaginate from 'react-paginate';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
+import CurrencyInput from 'react-currency-input-field';
 import Breadcrumb from '~/components/Breadcrumb';
 import { AccessoriesIcon, BagIcon, JeansIcon, ShirtIcon, ShoesIcon, WatchIcon } from '~/components/Icons';
 import {
@@ -11,22 +15,26 @@ import {
     getCategory,
     getSubCategory,
 } from '~/features/category/categorySlice';
-import { motion } from 'framer-motion';
-import { fetchProductAsync, getProducts } from '~/features/product/productSlice';
+
+import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
+import { fetchProductAsync, getProducts, totalProduct } from '~/features/product/productSlice';
 import Product from '~/layouts/components/Product';
 import './Category.scss';
-import { Helmet } from 'react-helmet';
+
+const PER_PAGE = 9;
 
 function Category() {
+    const [pageNumber, setPageNumber] = useState<number>(0);
+    const [fromToPrice, setFromToPrice] = useState<any>({ from: '', to: '' });
     const { slug } = useParams();
-
     const dispatch = useAppDispatch();
     const products = useAppSelector(getProducts);
+    const totalCountProduct = useAppSelector(totalProduct);
     const category = useAppSelector(getCategory);
     const subCategory = useAppSelector(getSubCategory);
 
     useEffect(() => {
-        dispatch(fetchProductAsync());
+        dispatch(fetchProductAsync({}));
     }, [dispatch]);
     useEffect(() => {
         dispatch(fetchCategoryAsync());
@@ -35,8 +43,33 @@ function Category() {
         dispatch(fetchSubCategoryAsync());
     }, [dispatch]);
 
+    const totalPage = Math.ceil(totalCountProduct / PER_PAGE);
+    const handlePageChange = ({ selected }: any) => {
+        setPageNumber(selected);
+        const fromPrice = fromToPrice.from;
+        const toPrice = fromToPrice.to;
+        let requestParams = {
+            page: selected,
+            fromPrice,
+            toPrice,
+        };
+        dispatch(fetchProductAsync(requestParams));
+    };
+
+    const applyFilterPrice = () => {
+        const fromPrice = fromToPrice.from;
+        const toPrice = fromToPrice.to;
+        let requestParams = {
+            page: pageNumber,
+            fromPrice,
+            toPrice,
+        };
+        dispatch(fetchProductAsync(requestParams));
+    };
+
     const fetchCategoryNoParent = (id: number) => {
         let subCategoryNew: any = [];
+        // eslint-disable-next-line array-callback-return
         const result = subCategory?.filter((item: any) => {
             if (item.parent_id === id) {
                 subCategoryNew.push(item);
@@ -131,11 +164,28 @@ function Category() {
                                     data-aos-delay="300"
                                 >
                                     <h6 className="text-lg font-semibold pt-4">Giá</h6>
-                                    <div className="flex">
-                                        <input type="text" className="input flex-1" placeholder="Từ" />
-                                        <input type="text" className="input flex-1" placeholder="Đến" />
+                                    <div className="flex h-[40px] mb-2 gap-2">
+                                        <CurrencyInput
+                                            placeholder="Từ"
+                                            className="input flex-1 border rounded-md"
+                                            decimalsLimit={2}
+                                            onValueChange={(value) =>
+                                                setFromToPrice({ ...fromToPrice, from: Number(value) })
+                                            }
+                                        />
+                                        <CurrencyInput
+                                            placeholder="Đến"
+                                            className="input flex-1 border rounded-md"
+                                            decimalsLimit={2}
+                                            onValueChange={(value) =>
+                                                setFromToPrice({ ...fromToPrice, to: Number(value) })
+                                            }
+                                        />
                                     </div>
-                                    <button className="bg-primary text-center text-base w-full py-3 text-white rounded-lg">
+                                    <button
+                                        className="bg-primary text-center text-base w-full py-3 text-white rounded-lg"
+                                        onClick={applyFilterPrice}
+                                    >
                                         Áp dụng
                                     </button>
                                 </div>
@@ -209,27 +259,46 @@ function Category() {
                                     <option value="1">abc</option>
                                 </select>
                             </div>
-                            <div>
+                            <div className="product-list">
                                 <div className="grid grid-cols-12 gap-4">
-                                    {products.map((item: any, index) => (
-                                        <div
-                                            key={index}
-                                            className="col-span-12 md:col-span-4"
-                                            data-aos="zoom-in-down"
-                                            data-aos-delay="200"
-                                        >
-                                            <Product
-                                                idProduct={item.id}
-                                                name={item.name}
-                                                slug={item.slug}
-                                                color={item.classify_1}
-                                                size={item.classify_2}
-                                                type={item.classify_n}
-                                                images={item.images}
-                                                stocks={item.stocks}
+                                    {products.length > 0 &&
+                                        products?.map((item: any, index) => (
+                                            <div
+                                                key={index}
+                                                className="col-span-12 md:col-span-4"
+                                                data-aos="zoom-in-down"
+                                                data-aos-delay="200"
+                                            >
+                                                <Product
+                                                    idProduct={item.id}
+                                                    name={item.name}
+                                                    slug={item.slug}
+                                                    color={item.classify_1}
+                                                    size={item.classify_2}
+                                                    type={item.classify_n}
+                                                    images={item.images}
+                                                    stocks={item.stocks}
+                                                />
+                                            </div>
+                                        ))}
+                                </div>
+                                <div className="pagination-feature">
+                                    {totalPage > 0 && (
+                                        <div className="pagination-feature flex">
+                                            <ReactPaginate
+                                                previousLabel={<BiChevronLeft className="inline text-xl" />}
+                                                nextLabel={<BiChevronRight className="inline text-xl" />}
+                                                pageCount={totalPage}
+                                                onPageChange={handlePageChange}
+                                                activeClassName={'page-item active'}
+                                                disabledClassName={'page-item disabled'}
+                                                containerClassName={'pagination'}
+                                                previousLinkClassName={'page-link'}
+                                                nextLinkClassName={'page-link'}
+                                                pageLinkClassName={'page-link'}
                                             />
                                         </div>
-                                    ))}
+                                    )}
                                 </div>
                             </div>
                         </div>
