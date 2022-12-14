@@ -27,15 +27,15 @@ function Home() {
     const products = useAppSelector(getProducts);
 
     useEffect(() => {
-        dispatch(fetchProductAsync());
+        dispatch(fetchProductAsync({}));
     }, [dispatch]);
 
     return (
         <>
-            <Helmet>
+            {/* <Helmet>
                 <meta charSet="utf-8" />
                 <title>Trang chủ</title>
-            </Helmet>
+            </Helmet> */}
             <div className="home overflow-hidden">
                 {/* Big Slide */}
                 <section className="bg-[#e3ffe6] ">
@@ -457,25 +457,25 @@ const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
             <div className="ulinaCountDown is-countdown">
                 <span className="countdown-row countdown-show flex gap-5 text-center">
                     <span className="countdown-section flex flex-col text-center justify-center">
-                        <span className="countdown-amount bg-[#fff] h-[72px] w-[72px] rounded-full p-4 text-center shadow-sm">
+                        <span className="countdown-amount bg-[#fff] text-xl h-[60px] w-[60px] rounded-full p-4 text-center shadow-sm">
                             {days}
                         </span>
                         <span className="countdown-period">Ngày</span>
                     </span>
                     <span className="countdown-section flex flex-col">
-                        <span className="countdown-amount bg-[#fff] h-[72px] w-[72px] rounded-full p-4 text-center shadow-sm">
+                        <span className="countdown-amount bg-[#fff] text-xl h-[60px] w-[60px] rounded-full p-4 text-center shadow-sm">
                             {hours}
                         </span>
                         <span className="countdown-period">Giờ</span>
                     </span>
                     <span className="countdown-section flex flex-col">
-                        <span className="countdown-amount bg-[#fff] h-[72px] w-[72px] rounded-full p-4 text-center shadow-sm">
+                        <span className="countdown-amount bg-[#fff] text-xl h-[60px] w-[60px] rounded-full p-4 text-center shadow-sm">
                             {minutes}
                         </span>
                         <span className="countdown-period">Phút</span>
                     </span>
                     <span className="countdown-section flex flex-col">
-                        <span className="countdown-amount bg-[#fff] h-[72px] w-[72px] rounded-full p-4 text-center shadow-sm">
+                        <span className="countdown-amount bg-[#fff] text-xl h-[60px] w-[60px] rounded-full p-4 text-center shadow-sm">
                             {seconds}
                         </span>
                         <span className="countdown-period">Giây</span>

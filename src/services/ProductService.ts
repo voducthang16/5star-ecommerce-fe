@@ -3,10 +3,17 @@ import AxiosInstance from '~/utils/AxiosInstance';
 
 let url: string = 'product';
 
-const getAllProduct = async () => {
-    let dataAllProduct = await AxiosInstance.get(Config.apiUrl + url).then((resAllProduct: any) => {
+const getAllProduct = async (
+    page: number = 0,
+    from: number | string = '',
+    to: number | string = '',
+    perPage: number = 9,
+) => {
+    let dataAllProduct = await AxiosInstance.get(
+        Config.apiUrl + url + `?page=${page}&perPage=${perPage}&price_from=${from}&price_to=${to}`,
+    ).then((resAllProduct: any) => {
         if (resAllProduct.statusCode === 200) {
-            resAllProduct.data.forEach((res: any) => {
+            resAllProduct.data.data.forEach((res: any) => {
                 let hash: any = {};
                 let hash2: any = {};
                 res.stocks.forEach((stock: any) => {

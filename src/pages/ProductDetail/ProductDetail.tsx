@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { AiFillHeart, AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { HiOutlineShoppingCart } from 'react-icons/hi';
 import { useParams } from 'react-router-dom';
-import { Mousewheel, Pagination } from 'swiper';
+import { Mousewheel, Navigation, Pagination } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -21,7 +21,8 @@ import { PackageIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Loading from '~/components/Loading';
 import Config from '~/config';
-import { fetchDetailProductAsync, getDetail } from '~/features/product/productSlice';
+import { fetchDetailProductAsync, fetchProductAsync, getDetail, getProducts } from '~/features/product/productSlice';
+import Product from '~/layouts/components/Product';
 import Rate from '~/layouts/components/Rate';
 import { FormatPriceVND } from '~/utils/FormatPriceVND';
 import './ProductDetail.scss';
@@ -34,11 +35,17 @@ function ProductDetail() {
     const [quantity, setQuantity] = useState(1);
     const [paginationImage, setPaginationImage] = useState<any>('');
     const { slug } = useParams();
+
+    const products = useAppSelector(getProducts);
+
+    useEffect(() => {
+        dispatch(fetchProductAsync({}));
+    }, [dispatch]);
+
     useEffect(() => {
         dispatch(fetchDetailProductAsync(slug!));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    console.log('detail: ', detail);
 
     const handleQuantity = (type: string) => {
         if (type === 'asc') {
@@ -136,7 +143,7 @@ function ProductDetail() {
                                 <Rate className="flex space-x-1" average={3.7} />
                                 <span className="ml-1 inline-block text-sm text-[#aeb4be]">(17)</span>
                                 <span className="ml-2 inline-block text-sm text-[#aeb4be]">
-                                    Đã bán(web): {detail.sold}
+                                    Đã bán (web): {detail.sold}
                                 </span>
                             </div>
                             <div className="flex space-x-4 text-base items-end">
@@ -159,10 +166,7 @@ function ProductDetail() {
                                                     value={value}
                                                 />
                                                 <label
-                                                    onClick={() => {
-                                                        console.log(img[index]);
-                                                    }}
-                                                    className="color-label bg-white relative inline-block w-8 h-8 border-[3px] border-slate-400 shadow-sm rounded-full"
+                                                    className="color-label bg-white cursor-pointer relative inline-block w-8 h-8 border-[3px] border-slate-400 shadow-sm rounded-full"
                                                     htmlFor={`c_${detail.id}_${value}`}
                                                 >
                                                     <span
@@ -192,7 +196,7 @@ function ProductDetail() {
                                                     id={`s_${detail.id}_${value}`}
                                                 />
                                                 <label
-                                                    className="size-label bg-white w-8 h-8 text-center 
+                                                    className="size-label bg-white w-8 h-8 text-center cursor-pointer
                                                 leading-8 inline-block border border-slate-200 rounded-lg"
                                                     htmlFor={`s_${detail.id}_${value}`}
                                                 >
@@ -293,7 +297,7 @@ function ProductDetail() {
                             <span>4.5</span>
                         </div>
                     </div>
-                    <div className="col-span-12 lg:col-span-8 flex flex-wrap items-center justify-between text-base">
+                    <div className="col-span-12 lg:col-span-8 flex flex-wrap items-center justify-start gap-2 text-base">
                         <div className="w-24 py-2 my-2 font-semibold text-center rounded-lg border border-slate-500">
                             Tất cả
                         </div>
@@ -348,17 +352,38 @@ function ProductDetail() {
             </section>
 
             {/* San pham lien quan */}
-            {/* <section className="py-20 mb-40 border-t border-slate-200">
+            <section className="py-20 mb-40 border-t border-slate-200">
+                <div className="title-heading my-5 text-center mb-10">
+                    <h3 className="font-bold text-4xl">Sản phẩm liên quan</h3>
+                    <span className="title-divider">
+                        <span className="square"></span>
+                        <span className="square"></span>
+                    </span>
+                    <p className="text-tbase text-xl font-normal my-2">
+                        Những sản phẩm thời trang nổi bật, được giới trẻ ưa thích nhất
+                    </p>
+                </div>
                 <div className="container">
                     <Swiper slidesPerView={4} spaceBetween={30} navigation={true} modules={[Navigation]}>
-                        {productFakeData.map((item, index) => (
+                        {products.map((item: any, index: number) => (
                             <SwiperSlide key={index}>
-                                <Rate average={5} />
+                                <div key={index} className="col-span-1" data-aos="zoom-in" data-aos-delay="200">
+                                    <Product
+                                        idProduct={item.id}
+                                        name={item.name}
+                                        slug={item.slug}
+                                        color={item.classify_1}
+                                        size={item.classify_2}
+                                        type={item.classify_n}
+                                        images={item.images}
+                                        stocks={item.stocks}
+                                    />
+                                </div>
                             </SwiperSlide>
                         ))}
                     </Swiper>
                 </div>
-            </section> */}
+            </section>
         </div>
     );
 }
