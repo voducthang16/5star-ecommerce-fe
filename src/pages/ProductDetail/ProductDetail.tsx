@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { AiFillHeart, AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { HiOutlineShoppingCart } from 'react-icons/hi';
 import { useParams } from 'react-router-dom';
-import { Mousewheel, Pagination } from 'swiper';
+import { Mousewheel, Navigation, Pagination } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -21,7 +21,8 @@ import { PackageIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Loading from '~/components/Loading';
 import Config from '~/config';
-import { fetchDetailProductAsync, getDetail } from '~/features/product/productSlice';
+import { fetchDetailProductAsync, fetchProductAsync, getDetail, getProducts } from '~/features/product/productSlice';
+import Product from '~/layouts/components/Product';
 import Rate from '~/layouts/components/Rate';
 import { FormatPriceVND } from '~/utils/FormatPriceVND';
 import './ProductDetail.scss';
@@ -34,11 +35,17 @@ function ProductDetail() {
     const [quantity, setQuantity] = useState(1);
     const [paginationImage, setPaginationImage] = useState<any>('');
     const { slug } = useParams();
+
+    const products = useAppSelector(getProducts);
+
+    useEffect(() => {
+        dispatch(fetchProductAsync());
+    }, [dispatch]);
+
     useEffect(() => {
         dispatch(fetchDetailProductAsync(slug!));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    console.log('detail: ', detail);
 
     const handleQuantity = (type: string) => {
         if (type === 'asc') {
@@ -348,17 +355,36 @@ function ProductDetail() {
             </section>
 
             {/* San pham lien quan */}
-            {/* <section className="py-20 mb-40 border-t border-slate-200">
+            <section className="py-20 mb-40 border-t border-slate-200">
                 <div className="container">
-                    <Swiper slidesPerView={4} spaceBetween={30} navigation={true} modules={[Navigation]}>
-                        {productFakeData.map((item, index) => (
+                    <Swiper
+                        slidesPerView={4}
+                        spaceBetween={30}
+                        navigation={true}
+                        pagination={{
+                            clickable: true,
+                        }}
+                        modules={[Navigation, Pagination]}
+                    >
+                        {products.map((item: any, index: number) => (
                             <SwiperSlide key={index}>
-                                <Rate average={5} />
+                                <div key={index} className="col-span-1" data-aos="zoom-in" data-aos-delay="200">
+                                    <Product
+                                        idProduct={item.id}
+                                        name={item.name}
+                                        slug={item.slug}
+                                        color={item.classify_1}
+                                        size={item.classify_2}
+                                        type={item.classify_n}
+                                        images={item.images}
+                                        stocks={item.stocks}
+                                    />
+                                </div>
                             </SwiperSlide>
                         ))}
                     </Swiper>
                 </div>
-            </section> */}
+            </section>
         </div>
     );
 }

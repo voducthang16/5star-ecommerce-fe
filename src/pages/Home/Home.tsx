@@ -32,10 +32,10 @@ function Home() {
 
     return (
         <>
-            <Helmet>
+            {/* <Helmet>
                 <meta charSet="utf-8" />
                 <title>Trang chủ</title>
-            </Helmet>
+            </Helmet> */}
             <div className="home overflow-hidden">
                 {/* Big Slide */}
                 <section className="bg-[#e3ffe6] ">

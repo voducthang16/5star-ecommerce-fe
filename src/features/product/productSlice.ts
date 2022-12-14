@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import ProductService from '~/services/ProductService';
+import { ResponseType } from '~/utils/Types';
 import { RootState } from '../../app/store';
 
 export interface ProductProps {
@@ -26,8 +27,11 @@ const initialState: ProductState = {
 };
 
 export const fetchProductAsync = createAsyncThunk('product/fetchProducts', async () => {
-    const response = await ProductService.getAllProduct();
-    return response.data;
+    const response: ResponseType = await ProductService.getAllProduct();
+    console.log('response: ', response);
+    if (response.statusCode === 200) {
+        return response.data.data;
+    }
 });
 
 export const fetchDetailProductAsync = createAsyncThunk('product/fetchDetailProducts', async (slug: string) => {
