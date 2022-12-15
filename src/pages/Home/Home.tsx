@@ -20,7 +20,7 @@ import { configSlide, fourStep, specialProduct, threeSmallSlide, sixSmallSlide }
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import { fetchProductAsync, getProducts } from '~/features/product/productSlice';
 import './Home.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 function Home() {
     const dispatch = useAppDispatch();
@@ -32,10 +32,10 @@ function Home() {
 
     return (
         <>
-            {/* <Helmet>
+            <Helmet>
                 <meta charSet="utf-8" />
                 <title>Trang chủ</title>
-            </Helmet> */}
+            </Helmet>
             <div className="home overflow-hidden">
                 {/* Big Slide */}
                 <section className="bg-[#e3ffe6] ">

@@ -42,7 +42,7 @@ function Footer() {
                                     <Link to="/store-system">Hệ thống cửa hàng</Link>
                                 </li>
                                 <li>
-                                    <Link to="/">Hướng dẫn chọn size</Link>
+                                    <Link to="/size-guide">Hướng dẫn chọn size</Link>
                                 </li>
                                 <li>
                                     <a href="/">Bảo mật</a>

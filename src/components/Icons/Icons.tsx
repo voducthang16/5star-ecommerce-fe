@@ -174,13 +174,12 @@ export const FourSquaresIcon = ({ height, width, className }: IconsProps) => {
     );
 };
 
-export const StartIcon = ({ key, height, width, className }: IconsProps) => {
+export const StartIcon = ({ height, width, className }: IconsProps) => {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
             x="0px"
             y="0px"
-            key={key}
             height={height}
             width={width}
             className={className}
@@ -201,13 +200,12 @@ export const StartIcon = ({ key, height, width, className }: IconsProps) => {
     );
 };
 
-export const StarHalfIcon = ({ key, height, width, className }: IconsProps) => {
+export const StarHalfIcon = ({ height, width, className }: IconsProps) => {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
             x="0px"
             y="0px"
-            key={key}
             height={height}
             width={width}
             className={className}
@@ -229,13 +227,12 @@ export const StarHalfIcon = ({ key, height, width, className }: IconsProps) => {
     );
 };
 
-export const StartEmptyIcon = ({ key, height, width, className }: IconsProps) => {
+export const StartEmptyIcon = ({ height, width, className }: IconsProps) => {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
             x="0px"
             y="0px"
-            key={key}
             height={height}
             width={width}
             className={className}
