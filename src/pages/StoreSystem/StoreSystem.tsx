@@ -18,22 +18,22 @@ function StoreSystem() {
                             <div className="p-1 bg-white rounded-full">
                                 <AiOutlineQuestion className="!fill-black" />
                             </div>
-                            <span className="font-bold inline-block mx-2">0123456789</span>
+                            <span className="font-bold inline-block mx-2">+84 364303989</span>
                             <span className="text-base">(Khiếu nại, góp ý)</span>
                         </Link>
                         <Link className="flex items-center" to={'tel:0123456789'}>
                             <div className="p-1 bg-white rounded-full">
                                 <AiOutlinePhone className="!fill-black" />
                             </div>
-                            <span className="font-bold inline-block mx-2">0123456789</span>
+                            <span className="font-bold inline-block mx-2">+84 35587987785</span>
                             <span className="text-base">(Tư vấn)</span>
                         </Link>
-                        <Link className="flex items-center" to={'/'}>
+                        {/* <Link className="flex items-center" to={'/'}>
                             <div className="p-1 bg-white rounded-full">
                                 <AiOutlineComment className="!fill-black" />
                             </div>
                             <span className="font-bold inline-block mx-2">Chat</span>
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
                 <Breadcrumb page="Hệ Thống Cửa Hàng 5Star" category={false} share={false} />
