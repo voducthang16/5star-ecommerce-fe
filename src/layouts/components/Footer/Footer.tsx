@@ -3,6 +3,7 @@ import { AiFillYoutube } from 'react-icons/ai';
 import { BsInstagram, BsTwitter } from 'react-icons/bs';
 import { FiSend } from 'react-icons/fi';
 import { ImFacebook } from 'react-icons/im';
+import { Link } from 'react-router-dom';
 import images from '~/assets/images';
 import { CallCenterIcon, CreditCardIcon, RefundIcon, RocketIcon } from '~/components/Icons';
 import Image from '~/components/Image';
@@ -38,10 +39,10 @@ function Footer() {
                             <h4 className="text-lg font-bold mb-8">Khám phá</h4>
                             <ul className="list-menu text-base font-normal space-y-4">
                                 <li>
-                                    <a href="/">Hệ thống thiết kế</a>
+                                    <Link to="/store-system">Hệ thống cửa hàng</Link>
                                 </li>
                                 <li>
-                                    <a href="/">Bảng giá</a>
+                                    <Link to="/">Hướng dẫn chọn size</Link>
                                 </li>
                                 <li>
                                     <a href="/">Bảo mật</a>

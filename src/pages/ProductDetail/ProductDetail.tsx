@@ -359,9 +359,7 @@ function ProductDetail() {
                         <span className="square"></span>
                         <span className="square"></span>
                     </span>
-                    <p className="text-tbase text-xl font-normal my-2">
-                        Những sản phẩm thời trang nổi bật, được giới trẻ ưa thích nhất
-                    </p>
+                    <p className="text-tbase text-xl font-normal my-2">Có thể bạn cũng thích những sản phẩm dưới đây</p>
                 </div>
                 <div className="container">
                     <Swiper slidesPerView={4} spaceBetween={30} navigation={true} modules={[Navigation]}>
