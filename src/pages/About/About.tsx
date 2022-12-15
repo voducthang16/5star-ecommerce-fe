@@ -7,7 +7,7 @@ import Image from '~/components/Image';
 import Rate from '~/layouts/components/Rate';
 import { fourStepAbout } from '~/utils/DataMockup/AboutPageData';
 import './About.scss';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 function About() {
     return (
         <>

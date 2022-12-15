@@ -6,6 +6,7 @@ import {
     AccordionPanel,
     Box,
     Button,
+    useDisclosure,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { AiFillHeart, AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
@@ -26,7 +27,16 @@ import Product from '~/layouts/components/Product';
 import Rate from '~/layouts/components/Rate';
 import { FormatPriceVND } from '~/utils/FormatPriceVND';
 import './ProductDetail.scss';
-
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+} from '@chakra-ui/react';
+import SizeGuideComp from '~/layouts/components/SizeGuideComp';
 function ProductDetail() {
     const dispatch = useAppDispatch();
     const detail = useAppSelector(getDetail);
@@ -35,7 +45,7 @@ function ProductDetail() {
     const [quantity, setQuantity] = useState(1);
     const [paginationImage, setPaginationImage] = useState<any>('');
     const { slug } = useParams();
-
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const products = useAppSelector(getProducts);
 
     useEffect(() => {
@@ -210,6 +220,26 @@ function ProductDetail() {
                                 <></>
                             )}
 
+                            {/* Check Size Here */}
+                            <Button onClick={onOpen}>Hướng Dẫn Chọn Size</Button>
+
+                            <Modal isOpen={isOpen} onClose={onClose} size="2xl">
+                                <ModalOverlay />
+                                <ModalContent>
+                                    <ModalHeader>Hướng Dẫn Chọn Size</ModalHeader>
+                                    <ModalCloseButton />
+                                    <ModalBody>
+                                        <SizeGuideComp />
+                                    </ModalBody>
+
+                                    <ModalFooter>
+                                        <Button colorScheme="red" onClick={onClose}>
+                                            Đóng
+                                        </Button>
+                                    </ModalFooter>
+                                </ModalContent>
+                            </Modal>
+
                             <div className="flex items-center space-x-4">
                                 <div className="flex items-center w-[150px] quantity-group bg-slate-100 rounded-2xl p-2 py-3 shadow-sm">
                                     <span
@@ -319,6 +349,7 @@ function ProductDetail() {
                     </div>
                 </div>
                 <div className="mt-10 lg:mt-20">
+                    {/* Loop Here */}
                     <div className="flex space-x-4 border-slate-200 border-b py-4">
                         <div className="w-20 h-20">
                             <Image
@@ -329,6 +360,21 @@ function ProductDetail() {
                         <div className="flex flex-col justify-between space-y-2">
                             <span className="text-sm text-gray-600">Tên người dùng</span>
                             <Rate className="flex space-x-1" average={3} />
+                            <div className="text-base">10.10.2022</div>
+                            <p className="text-base">Phản hồi</p>
+                        </div>
+                    </div>
+                    {/* End Loop */}
+                    <div className="flex space-x-4 border-slate-200 border-b py-4">
+                        <div className="w-20 h-20">
+                            <Image
+                                className="w-full object-contain rounded-full"
+                                src="https://cartzilla.createx.studio/img/shop/reviews/01.jpg"
+                            />
+                        </div>
+                        <div className="flex flex-col justify-between space-y-2">
+                            <span className="text-sm text-gray-600">Tên người dùng</span>
+                            <Rate className="flex space-x-1" average={0} />
                             <div className="text-base">10.10.2022</div>
                             <p className="text-base">Phản hồi</p>
                         </div>

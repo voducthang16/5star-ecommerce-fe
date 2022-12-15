@@ -10,7 +10,7 @@ function Rate({ className, average }: RateProps) {
     const decimal = +(average - integer).toFixed(1);
     return (
         <div className={className}>
-            {[...Array(integer)].map((index) => (
+            {Array.from(Array(integer).keys()).map((index) => (
                 <StartIcon key={index} width={14} height={14} className={'fill-[#fea569]'} />
             ))}
             {5 - integer >= 1 ? (
@@ -22,7 +22,7 @@ function Rate({ className, average }: RateProps) {
             ) : null}
             {/* 5 - integer - 1 || (1 la phan thap phan) */}
             {4 - integer >= 0
-                ? [...Array(4 - integer)].map((index) => (
+                ? Array.from(Array(4 - integer).keys()).map((index) => (
                       <StartEmptyIcon key={index} width={14} height={14} className={'fill-[#aeb4be]'} />
                   ))
                 : null}

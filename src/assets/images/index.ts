@@ -42,6 +42,14 @@ const images: any = {
     about_bg_dot: require('~/assets/images/about-bg-dot.png'),
     about_women: require('~/assets/images/about-women.jpg'),
     about_man_jean: require('~/assets/images/about-man-jean.jpg'),
+    size_ao_thun: require('~/assets/images/size-ao-thun.jpg'),
+    size_ao_polo: require('~/assets/images/size-ao-polo.jpg'),
+    size_ao_somi: require('~/assets/images/size-ao-somi.jpg'),
+    size_ao_khoac: require('~/assets/images/size-ao-khoac.jpg'),
+    size_quan_short: require('~/assets/images/size-quan-short.jpg'),
+    size_quan_kaki: require('~/assets/images/size-quan-kaki.jpg'),
+    size_quan_tay: require('~/assets/images/size-quan-tay.jpg'),
+    size_quan_jean: require('~/assets/images/size-quan-jean.jpg'),
 };
 
 export default images;

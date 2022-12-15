@@ -8,19 +8,23 @@ import { store, persistor } from './app/store';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import GlobalStyles from './components/GlobalStyles';
+
+import { HelmetProvider } from 'react-helmet-async';
 import './index.css';
 const container = document.getElementById('root')!;
 const root = createRoot(container);
 root.render(
     <React.StrictMode>
-        <ChakraProvider>
-            <Provider store={store}>
-                <Router>
-                    <PersistGate loading={null} persistor={persistor}>
-                        <GlobalStyles Children={App} />
-                    </PersistGate>
-                </Router>
-            </Provider>
-        </ChakraProvider>
+        <HelmetProvider>
+            <ChakraProvider>
+                <Provider store={store}>
+                    <Router>
+                        <PersistGate loading={null} persistor={persistor}>
+                            <GlobalStyles Children={App} />
+                        </PersistGate>
+                    </Router>
+                </Provider>
+            </ChakraProvider>
+        </HelmetProvider>
     </React.StrictMode>,
 );

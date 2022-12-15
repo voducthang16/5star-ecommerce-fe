@@ -16,7 +16,7 @@ import OrderSuccess from '~/pages/OrderSuccess';
 import ProductDetail from '~/pages/ProductDetail';
 import Register from '~/pages/Register';
 import StoreSystem from '~/pages/StoreSystem';
-
+import SizeGuide from '~/pages/SizeGuide';
 interface Routes {
     path: string;
     Component: React.ComponentType | any;
@@ -42,7 +42,10 @@ const publicRoutes: Routes[] = [
         path: '/product/:slug',
         Component: ProductDetail,
     },
-
+    {
+        path: '/size-guide',
+        Component: SizeGuide,
+    },
     // MY ACCOUNT
     {
         path: '/my-account',

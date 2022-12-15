@@ -2,7 +2,7 @@ import { Button } from '@chakra-ui/react';
 import { BsChevronRight, BsClock, BsEnvelope, BsGeoAlt, BsTelephone } from 'react-icons/bs';
 import { MdOutlineAttachEmail } from 'react-icons/md';
 import Breadcrumb from '~/components/Breadcrumb';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 function Contact() {
     return (
