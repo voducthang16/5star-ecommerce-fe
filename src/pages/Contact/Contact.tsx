@@ -89,6 +89,7 @@ function Contact() {
                         <div className="md:flex justify-center">
                             {[1, 2, 3].map((item, index) => (
                                 <div
+                                    key={index}
                                     className="store-item pt-[24px] md:px-[15px]"
                                     data-aos="fade-left"
                                     data-aos-delay={index * 200}

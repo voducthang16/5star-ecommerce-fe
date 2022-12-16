@@ -41,8 +41,8 @@ const Info = () => {
                                             <tr>
                                                 <td>Ngày sinh: </td>
                                                 <td>
-                                                    {infoUser?.birthday ? (
-                                                        infoUser?.birthday
+                                                    {infoUser?.birth_day ? (
+                                                        infoUser?.birth_day
                                                     ) : (
                                                         <Badge variant="subtle" colorScheme="teal">
                                                             Chưa có

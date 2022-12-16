@@ -1,4 +1,4 @@
-import { Button, FormLabel, Input } from '@chakra-ui/react';
+import { Button, FormLabel, Input, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import { Form, Formik, FormikProps } from 'formik';
 import { motion } from 'framer-motion';
@@ -49,10 +49,14 @@ function Cart() {
     const [wardName, setWardName] = useState('');
     const [typeShip, setTypeShip] = useState('');
     const [fee, setFee] = useState(0);
+
     const dispatch = useAppDispatch();
+    const toast = useToast();
     const listCart = useAppSelector(getCart);
     const infoUser: any = useAppSelector(getUser);
+
     const totalMoney = listCart.reduce((a: any, b: any) => a + b.price, 0);
+
     const handleRemoveCart = (id: number) => {
         CartService.deleteCart(id).then((res: ResponseType) => {
             if (res.statusCode === 200) {
@@ -166,13 +170,28 @@ function Cart() {
 
     const handleSubmitForm = (values: ValuesForm) => {
         console.log(values);
-        let dataSendRequest = {
-            ...values,
-            districtName,
-            cityName,
-            wardName,
-        };
-        console.log('dataSendRequest: ', dataSendRequest);
+
+        let products: Array<any> = [];
+        if (listCart.length > 0) {
+            listCart.forEach((item: any) => {
+                products.push({ id_product: item.id, quantity: +item.quantity });
+            });
+            let dataSendRequest = {
+                ...values,
+                districtName,
+                cityName,
+                wardName,
+                products,
+            };
+            console.log('dataSendRequest: ', dataSendRequest);
+        } else {
+            toast({
+                position: 'top-right',
+                title: 'Chưa có sản phẩm nào trong giỏ hàng',
+                duration: 1000,
+                status: 'warning',
+            });
+        }
     };
 
     return (
@@ -188,7 +207,7 @@ function Cart() {
                         <Formik
                             initialValues={defaultValue}
                             enableReinitialize={true}
-                            validationSchema={orderCartSchema}
+                            // validationSchema={orderCartSchema}
                             onSubmit={(values: ValuesForm) => handleSubmitForm(values)}
                         >
                             {(formik: FormikProps<ValuesForm>) => {

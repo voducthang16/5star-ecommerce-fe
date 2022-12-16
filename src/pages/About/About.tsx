@@ -64,7 +64,12 @@ function About() {
                                 </p>
                                 <ul className="mt-[32px]" data-aos="fade-up">
                                     {fourStepAbout.map((item: any, index: number) => (
-                                        <li className="my-5" data-aos="fade-up" data-aos-delay={index * 200}>
+                                        <li
+                                            className="my-5"
+                                            data-aos="fade-up"
+                                            data-aos-delay={index * 200}
+                                            key={index}
+                                        >
                                             <div className="flex">
                                                 <div className="icon text-primary mr-3">{item?.icon}</div>
                                                 <div className="">

@@ -14,34 +14,36 @@ import {
 import { Form, Formik, FormikProps } from 'formik';
 import { useEffect, useState } from 'react';
 import { BsPlus } from 'react-icons/bs';
-import { useAppSelector } from '~/app/hooks';
-import { getUser } from '~/features/user/userSlice';
-import { InputField } from '~/layouts/components/CustomField';
+import { useAppDispatch, useAppSelector } from '~/app/hooks';
+import { getOneInfoUser, getUser } from '~/features/user/userSlice';
+import { InputField, RadioField } from '~/layouts/components/CustomField';
 import CartService from '~/services/CartService';
 import UserService from '~/services/UserService';
 import { ResponseType } from '~/utils/Types';
-import { updateAddressAccountSchema } from '~/utils/validationSchema';
 
 type ValuesForm = {
     phone: number;
     address: string;
+    isDefault: boolean;
 };
 
 const initCheckoutForm = {
     address: '',
     phone: 0,
+    isDefault: false,
 };
 
 const ModalAddAddress = () => {
     const [city, setCity] = useState([]);
-    const [cityName, setCityName] = useState('');
+    const [cityName, setCityName] = useState<any>({});
     const [district, setDistrict] = useState([]);
-    const [districtName, setDistrictName] = useState('');
+    const [districtName, setDistrictName] = useState<any>({});
     const [ward, setWard] = useState([]);
-    const [wardName, setWardName] = useState('');
+    const [wardName, setWardName] = useState<any>({});
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
+    const dispatch = useAppDispatch();
     const infoUser: any = useAppSelector(getUser);
 
     useEffect(() => {
@@ -61,6 +63,7 @@ const ModalAddAddress = () => {
     };
 
     const handleSubmitForm = (values: ValuesForm) => {
+        console.log('values: ', values);
         if (!districtName || !cityName || !wardName) {
             toast({
                 position: 'top-right',
@@ -69,22 +72,36 @@ const ModalAddAddress = () => {
                 status: 'warning',
             });
         } else {
-            let idAddress = infoUser?.address ? infoUser?.address.length + 1 : 1;
-
-            const dataSendRequest = {
-                address: {
-                    id: idAddress,
-                    districtName,
-                    cityName,
-                    wardName,
-                    address: values.address,
-                    phone: values.phone,
-                    isDefault: false,
-                },
+            let idAddress = Object.keys(infoUser?.address).length !== 0 ? infoUser?.address.length + 1 : 1;
+            let dataSendRequest: any = [];
+            if (values.isDefault && Object.keys(infoUser?.address).length !== 0) {
+                infoUser?.address?.forEach((item: any) => {
+                    item.isDefault = false;
+                    dataSendRequest.push(item);
+                });
+            }
+            let data = {
+                id: idAddress,
+                districtName,
+                cityName,
+                wardName,
+                address: values.address,
+                phone: values.phone,
+                isDefault: Boolean(values.isDefault),
             };
+            dataSendRequest.push(data);
 
-            UserService.UpdateUser(dataSendRequest, infoUser.id).then((res: ResponseType) => {
-                console.log(res);
+            UserService.UpdateUser({ address: dataSendRequest }, infoUser.id).then((res: ResponseType) => {
+                if (res.statusCode === 200) {
+                    dispatch(getOneInfoUser(infoUser.id));
+                    onClose();
+                    toast({
+                        position: 'top-right',
+                        title: 'Thêm địa chỉ thành công',
+                        duration: 1000,
+                        status: 'success',
+                    });
+                }
             });
         }
     };
@@ -98,7 +115,7 @@ const ModalAddAddress = () => {
                 <Formik
                     initialValues={initCheckoutForm}
                     onSubmit={(values: ValuesForm) => handleSubmitForm(values)}
-                    validationSchema={updateAddressAccountSchema}
+                    // validationSchema={updateAddressAccountSchema}
                 >
                     {(formik: FormikProps<ValuesForm>) => (
                         <Form>
@@ -111,7 +128,10 @@ const ModalAddAddress = () => {
                                         <select
                                             className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
                                             onChange={(e) => {
-                                                setCityName(e.target.options[e.target.selectedIndex].text);
+                                                setCityName({
+                                                    name: e.target.options[e.target.selectedIndex].id,
+                                                    code: +e.target.value,
+                                                });
                                                 setDistrict([]);
                                                 setWard([]);
                                                 setDistrictName('');
@@ -121,14 +141,17 @@ const ModalAddAddress = () => {
                                         >
                                             <option hidden>Tỉnh, Thành Phố</option>
                                             {city?.map((item: any, index) => (
-                                                <option key={index} value={item.code}>
+                                                <option key={index} value={item.code} id={item.name}>
                                                     {item.name}
                                                 </option>
                                             ))}
                                         </select>
                                         <select
                                             onChange={(e) => {
-                                                setDistrictName(e.target.options[e.target.selectedIndex].text);
+                                                setDistrictName({
+                                                    name: e.target.options[e.target.selectedIndex].id,
+                                                    code: +e.target.value,
+                                                });
                                                 setWard([]);
                                                 setWardName('');
                                                 getWard(+e.target.value);
@@ -137,20 +160,23 @@ const ModalAddAddress = () => {
                                         >
                                             <option hidden>Quận, Huyện</option>
                                             {district?.map((item: any, index) => (
-                                                <option key={index} value={item.code}>
+                                                <option key={index} value={item.code} id={item.name}>
                                                     {item.name}
                                                 </option>
                                             ))}
                                         </select>
                                         <select
                                             onChange={(e) => {
-                                                setWardName(e.target.options[e.target.selectedIndex].text);
+                                                setWardName({
+                                                    name: e.target.options[e.target.selectedIndex].id,
+                                                    code: +e.target.value,
+                                                });
                                             }}
                                             className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
                                         >
                                             <option hidden>Xã, Phường</option>
                                             {ward?.map((item: any, index) => (
-                                                <option key={index} value={item.code}>
+                                                <option key={index} value={item.code} id={item.name}>
                                                     {item.name}
                                                 </option>
                                             ))}
@@ -173,6 +199,16 @@ const ModalAddAddress = () => {
                                             placeholder="Số điện thoại của bạn"
                                             className="flex-1"
                                         />
+                                    </div>
+                                    <div className="form-group mt-3">
+                                        <div className="flex gap-2">
+                                            <RadioField
+                                                label="Mặc định"
+                                                name="isDefault"
+                                                value="true"
+                                                id="isDefault-3"
+                                            />
+                                        </div>
                                     </div>
                                 </ModalBody>
 

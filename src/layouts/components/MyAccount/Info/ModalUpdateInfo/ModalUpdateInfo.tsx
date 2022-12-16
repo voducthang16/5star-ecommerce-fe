@@ -25,7 +25,7 @@ type ValuesForm = {
     first_name: string;
     last_name: string;
     phone: string;
-    // birthday: string;
+    birth_day: string;
     gender: string;
 };
 
@@ -33,7 +33,7 @@ let initCheckoutForm = {
     first_name: '',
     last_name: '',
     phone: '',
-    // birthday: '',
+    birth_day: '',
     gender: 'Nam',
 };
 
@@ -50,13 +50,14 @@ const ModalUpdateInfo = () => {
             first_name: infoUser?.first_name || '',
             last_name: infoUser?.last_name || '',
             phone: infoUser?.phone || '',
-            // birthday: infoUser?.birthday || '',
+            birth_day: infoUser?.birth_day || '',
             gender: infoUser?.gender || 'Nam',
         };
         setInitField(newValue);
     }, [infoUser]);
 
     const handleSubmitForm = (values: ValuesForm) => {
+        console.log('values: ', values);
         UserService.UpdateUser(values, infoUser?.id).then((res: ResponseType) => {
             if (res.statusCode === 200) {
                 dispatch(getOneInfoUser(infoUser?.id));
@@ -97,14 +98,14 @@ const ModalUpdateInfo = () => {
                                         />
                                         <InputField name="last_name" placeholder="Nhập tên của bạn" label="Tên" />
                                     </div>
-                                    {/* <div className="form-group mt-2">
+                                    <div className="form-group mt-2">
                                         <InputField
                                             type="date"
-                                            name="birthday"
+                                            name="birth_day"
                                             placeholder="Ngày sinh"
                                             label="Ngày sinh"
                                         />
-                                    </div> */}
+                                    </div>
                                     <div className="form-group mt-2">
                                         <InputField
                                             type="text"
