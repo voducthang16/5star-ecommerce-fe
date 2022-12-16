@@ -1,4 +1,4 @@
-import { Button, Popover, PopoverContent, PopoverTrigger, Tooltip } from '@chakra-ui/react';
+import { Button, Popover, PopoverContent, PopoverTrigger, Tooltip, useToast } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { AiOutlineHeart, AiOutlineShoppingCart, AiOutlineUser } from 'react-icons/ai';
 import { BiMessageSquareCheck } from 'react-icons/bi';
@@ -8,7 +8,7 @@ import { IoReorderThreeSharp } from 'react-icons/io5';
 import { MdOutlineDelete, MdOutlineManageAccounts } from 'react-icons/md';
 import { RiUserSharedLine } from 'react-icons/ri';
 import { TbUserCircle } from 'react-icons/tb';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import { FourSquaresIcon } from '~/components/Icons';
 import Image from '~/components/Image';
@@ -33,6 +33,8 @@ function Header() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productInCart]);
 
+    const toast = useToast();
+    const navigate = useNavigate();
     const handleRemoveCart = (id: number) => {
         CartService.deleteCart(id).then((res: ResponseType) => {
             if (res.statusCode === 200) {
@@ -68,18 +70,38 @@ function Header() {
                                     </Button>
                                 </li>
                                 <li className="hidden lg:block icon-header-wrapper">
-                                    <Link to={'/my-account/wish-list'}>
+                                    <p
+                                        onClick={() => {
+                                            if (infoUser?.length === 0) {
+                                                toast({
+                                                    title: 'Thông báo',
+                                                    description: 'Bạn phải đăng nhập để xem trang này',
+                                                    status: 'warning',
+                                                    position: 'bottom-right',
+                                                    duration: 1500,
+                                                    isClosable: true,
+                                                });
+                                                setTimeout(() => {
+                                                    navigate('/login');
+                                                }, 1500);
+                                            } else {
+                                                navigate('/my-account/wish-list');
+                                            }
+                                        }}
+                                    >
                                         <Button className="!p-3 !rounded-full !bg-transparent hover:!bg-hover hover:text-primary">
                                             <Tooltip label="Yêu thích">
                                                 <div className="icon relative text-2xl">
                                                     <AiOutlineHeart />
-                                                    <span className="badge-notif-header">9</span>
+                                                    {infoUser?.length !== 0 && (
+                                                        <span className="badge-notif-header">9</span>
+                                                    )}
                                                 </div>
                                             </Tooltip>
                                         </Button>
-                                    </Link>
+                                    </p>
                                 </li>
-                                <li className="icon-header-wrapper">
+                                {/* <li className="icon-header-wrapper">
                                     <div className="notification relative z-20">
                                         <Popover closeOnBlur={true}>
                                             {({ isOpen, onClose }) => (
@@ -125,7 +147,7 @@ function Header() {
                                             )}
                                         </Popover>
                                     </div>
-                                </li>
+                                </li> */}
                                 <li onClick={handleShowNavbarMobile} className="icon-header-wrapper lg:hidden">
                                     <Button className="!p-2 !rounded-full !bg-transparent hover:!bg-hover hover:text-primary">
                                         <div className="icon relative text-2xl">
@@ -221,90 +243,130 @@ function Header() {
                                     </div>
                                 </li>
                                 <li className="hidden lg:block icon-header-wrapper relative">
-                                    <Link to={'/cart'}>
+                                    <p
+                                        onClick={() => {
+                                            if (infoUser?.length === 0) {
+                                                toast({
+                                                    title: 'Thông báo',
+                                                    description: 'Bạn phải đăng nhập để xem trang này',
+                                                    status: 'warning',
+                                                    position: 'bottom-right',
+                                                    duration: 1500,
+                                                    isClosable: true,
+                                                });
+                                                setTimeout(() => {
+                                                    navigate('/login');
+                                                }, 1500);
+                                            } else {
+                                                navigate('/cart');
+                                            }
+                                        }}
+                                    >
                                         <Button className="!p-3 !rounded-full !bg-transparent hover:!bg-hover hover:text-primary">
                                             <div className="icon relative text-2xl">
                                                 <AiOutlineShoppingCart />
-                                                <span className="badge-notif-header">
-                                                    {listCart?.length > 0 ? listCart?.length : 0}{' '}
-                                                </span>
+                                                {infoUser?.length !== 0 && (
+                                                    <span className="badge-notif-header">
+                                                        {listCart?.length > 0 ? listCart?.length : 0}{' '}
+                                                    </span>
+                                                )}
                                             </div>
                                         </Button>
-                                    </Link>
+                                    </p>
                                     <div className="cart-hover absolute top-full pt-4 right-0 w-[400px]">
-                                        <div className="bg-white rounded-xl p-4 cart-hover-wrapper cursor-default">
-                                            <div className="flex justify-between text-sm mb-2">
-                                                <span className="cursor-text">
-                                                    {listCart?.length > 0 ? listCart?.length : 0} Sản phẩm
-                                                </span>
-                                                <Link className="text-[#2f5acf]" to={'/cart'}>
-                                                    Xem tất cả
-                                                </Link>
-                                            </div>
-                                            {/* list product in cart */}
-                                            <div className="max-h-[250px] overflow-y-auto">
-                                                {listCart?.length > 0 &&
-                                                    listCart?.map((cartItem: any) => (
-                                                        <div
-                                                            key={cartItem?.id}
-                                                            className="flex space-x-2 py-4 mr-2 border-b border-slate-200"
-                                                        >
-                                                            <Link to={'/'} className="w-[30%]">
-                                                                <Image
-                                                                    className="w-full object-contain"
-                                                                    src={
-                                                                        cartItem?.image
-                                                                            ? `${Config.apiUrl}upload/${cartItem?.image}`
-                                                                            : `${Config.apiUrl}upload/${cartItem?.product?.images[0].file_name}`
-                                                                    }
-                                                                />
-                                                            </Link>
-                                                            <Link
-                                                                to={'/'}
-                                                                className="flex-1 text-base flex flex-col justify-around"
-                                                            >
-                                                                <h6>{cartItem?.product?.name}</h6>
-                                                                <div className="flex items-center">
-                                                                    {cartItem?.classify_1 && (
-                                                                        <span className="color-label bg-white relative inline-block w-6 h-6 border shadow-md rounded-full">
-                                                                            <span
-                                                                                style={{
-                                                                                    backgroundColor: `${cartItem?.classify_1.attribute}`,
-                                                                                }}
-                                                                                className={`absolute inset-1 rounded-full`}
-                                                                            ></span>
-                                                                        </span>
-                                                                    )}
-                                                                    {cartItem?.classify_2 && (
-                                                                        <>
-                                                                            <span className="ml-1 font-semibold">
-                                                                                - {cartItem?.classify_2.attribute}
-                                                                            </span>
-                                                                        </>
-                                                                    )}
-                                                                </div>
+                                        <div
+                                            className={`${
+                                                infoUser?.length !== 0 &&
+                                                'bg-white rounded-xl p-4 cart-hover-wrapper cursor-default'
+                                            }`}
+                                        >
+                                            {/* {infoUser?.length !== 0 && (
+                                                    <span className="badge-notif-header">
+                                                        {listCart?.length > 0 ? listCart?.length : 0}{' '}
+                                                    </span>
+                                                )} */}
+                                            {infoUser?.length !== 0 && (
+                                                <>
+                                                    <div className="flex justify-between text-sm mb-2">
+                                                        <span className="cursor-text">
+                                                            {listCart?.length > 0 ? listCart?.length : 0} Sản phẩm
+                                                        </span>
+                                                        <Link className="text-[#2f5acf]" to={'/cart'}>
+                                                            Xem tất cả
+                                                        </Link>
+                                                    </div>
+                                                    {/* list product in cart */}
+                                                    <div className="max-h-[250px] overflow-y-auto">
+                                                        {listCart?.length > 0 &&
+                                                            listCart?.map((cartItem: any) => (
+                                                                <div
+                                                                    key={cartItem?.id}
+                                                                    className="flex space-x-2 py-4 mr-2 border-b border-slate-200"
+                                                                >
+                                                                    <Link to={'/'} className="w-[30%]">
+                                                                        <Image
+                                                                            className="w-full object-contain"
+                                                                            src={
+                                                                                cartItem?.image
+                                                                                    ? `${Config.apiUrl}upload/${cartItem?.image}`
+                                                                                    : `${Config.apiUrl}upload/${cartItem?.product?.images[0].file_name}`
+                                                                            }
+                                                                        />
+                                                                    </Link>
+                                                                    <Link
+                                                                        to={'/'}
+                                                                        className="flex-1 text-base flex flex-col justify-around"
+                                                                    >
+                                                                        <h6>{cartItem?.product?.name}</h6>
+                                                                        <div className="flex items-center">
+                                                                            {cartItem?.classify_1 && (
+                                                                                <span className="color-label bg-white relative inline-block w-6 h-6 border shadow-md rounded-full">
+                                                                                    <span
+                                                                                        style={{
+                                                                                            backgroundColor: `${cartItem?.classify_1.attribute}`,
+                                                                                        }}
+                                                                                        className={`absolute inset-1 rounded-full`}
+                                                                                    ></span>
+                                                                                </span>
+                                                                            )}
+                                                                            {cartItem?.classify_2 && (
+                                                                                <>
+                                                                                    <span className="ml-1 font-semibold">
+                                                                                        -{' '}
+                                                                                        {cartItem?.classify_2.attribute}
+                                                                                    </span>
+                                                                                </>
+                                                                            )}
+                                                                        </div>
 
-                                                                <p className="flex items-center space-x-2">
-                                                                    <span className="text-[#2f5acf]">
-                                                                        {cartItem?.price.toLocaleString('it-IT', {
-                                                                            style: 'currency',
-                                                                            currency: 'VND',
-                                                                        })}
-                                                                    </span>
-                                                                    <span>x</span>
-                                                                    <span>{+cartItem?.quantity}</span>
-                                                                </p>
-                                                            </Link>
-                                                            <div
-                                                                onClick={() => handleRemoveCart(cartItem?.id)}
-                                                                className="flex items-center text-2xl justify-center hover:text-red-600 cursor-pointer"
-                                                            >
-                                                                <MdOutlineDelete />
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                {listCart.length === 0 && <p>Chưa có sản phẩm nào trong giỏ hàng</p>}
-                                            </div>
+                                                                        <p className="flex items-center space-x-2">
+                                                                            <span className="text-[#2f5acf]">
+                                                                                {cartItem?.price.toLocaleString(
+                                                                                    'it-IT',
+                                                                                    {
+                                                                                        style: 'currency',
+                                                                                        currency: 'VND',
+                                                                                    },
+                                                                                )}
+                                                                            </span>
+                                                                            <span>x</span>
+                                                                            <span>{+cartItem?.quantity}</span>
+                                                                        </p>
+                                                                    </Link>
+                                                                    <div
+                                                                        onClick={() => handleRemoveCart(cartItem?.id)}
+                                                                        className="flex items-center text-2xl justify-center hover:text-red-600 cursor-pointer"
+                                                                    >
+                                                                        <MdOutlineDelete />
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        {listCart.length === 0 && (
+                                                            <p>Chưa có sản phẩm nào trong giỏ hàng</p>
+                                                        )}
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </li>

@@ -1,8 +1,14 @@
 import { AiOutlineUser, AiOutlineShoppingCart, AiOutlineHeart, AiOutlineFilter } from 'react-icons/ai';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAppSelector } from '~/app/hooks';
+import { getUser } from '~/features/user/userSlice';
+import { useToast } from '@chakra-ui/react';
 function Navigator() {
     const location = useLocation();
     const path = location.pathname;
+    const navigate = useNavigate();
+    const toast = useToast();
+    const infoUser: any = useAppSelector(getUser);
 
     const triggerFilters = () => {
         const filtersWrapper = document.querySelector('.filters-wrapper') as HTMLElement;
@@ -49,36 +55,94 @@ function Navigator() {
                     )}
                     {path === '/category' ? <div className="h-20 w-px bg-slate-300"></div> : <></>}
                     <div className="flex flex-col items-center justify-around cursor-pointer px-4">
-                        <div className="icon-header-wrapper">
+                        <div
+                            onClick={() => {
+                                if (infoUser?.length === 0) {
+                                    toast({
+                                        title: 'Thông báo',
+                                        description: 'Bạn phải đăng nhập để xem trang này',
+                                        status: 'warning',
+                                        position: 'top-right',
+                                        duration: 1500,
+                                        isClosable: true,
+                                    });
+                                    setTimeout(() => {
+                                        navigate('/login');
+                                    }, 1500);
+                                } else {
+                                    navigate('/my-account/wish-list');
+                                }
+                            }}
+                            className="icon-header-wrapper"
+                        >
                             <AiOutlineHeart className="text-2xl" />
-                            <span
-                                className="absolute -top-1 -right-1 bg-cyan-500 text-white h-4 w-4 
-                            block text-center rounded-full text-[10px]"
-                            >
-                                5
-                            </span>
+                            {infoUser?.length !== 0 && (
+                                <span
+                                    className="absolute -top-1 -right-1 bg-cyan-500 text-white h-4 w-4 
+                                    block text-center rounded-full text-[10px]"
+                                >
+                                    5
+                                </span>
+                            )}
                         </div>
-                        <h6 className="text-sm font-normal text-gray-500">Wishlist</h6>
                     </div>
                     <div className="h-20 w-px bg-slate-300"></div>
                     <div className="flex flex-col items-center justify-around cursor-pointer px-4">
-                        <div className="icon-header-wrapper">
+                        <div
+                            onClick={() => {
+                                if (infoUser?.length === 0) {
+                                    toast({
+                                        title: 'Thông báo',
+                                        description: 'Bạn phải đăng nhập để xem trang này',
+                                        status: 'warning',
+                                        position: 'top-right',
+                                        duration: 1500,
+                                        isClosable: true,
+                                    });
+                                    setTimeout(() => {
+                                        navigate('/login');
+                                    }, 1500);
+                                } else {
+                                    navigate('/cart');
+                                }
+                            }}
+                            className="icon-header-wrapper"
+                        >
                             <AiOutlineShoppingCart className="text-2xl" />
-                            <span
-                                className="absolute -top-1 -right-1 bg-cyan-500 text-white h-4 w-4 
-                            block text-center rounded-full text-[10px]"
-                            >
-                                5
-                            </span>
+                            {infoUser?.length !== 0 && (
+                                <span
+                                    className="absolute -top-1 -right-1 bg-cyan-500 text-white h-4 w-4 
+                                    block text-center rounded-full text-[10px]"
+                                >
+                                    5
+                                </span>
+                            )}
                         </div>
-                        <h6 className="text-sm font-normal text-gray-500">250.000.000</h6>
                     </div>
                     <div className="h-20 w-px bg-slate-300"></div>
                     <div className="flex flex-col items-center justify-around cursor-pointer px-4">
-                        <div className="icon-header-wrapper">
+                        <div
+                            onClick={() => {
+                                if (infoUser?.length === 0) {
+                                    toast({
+                                        title: 'Thông báo',
+                                        description: 'Bạn phải đăng nhập để xem trang này',
+                                        status: 'warning',
+                                        position: 'top-right',
+                                        duration: 1500,
+                                        isClosable: true,
+                                    });
+                                    setTimeout(() => {
+                                        navigate('/login');
+                                    }, 1500);
+                                } else {
+                                    navigate('/my-account');
+                                }
+                            }}
+                            className="icon-header-wrapper"
+                        >
                             <AiOutlineUser className="text-2xl" />
                         </div>
-                        <h6 className="text-sm font-normal text-gray-500">User</h6>
                     </div>
                 </div>
             </div>
