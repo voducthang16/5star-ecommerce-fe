@@ -4,7 +4,10 @@ import { MdDeleteOutline } from 'react-icons/md';
 import { RiVipCrown2Line } from 'react-icons/ri';
 import { TbEdit } from 'react-icons/tb';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
-import { getUser } from '~/features/user/userSlice';
+import ModalConfirm from '~/components/ModalConfirm';
+import { getOneInfoUser, getUser } from '~/features/user/userSlice';
+import UserService from '~/services/UserService';
+import { ResponseType } from '~/utils/Types';
 import ModalAddAddress from './ModalAddAddress';
 import ModalUpdateAddress from './ModalUpdateAddress';
 
@@ -12,6 +15,17 @@ const Address = () => {
     const toast = useToast();
     const dispatch = useAppDispatch();
     const infoUser: any = useAppSelector(getUser);
+
+    const handleDeleteAddress = (id: number) => {
+        if (Object.keys(infoUser?.address).length !== 0) {
+            const newAdress = infoUser?.address.filter((item: any) => item.id !== id);
+            UserService.UpdateUser({ address: newAdress }, infoUser.id).then((res: ResponseType) => {
+                if (res.statusCode === 200) {
+                    dispatch(getOneInfoUser(infoUser.id));
+                }
+            });
+        }
+    };
 
     return (
         <div className="tab-order bg-[#f8f8f8] p-6 rounded-md shadow-sm">
@@ -66,9 +80,12 @@ const Address = () => {
                                     <ModalUpdateAddress id={item?.id}>
                                         <TbEdit />
                                     </ModalUpdateAddress>
-                                    <Button p={1} className="p-2 rounded-md border" colorScheme="red">
-                                        <MdDeleteOutline />
-                                    </Button>
+
+                                    <ModalConfirm handleConfirm={() => handleDeleteAddress(item.id)}>
+                                        <Button p={1} className="p-2 rounded-md border" colorScheme="red">
+                                            <MdDeleteOutline />
+                                        </Button>
+                                    </ModalConfirm>
                                 </div>
                             </div>
                         ))}
