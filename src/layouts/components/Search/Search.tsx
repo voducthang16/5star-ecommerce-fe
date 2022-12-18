@@ -10,7 +10,7 @@ function Search(props: any) {
     return (
         <form className="relative flex-1" onSubmit={onSubmit}>
             <input
-                className="input-search input-form"
+                className="input-search input-form !text-black"
                 type="text"
                 placeholder={props.placeholder}
                 onChange={(e) => setSearch(e.target.value)}
