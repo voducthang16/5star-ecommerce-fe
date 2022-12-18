@@ -7,7 +7,6 @@ import {
     Box,
     ChakraProvider,
 } from '@chakra-ui/react';
-import { useState } from 'react';
 import {
     BsArrowRight,
     BsChevronDoubleLeft,
@@ -18,11 +17,31 @@ import {
     BsSearch,
 } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
+import { getBlogAsync, getBlogs } from '~/features/blog/blogSlice';
+import { useAppDispatch, useAppSelector } from '~/app/hooks';
+import { useEffect } from 'react';
+import Image from '~/components/Image';
+import Config from '~/config';
+export const convertDate = (create_at: any) => {
+    let date = new Date(create_at);
+    let year = date.getFullYear();
+    let month: any = date.getMonth() + 1;
+    let dt: any = date.getDate();
 
+    if (dt < 10) {
+        dt = '0' + dt;
+    }
+    if (month < 10) {
+        month = '0' + month;
+    }
+    return `${dt}/${month}/${year}`;
+};
 function Blog() {
-    const [blog, setBlog] = useState('');
-
-    const getBlog = () => {};
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+        dispatch(getBlogAsync());
+    }, [dispatch]);
+    const blogs = useAppSelector(getBlogs);
 
     return (
         <section className="py-[32px] md:py-[36px] lg:py-[38px] xl:py-[44px]">
@@ -32,425 +51,47 @@ function Blog() {
                     <div className="lg:order-1 lg:col-span-3 xl:col-span-6 2xl:col-span-3">
                         {/* post item */}
                         <div className="md:grid md:grid-cols-2 2xl:grid-cols-3 md:gap-6">
-                            <div className="mt-[24px] px-[12px] md:mt-0">
-                                <div className="mx-[-12px] border-[1px] border-solid border-[#ececec] rounded-[10px]">
-                                    <div className="mb-[15px] min-h-[243px]">
-                                        <Link to="/">
-                                            <img
-                                                className="rounded-t-[10px] w-full h-full"
-                                                src="https://lzd-img-global.slatic.net/g/p/8c0c4fc6c0f5d6ba7a30a85d2aa186e5.jpg_720x720q80.jpg_.webp"
-                                                alt="img-blog"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="px-[20px] pb-[20px]">
-                                        <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                            <span className="flex items-center">
-                                                <BsClock className="mr-1 inline w-4 h-4" />
-                                                <span>25/02/2022</span>
-                                            </span>
-                                            <span className="flex items-center">
-                                                <BsPerson className="mr-1 inline w-4 h-4" />
-                                                <span>James M.Martin</span>
-                                            </span>
+                            {blogs.map((item: any, index: number) => (
+                                <div key={index} className="mt-6 px-3 md:mt-0">
+                                    <div className="mx-[-12px] border border-slate-200 overflow-hidden rounded-[10px]">
+                                        <div className="mb-[15px]">
+                                            <Link
+                                                className="flex items-center justify-center"
+                                                to={`/blog/${item?.slug}`}
+                                            >
+                                                <Image
+                                                    className="min-h-[250px] max-h-[250px] object-contain"
+                                                    src={`${Config.apiUrl}upload/${item?.media.file_name}`}
+                                                />
+                                            </Link>
                                         </div>
-                                        <Link to="/">
-                                            <h3 className="mt-[10px] mb-[6px] text-[16px] font-[600] leading-6">
-                                                Polo DSW Polo High Low có thật sự đáng mua?
-                                            </h3>
-                                        </Link>
-                                        <button className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]">
-                                            Đọc tiếp
-                                            <BsArrowRight className="inline ml-2" />
-                                        </button>
+                                        <div className="px-[20px] pb-[20px]">
+                                            <div className="flex align-center gap-[15px] text-[13px] uppercase">
+                                                <span className="flex items-center">
+                                                    <BsClock className="mr-1 inline w-4 h-4" />
+                                                    <span>{convertDate(item?.create_at)}</span>
+                                                </span>
+                                                <span className="flex items-center">
+                                                    <BsPerson className="mr-1 inline w-4 h-4" />
+                                                    <span>James M.Martin</span>
+                                                </span>
+                                            </div>
+                                            <Link to={`/blog/${item?.slug}`}>
+                                                <h3 className="mt-[10px] mb-4 text-base font-[600] leading-6">
+                                                    {item?.title}
+                                                </h3>
+                                            </Link>
+                                            <Link
+                                                to={`/blog/${item?.slug}`}
+                                                className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]"
+                                            >
+                                                Đọc tiếp
+                                                <BsArrowRight className="inline ml-2" />
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div className="mt-[24px] px-[12px] md:mt-0">
-                                <div className="mx-[-12px] border-[1px] border-solid border-[#ececec] rounded-[10px]">
-                                    <div className="mb-[15px]">
-                                        <Link to="/">
-                                            <img
-                                                className="rounded-t-[10px]"
-                                                src="https://lzd-img-global.slatic.net/g/p/5068c793852e61995e3ff61ba64a5bc8.png_720x720q80.jpg_.webp"
-                                                alt="img-blog"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="px-[20px] pb-[20px]">
-                                        <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                            <span className="flex items-center">
-                                                <BsClock className="mr-1 inline w-4 h-4" />
-                                                <span>01/06/2022</span>
-                                            </span>
-                                            <span className="flex items-center">
-                                                <BsPerson className="mr-1 inline w-4 h-4" />
-                                                <span>James Clear</span>
-                                            </span>
-                                        </div>
-                                        <Link to="/">
-                                            <h3 className="mt-[10px] mb-[6px] text-[16px] font-[600] leading-6">
-                                                Những chi tiết thú vị về chiếc áo DEE Hockey Shirt
-                                            </h3>
-                                        </Link>
-                                        <button className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]">
-                                            Đọc tiếp
-                                            <BsArrowRight className="inline ml-2" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-[24px] px-[12px] md:mt-0">
-                                <div className="mx-[-12px] border-[1px] border-solid border-[#ececec] rounded-[10px]">
-                                    <div className="mb-[15px]">
-                                        <Link to="/">
-                                            <img
-                                                className="rounded-t-[10px]"
-                                                src="https://lzd-img-global.slatic.net/g/p/71347f2ab3821c7c15da9392253c0c97.jpg_720x720q80.jpg_.webp"
-                                                alt="img-blog"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="px-[20px] pb-[20px]">
-                                        <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                            <span className="flex items-center">
-                                                <BsClock className="mr-1 inline w-4 h-4" />
-                                                <span>25 Feg, 2022</span>
-                                            </span>
-                                            <span className="flex items-center">
-                                                <BsPerson className="mr-1 inline w-4 h-4" />
-                                                <span>James M.Martin</span>
-                                            </span>
-                                        </div>
-                                        <Link to="/">
-                                            <h3 className="mt-[10px] mb-[6px] text-[16px] font-[600] leading-6">
-                                                How to freeze fresh vegetables while preserving their best qualities.
-                                            </h3>
-                                        </Link>
-                                        <button className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]">
-                                            Đọc tiếp
-                                            <BsArrowRight className="inline ml-2" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-[24px] px-[12px] md:mt-0">
-                                <div className="mx-[-12px] border-[1px] border-solid border-[#ececec] rounded-[10px]">
-                                    <div className="mb-[15px]">
-                                        <Link to="/">
-                                            <img
-                                                className="rounded-t-[10px]"
-                                                src="https://lzd-img-global.slatic.net/g/p/2b0d6f87afa6b02361764574031543d3.png_720x720q80.jpg_.webp"
-                                                alt="img-blog"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="px-[20px] pb-[20px]">
-                                        <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                            <span className="flex items-center">
-                                                <BsClock className="mr-1 inline w-4 h-4" />
-                                                <span>25 Feg, 2022</span>
-                                            </span>
-                                            <span className="flex items-center">
-                                                <BsPerson className="mr-1 inline w-4 h-4" />
-                                                <span>James M.Martin</span>
-                                            </span>
-                                        </div>
-                                        <Link to="/">
-                                            <h3 className="mt-[10px] mb-[6px] text-[16px] font-[600] leading-6">
-                                                How to freeze fresh vegetables while preserving their best qualities.
-                                            </h3>
-                                        </Link>
-                                        <button className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]">
-                                            Đọc tiếp
-                                            <BsArrowRight className="inline ml-2" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-[24px] px-[12px] md:mt-0">
-                                <div className="mx-[-12px] border-[1px] border-solid border-[#ececec] rounded-[10px]">
-                                    <div className="mb-[15px]">
-                                        <Link to="/">
-                                            <img
-                                                className="rounded-t-[10px]"
-                                                src="https://themes.pixelstrap.com/fastkart/assets/images/inner-page/blog/1.jpg"
-                                                alt="img-blog"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="px-[20px] pb-[20px]">
-                                        <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                            <span className="flex items-center">
-                                                <BsClock className="mr-1 inline w-4 h-4" />
-                                                <span>25 Feg, 2022</span>
-                                            </span>
-                                            <span className="flex items-center">
-                                                <BsPerson className="mr-1 inline w-4 h-4" />
-                                                <span>James M.Martin</span>
-                                            </span>
-                                        </div>
-                                        <Link to="/">
-                                            <h3 className="mt-[10px] mb-[6px] text-[16px] font-[600] leading-6">
-                                                How to freeze fresh vegetables while preserving their best qualities.
-                                            </h3>
-                                        </Link>
-                                        <button className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]">
-                                            Đọc tiếp
-                                            <BsArrowRight className="inline ml-2" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-[24px] px-[12px] md:mt-0">
-                                <div className="mx-[-12px] border-[1px] border-solid border-[#ececec] rounded-[10px]">
-                                    <div className="mb-[15px]">
-                                        <Link to="">
-                                            <img
-                                                className="rounded-t-[10px]"
-                                                src="https://themes.pixelstrap.com/fastkart/assets/images/inner-page/blog/2.jpg"
-                                                alt="img-blog"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="px-[20px] pb-[20px]">
-                                        <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                            <span className="flex items-center">
-                                                <BsClock className="mr-1 inline w-4 h-4" />
-                                                <span>25 T8, 2022</span>
-                                            </span>
-                                            <span className="flex items-center">
-                                                <BsPerson className="mr-1 inline w-4 h-4" />
-                                                <span>Duy Luan</span>
-                                            </span>
-                                        </div>
-                                        <Link to="#">
-                                            <h3 className="mt-[10px] mb-[6px] text-[16px] font-[600] leading-6">
-                                                Cách lựa chọn size quần ảo chuẩn nhất
-                                            </h3>
-                                        </Link>
-                                        <button className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]">
-                                            Đọc thêm
-                                            <BsArrowRight className="inline ml-2" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-[24px] px-[12px] md:mt-0">
-                                <div className="mx-[-12px] border-[1px] border-solid border-[#ececec] rounded-[10px]">
-                                    <div className="mb-[15px]">
-                                        <Link to="/">
-                                            <img
-                                                className="rounded-t-[10px]"
-                                                src="https://themes.pixelstrap.com/fastkart/assets/images/inner-page/blog/3.jpg"
-                                                alt="img-blog"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="px-[20px] pb-[20px]">
-                                        <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                            <span className="flex items-center">
-                                                <BsClock className="mr-1 inline w-4 h-4" />
-                                                <span>25 Feg, 2022</span>
-                                            </span>
-                                            <span className="flex items-center">
-                                                <BsPerson className="mr-1 inline w-4 h-4" />
-                                                <span>James M.Martin</span>
-                                            </span>
-                                        </div>
-                                        <Link to="/">
-                                            <h3 className="mt-[10px] mb-[6px] text-[16px] font-[600] leading-6">
-                                                How to freeze fresh vegetables while preserving their best qualities.
-                                            </h3>
-                                        </Link>
-                                        <button className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]">
-                                            Đọc tiếp
-                                            <BsArrowRight className="inline ml-2" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-[24px] px-[12px] md:mt-0">
-                                <div className="mx-[-12px] border-[1px] border-solid border-[#ececec] rounded-[10px]">
-                                    <div className="mb-[15px]">
-                                        <Link to="/">
-                                            <img
-                                                className="rounded-t-[10px]"
-                                                src="https://themes.pixelstrap.com/fastkart/assets/images/inner-page/blog/4.jpg"
-                                                alt="img-blog"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="px-[20px] pb-[20px]">
-                                        <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                            <span className="flex items-center">
-                                                <BsClock className="mr-1 inline w-4 h-4" />
-                                                <span>25 Feg, 2022</span>
-                                            </span>
-                                            <span className="flex items-center">
-                                                <BsPerson className="mr-1 inline w-4 h-4" />
-                                                <span>James M.Martin</span>
-                                            </span>
-                                        </div>
-                                        <Link to="/">
-                                            <h3 className="mt-[10px] mb-[6px] text-[16px] font-[600] leading-6">
-                                                How to freeze fresh vegetables while preserving their best qualities.
-                                            </h3>
-                                        </Link>
-                                        <button className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]">
-                                            Đọc tiếp
-                                            <BsArrowRight className="inline ml-2" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-[24px] px-[12px] md:mt-0">
-                                <div className="mx-[-12px] border-[1px] border-solid border-[#ececec] rounded-[10px]">
-                                    <div className="mb-[15px]">
-                                        <Link to="/">
-                                            <img
-                                                className="rounded-t-[10px]"
-                                                src="https://themes.pixelstrap.com/fastkart/assets/images/inner-page/blog/1.jpg"
-                                                alt="img-blog"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="px-[20px] pb-[20px]">
-                                        <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                            <span className="flex items-center">
-                                                <BsClock className="mr-1 inline w-4 h-4" />
-                                                <span>25 Feg, 2022</span>
-                                            </span>
-                                            <span className="flex items-center">
-                                                <BsPerson className="mr-1 inline w-4 h-4" />
-                                                <span>James M.Martin</span>
-                                            </span>
-                                        </div>
-                                        <Link to="/">
-                                            <h3 className="mt-[10px] mb-[6px] text-[16px] font-[600] leading-6">
-                                                How to freeze fresh vegetables while preserving their best qualities.
-                                            </h3>
-                                        </Link>
-                                        <button className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]">
-                                            Đọc tiếp
-                                            <BsArrowRight className="inline ml-2" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-[24px] px-[12px] md:mt-0">
-                                <div className="mx-[-12px] border-[1px] border-solid border-[#ececec] rounded-[10px]">
-                                    <div className="mb-[15px]">
-                                        <Link to="/">
-                                            <img
-                                                className="rounded-t-[10px]"
-                                                src="https://themes.pixelstrap.com/fastkart/assets/images/inner-page/blog/2.jpg"
-                                                alt="img-blog"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="px-[20px] pb-[20px]">
-                                        <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                            <span className="flex items-center">
-                                                <BsClock className="mr-1 inline w-4 h-4" />
-                                                <span>25 Feg, 2022</span>
-                                            </span>
-                                            <span className="flex items-center">
-                                                <BsPerson className="mr-1 inline w-4 h-4" />
-                                                <span>James M.Martin</span>
-                                            </span>
-                                        </div>
-                                        <Link to="/">
-                                            <h3 className="mt-[10px] mb-[6px] text-[16px] font-[600] leading-6">
-                                                How to freeze fresh vegetables while preserving their best qualities.
-                                            </h3>
-                                        </Link>
-                                        <button className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]">
-                                            Đọc tiếp
-                                            <BsArrowRight className="inline ml-2" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-[24px] px-[12px] md:mt-0">
-                                <div className="mx-[-12px] border-[1px] border-solid border-[#ececec] rounded-[10px]">
-                                    <div className="mb-[15px]">
-                                        <Link to="/">
-                                            <img
-                                                className="rounded-t-[10px]"
-                                                src="https://themes.pixelstrap.com/fastkart/assets/images/inner-page/blog/3.jpg"
-                                                alt="img-blog"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="px-[20px] pb-[20px]">
-                                        <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                            <span className="flex items-center">
-                                                <BsClock className="mr-1 inline w-4 h-4" />
-                                                <span>25 Feg, 2022</span>
-                                            </span>
-                                            <span className="flex items-center">
-                                                <BsPerson className="mr-1 inline w-4 h-4" />
-                                                <span>James M.Martin</span>
-                                            </span>
-                                        </div>
-                                        <Link to="/">
-                                            <h3 className="mt-[10px] mb-[6px] text-[16px] font-[600] leading-6">
-                                                How to freeze fresh vegetables while preserving their best qualities.
-                                            </h3>
-                                        </Link>
-                                        <button className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]">
-                                            Đọc tiếp
-                                            <BsArrowRight className="inline ml-2" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-[24px] px-[12px] md:mt-0">
-                                <div className="mx-[-12px] border-[1px] border-solid border-[#ececec] rounded-[10px]">
-                                    <div className="mb-[15px]">
-                                        <Link to="/">
-                                            <img
-                                                className="rounded-t-[10px]"
-                                                src="https://themes.pixelstrap.com/fastkart/assets/images/inner-page/blog/4.jpg"
-                                                alt="img-blog"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="px-[20px] pb-[20px]">
-                                        <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                            <span className="flex items-center">
-                                                <BsClock className="mr-1 inline w-4 h-4" />
-                                                <span>25 Feg, 2022</span>
-                                            </span>
-                                            <span className="flex items-center">
-                                                <BsPerson className="mr-1 inline w-4 h-4" />
-                                                <span>James M.Martin</span>
-                                            </span>
-                                        </div>
-                                        <Link to="/">
-                                            <h3 className="mt-[10px] mb-[6px] text-[16px] font-[600] leading-6">
-                                                How to freeze fresh vegetables while preserving their best qualities.
-                                            </h3>
-                                        </Link>
-                                        <button className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]">
-                                            Đọc tiếp
-                                            <BsArrowRight className="inline ml-2" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            ))}
                         </div>
 
                         {/* pagination */}

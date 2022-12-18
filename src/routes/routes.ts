@@ -74,7 +74,7 @@ const publicRoutes: Routes[] = [
         Component: Blog,
     },
     {
-        path: '/blog-detail',
+        path: '/blog/:slug',
         Component: BlogDetail,
     },
     {

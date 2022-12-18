@@ -1,6 +1,6 @@
 import { useToast } from '@chakra-ui/react';
 import { useState } from 'react';
-import { FaRegHeart } from 'react-icons/fa';
+import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { RiShoppingCart2Fill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
@@ -9,11 +9,13 @@ import Config from '~/config';
 import { addToCart, getProductInCart, updateToCart } from '~/features/cart/cartSlice';
 import { getProducts } from '~/features/product/productSlice';
 import CartService from '~/services/CartService';
+import WishlistService from '~/services/WishlistService';
 import { ResponseType } from '~/utils/Types';
 import { motion, useAnimation } from 'framer-motion';
 import Rate from '../Rate';
 import './Product.scss';
 import { getUser } from '~/features/user/userSlice';
+import { getWishlist, getWishlistAsync } from '~/features/wishlist/wishlistSlice';
 interface ProductProps {
     idProduct: number;
     name?: string;
@@ -44,6 +46,17 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
     const sizeArray: any = size ? Object?.entries(size) : '';
     const moneyArray: any = [];
     const infoUser: any = useAppSelector(getUser);
+    const wishlist = useAppSelector(getWishlist);
+
+    const checkProductInWishlist = (id: number) => {
+        let flag = false;
+        wishlist?.find((item: any) => {
+            if (item.id_product === id) {
+                flag = true;
+            }
+        });
+        return flag;
+    };
 
     stocks.forEach((item: any) => {
         moneyArray.push(item.price);
@@ -97,7 +110,6 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
 
     const handleAddToCart = (e: any, idProduct: number, type: number) => {
         e.preventDefault();
-        console.log(infoUser.length === 0);
         if (infoUser.length === 0) {
             toast({
                 title: 'Thông báo',
@@ -212,13 +224,38 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
             <div className="relative">
                 <div className="action-product absolute z-[21] top-[22%] right-2">
                     <motion.div
+                        onClick={() => {
+                            if (checkProductInWishlist(idProduct)) {
+                                alert('Xoa khoi danh sach');
+                            } else {
+                                WishlistService.createWishlist({ id_product: idProduct, quantity: 1 })
+                                    .then((res: any) => {
+                                        if (res.statusCode === 201) {
+                                            toast({
+                                                title: 'Thông báo',
+                                                description: 'Thêm vào danh sách yêu thích',
+                                                status: 'success',
+                                                position: 'top-right',
+                                                duration: 3000,
+                                                isClosable: true,
+                                            });
+                                            dispatch(getWishlistAsync(infoUser?.id));
+                                        }
+                                    })
+                                    .catch((err) => console.log(err));
+                            }
+                        }}
                         className="action-wishlist w-[40px] h-[40px] text-center bg-white leading-[38px] rounded-full shadow-md cursor-pointer"
                         initial="initial"
                         variants={variants}
                         animate={controls}
                         transition={{ type: 'spring', damping: 12, stiffness: 90 }}
                     >
-                        <FaRegHeart className="text-xl inline-block text-primary" />
+                        {checkProductInWishlist(idProduct) ? (
+                            <FaHeart className="text-xl inline-block text-primary" />
+                        ) : (
+                            <FaRegHeart className="text-xl inline-block text-primary" />
+                        )}
                     </motion.div>
                     <motion.div
                         onClick={(e) => handleAddToCart(e, idProduct, type)}
