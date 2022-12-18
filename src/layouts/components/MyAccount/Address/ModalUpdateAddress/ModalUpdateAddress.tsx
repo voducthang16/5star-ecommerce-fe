@@ -66,11 +66,11 @@ const ModalUpdateAddress = ({ children, id }: any) => {
         onOpen();
         infoUser?.address.forEach((adr: any) => {
             if (id === adr.id) {
-                setCityName({ code: +adr?.cityName?.code });
+                setCityName({ code: +adr?.cityName?.code, name: adr?.cityName?.name });
                 getDistrict(+adr?.cityName?.code);
-                setDistrictName({ code: +adr?.districtName?.code });
+                setDistrictName({ code: +adr?.districtName?.code, name: adr?.districtName?.name });
                 getWard(+adr?.districtName?.code);
-                setWardName({ code: +adr?.wardName?.code });
+                setWardName({ code: +adr?.wardName?.code, name: adr?.wardName?.name });
                 initCheckoutForm.phone = adr.phone;
                 initCheckoutForm.address = adr.address;
                 initCheckoutForm.isDefault = adr.isDefault;
@@ -87,24 +87,28 @@ const ModalUpdateAddress = ({ children, id }: any) => {
                 status: 'warning',
             });
         } else {
-            let idAddress = infoUser?.address !== '{}' ? infoUser?.address.length + 1 : 1;
             let dataSendRequest: any = [];
-            if (values.isDefault && Object.keys(infoUser?.address).length !== 0) {
+            const valueDefault = Boolean(values.isDefault);
+            console.log('valueDefault: ', valueDefault);
+            if (Object.keys(infoUser?.address).length !== 0) {
                 infoUser?.address.forEach((item: any) => {
-                    item.isDefault = false;
-                    if (item.id === id) {
+                    let newItem = { ...item };
+                    if (valueDefault && newItem.isDefault) {
+                        newItem.isDefault = false;
+                    }
+                    if (newItem.id === id) {
                         let addressUpdate = {
-                            id: idAddress,
+                            id: id,
                             districtName,
                             cityName,
                             wardName,
                             address: values.address,
                             phone: values.phone,
-                            isDefault: Boolean(values.isDefault),
+                            isDefault: valueDefault,
                         };
                         dataSendRequest.push(addressUpdate);
                     } else {
-                        dataSendRequest.push(item);
+                        dataSendRequest.push(newItem);
                     }
                 });
             }
@@ -113,7 +117,6 @@ const ModalUpdateAddress = ({ children, id }: any) => {
                 if (res.statusCode === 200) {
                     dispatch(getOneInfoUser(infoUser.id));
                     onClose();
-                    console.log('infoUser.id: ', infoUser.id);
                 }
             });
         }
@@ -222,7 +225,7 @@ const ModalUpdateAddress = ({ children, id }: any) => {
                                             <RadioField
                                                 label="Mặc định"
                                                 name="isDefault"
-                                                value={true}
+                                                value="true"
                                                 id="isDefault-3"
                                             />
                                         </div>

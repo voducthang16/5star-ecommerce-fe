@@ -110,6 +110,7 @@ function Category() {
                                         {category?.map((item: any, index: number) => (
                                             <AccordionItem key={index} borderTop={0}>
                                                 <AccordionButton
+                                                    _expanded={{ color: '#319795' }}
                                                     _hover={{
                                                         background: 'white',
                                                         color: 'teal.500',

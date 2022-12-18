@@ -20,6 +20,7 @@ import { InputField, RadioField } from '~/layouts/components/CustomField';
 import CartService from '~/services/CartService';
 import UserService from '~/services/UserService';
 import { ResponseType } from '~/utils/Types';
+import { updateAddressAccountSchema } from '~/utils/validationSchema';
 
 type ValuesForm = {
     phone: number;
@@ -63,7 +64,6 @@ const ModalAddAddress = () => {
     };
 
     const handleSubmitForm = (values: ValuesForm) => {
-        console.log('values: ', values);
         if (!districtName || !cityName || !wardName) {
             toast({
                 position: 'top-right',
@@ -72,28 +72,9 @@ const ModalAddAddress = () => {
                 status: 'warning',
             });
         } else {
-            let idAddress = Object.keys(infoUser?.address).length !== 0 ? infoUser?.address.length + 1 : 1;
-            let dataSendRequest: any = [];
-            if (values.isDefault && Object.keys(infoUser?.address).length !== 0) {
-                infoUser?.address?.forEach((item: any) => {
-                    item.isDefault = false;
-                    dataSendRequest.push(item);
-                });
-            }
-            let data = {
-                id: idAddress,
-                districtName,
-                cityName,
-                wardName,
-                address: values.address,
-                phone: values.phone,
-                isDefault: Boolean(values.isDefault),
-            };
-            dataSendRequest.push(data);
-
+            const dataSendRequest = handleDataSubmit(values);
             UserService.UpdateUser({ address: dataSendRequest }, infoUser.id).then((res: ResponseType) => {
                 if (res.statusCode === 200) {
-                    dispatch(getOneInfoUser(infoUser.id));
                     onClose();
                     toast({
                         position: 'top-right',
@@ -101,10 +82,40 @@ const ModalAddAddress = () => {
                         duration: 1000,
                         status: 'success',
                     });
+                    dispatch(getOneInfoUser(infoUser.id));
                 }
             });
         }
     };
+
+    const handleDataSubmit = (values: any) => {
+        console.log('values: ', values);
+        let idAddress = Object.keys(infoUser?.address).length !== 0 ? infoUser?.address.length + 1 : 1;
+        let dataSendRequest: any = [];
+        if (Object.keys(infoUser?.address).length !== 0) {
+            infoUser?.address.forEach((item: any) => {
+                let newItem = { ...item };
+                if (values.isDefault && newItem.isDefault) {
+                    newItem.isDefault = false;
+                }
+                dataSendRequest.push(newItem);
+            });
+        }
+        console.log('dataSendRequest: ', dataSendRequest);
+        let data = {
+            id: idAddress,
+            districtName,
+            cityName,
+            wardName,
+            address: values.address,
+            phone: values.phone,
+            isDefault: Boolean(values.isDefault),
+        };
+        dataSendRequest.push(data);
+
+        return dataSendRequest;
+    };
+
     return (
         <>
             <Button rightIcon={<BsPlus />} onClick={onOpen} colorScheme="teal" variant="outline">
@@ -114,10 +125,10 @@ const ModalAddAddress = () => {
                 <ModalOverlay />
                 <Formik
                     initialValues={initCheckoutForm}
-                    onSubmit={(values: ValuesForm) => handleSubmitForm(values)}
-                    // validationSchema={updateAddressAccountSchema}
+                    onSubmit={(values: any) => handleSubmitForm(values)}
+                    validationSchema={updateAddressAccountSchema}
                 >
-                    {(formik: FormikProps<ValuesForm>) => (
+                    {(formik: FormikProps<any>) => (
                         <Form>
                             <ModalContent>
                                 <ModalHeader>Thêm địa chỉ giao hàng</ModalHeader>
@@ -202,12 +213,7 @@ const ModalAddAddress = () => {
                                     </div>
                                     <div className="form-group mt-3">
                                         <div className="flex gap-2">
-                                            <RadioField
-                                                label="Mặc định"
-                                                name="isDefault"
-                                                value="true"
-                                                id="isDefault-3"
-                                            />
+                                            <RadioField label="Mặc định" name="isDefault" value="true" id="default_1" />
                                         </div>
                                     </div>
                                 </ModalBody>

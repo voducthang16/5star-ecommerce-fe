@@ -1,6 +1,10 @@
+import { Button } from '@chakra-ui/react';
+import { HiShoppingCart } from 'react-icons/hi';
+import { useNavigate } from 'react-router-dom';
 import './OrderSuccess.scss';
 
 function OrderSuccess() {
+    const Navigate = useNavigate();
     return (
         <section className="order-success-comp">
             <div className="px-5 py-10 bg-[#f7f7f7]">
@@ -22,15 +26,12 @@ function OrderSuccess() {
 
                 {/* content */}
                 <div className="text-center">
-                    <h1 className="mb-[10px] text-[20px] text-[#0f8fac] font-[500] lg:text-[22px] xl:text-[24px]">
-                        Order Success
+                    <h1 className="my-5 text-2xl text-primary font-[500]">
+                        Đơn hàng của bạn đã được xác nhận thành công
                     </h1>
-                    <h5 className="mb-[6px] text-[14px] text-[#767676] font-[500] leading-[20px] xl:text-[15px]">
-                        Payment Is Successfully Processsed And Your Order Is On The Way
-                    </h5>
-                    <h6 className="text-[14px] text[#262834] font-[600] tracking-[1.1px]">
-                        Transaction ID:267676GHERT105467
-                    </h6>
+                    <Button colorScheme={'teal'} size="lg" rightIcon={<HiShoppingCart />} onClick={() => Navigate('/')}>
+                        Tiếp tục mua sắm
+                    </Button>
                 </div>
             </div>
         </section>

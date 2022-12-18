@@ -7,6 +7,7 @@ import {
     Box,
     ChakraProvider,
 } from '@chakra-ui/react';
+import { useState } from 'react';
 import {
     BsArrowRight,
     BsChevronDoubleLeft,
@@ -19,6 +20,10 @@ import {
 import { Link } from 'react-router-dom';
 
 function Blog() {
+    const [blog, setBlog] = useState('');
+
+    const getBlog = () => {};
+
     return (
         <section className="py-[32px] md:py-[36px] lg:py-[38px] xl:py-[44px]">
             <div className="px-[20px] md:px-[54px] lg:px-[78px] xl:px-[108px] 2xl:px-[124px]">

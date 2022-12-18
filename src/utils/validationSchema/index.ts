@@ -61,7 +61,7 @@ export const updateAddressAccountSchema = () => {
 
 export const orderCartSchema = () => {
     return Yup.object({
-        fullname: Yup.string().required('Vui lòng nhập họ tên của bạn'),
+        name: Yup.string().required('Vui lòng nhập họ tên của bạn'),
         phone: Yup.string()
             .required('Vui lòng nhập số điện thoại của bạn')
             .matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/, 'Vui lòng nhập đúng số điện thoại của bạn'),
