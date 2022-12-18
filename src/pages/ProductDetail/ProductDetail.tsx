@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import { AiFillHeart, AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { HiOutlineShoppingCart } from 'react-icons/hi';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { Mousewheel, Navigation, Pagination } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -47,7 +47,7 @@ function ProductDetail() {
     const { slug } = useParams();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const products = useAppSelector(getProducts);
-
+    const location = useLocation();
     useEffect(() => {
         dispatch(fetchProductAsync({}));
     }, [dispatch]);
@@ -111,7 +111,7 @@ function ProductDetail() {
         <Loading />
     ) : (
         <div className="product-detail">
-            <Breadcrumb page={'Sản phẩm'} />
+            <Breadcrumb page={'Sản phẩm'} shareUrl={location.pathname} />
             <section className="container pb-10 lg:pb-20">
                 <div className="grid grid-cols-12 lg:gap-4 shadow-2xl lg:p-4 rounded-2xl">
                     <div className="col-span-12 lg:col-span-7">

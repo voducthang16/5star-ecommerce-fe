@@ -4,16 +4,17 @@ import { ImFacebook } from 'react-icons/im';
 import { MdOutlineKeyboardArrowRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import './Breadcrumb.scss';
-
+import { FacebookShareButton, FacebookIcon } from 'react-share';
 interface BreadcrumbProps {
     page?: string;
     share?: boolean;
     category?: boolean;
     parentPage?: string;
     parentLink?: string;
+    shareUrl?: string;
 }
 
-const Breadcrumb = ({ page, parentPage, parentLink = '/', share = true }: BreadcrumbProps) => {
+const Breadcrumb = ({ page, parentPage, parentLink = '/', share = true, shareUrl }: BreadcrumbProps) => {
     return (
         <div className="breadcrumb my-4 bg-[#f8f8f8] py-6">
             <div className="container">
@@ -49,7 +50,9 @@ const Breadcrumb = ({ page, parentPage, parentLink = '/', share = true }: Breadc
                                 className="flex items-center space-x-1 px-2 py-0.5 cursor-pointer
                             rounded-md transition-all group hover:bg-[#3b5998] bg-[#dbe1eb]"
                             >
-                                <ImFacebook className="fill-[#3b5998] group-hover:fill-white" />
+                                <FacebookShareButton url={`https://5starfashion.xyz/product${shareUrl!}`}>
+                                    <FacebookIcon size={16} round={true} />
+                                </FacebookShareButton>
                                 <span className="text-[#3b5998] group-hover:text-white">Facebook</span>
                             </span>
                             <span
