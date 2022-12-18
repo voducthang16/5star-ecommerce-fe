@@ -16,6 +16,7 @@ import Logo from '~/components/Logo';
 import Config from '~/config';
 import { getCart, getCartAsync, getProductInCart } from '~/features/cart/cartSlice';
 import { getUser, resetUser } from '~/features/user/userSlice';
+import { getWishlist, getWishlistAsync } from '~/features/wishlist/wishlistSlice';
 import CartService from '~/services/CartService';
 import { ResponseType } from '~/utils/Types';
 import Search from '../Search';
@@ -45,7 +46,10 @@ function Header() {
             }
         });
     };
-
+    useEffect(() => {
+        dispatch(getWishlistAsync(infoUser?.id));
+    }, [dispatch]);
+    const wishlist = useAppSelector(getWishlist);
     const handleLogout = () => {
         Navigate('/login');
         localStorage.removeItem('access_token');
@@ -103,7 +107,9 @@ function Header() {
                                                 <div className="icon relative text-2xl">
                                                     <AiOutlineHeart />
                                                     {infoUser?.length !== 0 && (
-                                                        <span className="badge-notif-header">9</span>
+                                                        <span className="badge-notif-header">
+                                                            {wishlist.length > 0 ? wishlist.length : 0}
+                                                        </span>
                                                     )}
                                                 </div>
                                             </Tooltip>

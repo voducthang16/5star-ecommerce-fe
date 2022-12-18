@@ -9,9 +9,19 @@ import {
 } from '@chakra-ui/react';
 
 import { BsCalendar4, BsChatLeft, BsFillReplyFill, BsHandThumbsUp, BsPerson, BsSearch } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
-
+import { Link, useParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '~/app/hooks';
+import { getBlogDetailAsync, getDetail } from '~/features/blog/blogSlice';
+import { useEffect } from 'react';
+import { convertDate } from '../Blog/Blog';
 function BlogDetail() {
+    const dispatch = useAppDispatch();
+
+    const { slug } = useParams();
+    useEffect(() => {
+        dispatch(getBlogDetailAsync(slug!));
+    }, [dispatch]);
+    const detail = useAppSelector(getDetail);
     return (
         <section className="px-[20px] py-[32px] md:px-[54px] lg:px-[78px] xl:px-[108px] xl:py-[44px] 2xl:px-[124px]">
             <div className="lg:grid lg:grid-cols-7 lg:gap-6 xl:grid-cols-3 2xl:grid-cols-4">
@@ -379,7 +389,11 @@ function BlogDetail() {
 
                 {/* blog content */}
                 <div className="lg:col-span-4 xl:col-span-2 2xl:col-span-3">
-                    <div className="relative mb-[24px] py-[8px] w-full h-[390px] bg-[url('https://www.girav.com/media/catalog/category/categoriebanner_NL_lente_2016_polo2_26.jpg')] bg-cover bg-center bg-no-repeat transition-filter duration-[400ms] ease-in rounded-[5px] object-cover">
+                    <div
+                        className={`relative mb-[24px] py-[8px] w-full h-[390px] 
+                    bg-[url('https://www.girav.com/media/catalog/category/categoriebanner_NL_lente_2016_polo2_26.jpg')] 
+                    bg-cover bg-center bg-no-repeat transition-filter duration-[400ms] ease-in rounded-[5px] object-cover`}
+                    >
                         <div className="w-full absolute bottom-0 px-[15px] pt-[55px] pb-[40px] bg-gradient-to-r from-[#fff0] to-[#ffffff]">
                             {/* <ul className="text-[14px] flex justify-center capitalize">
                                 <li className="relative">backpack</li>
@@ -391,7 +405,7 @@ function BlogDetail() {
                                 </li>
                             </ul> */}
                             <h2 className="my-[10px] text-[22px] text-[#222222] text-center font-[700]">
-                                DAVIES – Local brand nổi tiếng tại Việt Nam
+                                {detail?.title}
                             </h2>
                             <ul className="text-[14px] flex gap-4 justify-center">
                                 <li>
@@ -403,7 +417,7 @@ function BlogDetail() {
                                 <li>
                                     <div className="flex items-center">
                                         <BsCalendar4 className="w-[16px] h-[16px] mr-[3px]" />
-                                        <span>19/04/2022</span>
+                                        <span>{convertDate(detail?.create_at)}</span>
                                     </div>
                                 </li>
                                 <li>
@@ -417,32 +431,7 @@ function BlogDetail() {
                     </div>
 
                     {/* blog detail contain */}
-                    <div>
-                        <p className="text-[15px] mb-[12px] text-justify">
-                            <span className="w-[38px] h-[38px] mt-[8px] mr-[8px] flex items-center justify-center text-[56px] float-left">
-                                P
-                            </span>
-                            olo là một trong đồ local brand dường như đã trở thành trang phục cực hot không thể thiếu
-                            trong tủ đồ của mỗi người. Nhắc đến áo polo chúng ta nhớ đến những chiếc áo lịch sự, trang
-                            trọng giành cho các bạn nam. Nhưng ngày nay với sự phát triển mạnh mẽ của làn sóng thời
-                            trang trong nước, các mẫu áo polo càng ngày được cho ra đời càng nhiều đặc biệt là giành cho
-                            các bạn nữ. Hãy cùng điểm qua top 5 áo polo form rộng có cổ đang được yêu thích nhất hiện
-                            nay nhé
-                        </p>
-                        <p className="text-[15px] mb-[12px] text-justify">
-                            Áo polo form rộng có cổ là loại áo polo ưu tiên về chiều ngang, và có độ dài phủ qua mông.
-                            Mục đích thiết kế của áo polo form rộng là giúp người mặc trông năng động và thoải mái. Loại
-                            áo này không phân biệt dáng người, giới tính hay độ tuổi nên đối tượng nào cũng có thể mặc
-                            được.
-                        </p>
-                        <p className="text-[15px] mb-[12px] text-justify">
-                            Chất liệu vải thun cá sấu (lacoste) mềm mại, thấm hút mồ hôi tốt và có khả năng co giãn 4
-                            chiều, sử dụng kỹ thuật in tiên tiến mang đến hình ảnh sắc nét đẹp mắt. Bên cạnh đó, áo thun
-                            polo cổ bẻ lịch sự nhưng mang hơi thở hiện đại và năng động. Áo polo nhà DAVIES xứng đáng
-                            trở thành một trong những trang phục yêu thích của bạn.
-                        </p>
-                    </div>
-
+                    <div dangerouslySetInnerHTML={{ __html: detail.content }}></div>
                     {/* comments */}
                     <div>
                         <div className="mt-[40px] mb-[10px]">

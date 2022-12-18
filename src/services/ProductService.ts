@@ -8,7 +8,7 @@ const getAllProduct = async (
     from: number | string = '',
     to: number | string = '',
     perPage: number = 9,
-    category: number | null = null,
+    category: number | string = '',
 ) => {
     let dataAllProduct = await AxiosInstance.get(
         Config.apiUrl +

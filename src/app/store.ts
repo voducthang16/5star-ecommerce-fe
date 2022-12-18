@@ -4,6 +4,8 @@ import productReducer from '~/features/product/productSlice';
 import cartReducer from '~/features/cart/cartSlice';
 import userReducer from '~/features/user/userSlice';
 import categoryReducer from '~/features/category/categorySlice';
+import wishlistReducer from '~/features/wishlist/wishlistSlice';
+import blogReducer from '~/features/blog/blogSlice';
 import { persistStore, persistReducer, FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
@@ -18,6 +20,8 @@ const rootReducer = combineReducers({
     cart: cartReducer,
     user: userReducer,
     category: categoryReducer,
+    wishlist: wishlistReducer,
+    blog: blogReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
