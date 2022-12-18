@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { IoCloseOutline } from 'react-icons/io5';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import images from '~/assets/images';
 import { CodIcon, FastDeliveryIcon, SaveDeliveryIcon } from '~/components/Icons';
@@ -15,12 +15,13 @@ import { getCart, getCartAsync } from '~/features/cart/cartSlice';
 import { getUser } from '~/features/user/userSlice';
 import { InputField, TextareaField } from '~/layouts/components/CustomField';
 import CartService from '~/services/CartService';
+import OrderService from '~/services/OrderService';
 import { FormatPriceVND } from '~/utils/FormatPriceVND';
 import { ResponseType } from '~/utils/Types';
 import { orderCartSchema } from '~/utils/validationSchema';
 import './Cart.scss';
 type ValuesForm = {
-    fullName: string;
+    name: string;
     phone: string;
     email: string;
     address: string;
@@ -30,7 +31,7 @@ type ValuesForm = {
 };
 
 const initCheckoutForm = {
-    fullName: '',
+    name: '',
     phone: '',
     email: '',
     address: '',
@@ -42,18 +43,20 @@ const initCheckoutForm = {
 function Cart() {
     const [defaultValue, setDefaultValue] = useState<any>(initCheckoutForm);
     const [city, setCity] = useState([]);
-    const [cityName, setCityName] = useState('');
+    const [cityName, setCityName] = useState<any>();
     const [district, setDistrict] = useState([]);
-    const [districtName, setDistrictName] = useState('');
+    const [districtName, setDistrictName] = useState<any>();
     const [ward, setWard] = useState([]);
-    const [wardName, setWardName] = useState('');
+    const [wardName, setWardName] = useState<any>();
     const [typeShip, setTypeShip] = useState('');
     const [fee, setFee] = useState(0);
 
     const dispatch = useAppDispatch();
+    const Navigate = useNavigate();
     const toast = useToast();
     const listCart = useAppSelector(getCart);
     const infoUser: any = useAppSelector(getUser);
+    console.log('listCart: ', listCart);
 
     const totalMoney = listCart.reduce((a: any, b: any) => a + b.price, 0);
 
@@ -66,12 +69,21 @@ function Cart() {
     };
 
     const handlePatchValueOrder = () => {
-        setCityName('Tỉnh Long An');
-        let fullName = infoUser?.first_name + ' ' + infoUser?.last_name;
-        let email = infoUser.email;
-        let phone = infoUser.phone;
-        let newDefaultValues = { ...defaultValue, fullName, email, phone };
-        setDefaultValue(newDefaultValues);
+        let name = infoUser?.first_name + ' ' + infoUser?.last_name;
+        infoUser?.address.forEach((item: any) => {
+            if (item.isDefault) {
+                const { address, cityName, wardName, districtName, phone } = item;
+                console.log('cityName: ', cityName);
+                setCityName(cityName);
+                getDistrict(cityName?.code);
+                setDistrictName(districtName);
+                getWard(districtName?.code);
+                setWardName(wardName);
+                let email = infoUser.email;
+                let newDefaultValues = { name, email, address, cityName, wardName, districtName, phone };
+                setDefaultValue(newDefaultValues);
+            }
+        });
     };
 
     useEffect(() => {
@@ -142,9 +154,9 @@ function Cart() {
             const pick_province: string = 'Thành phố Hồ Chí Minh';
             // const pick_district: string = 'Thành phố Thủ Đức';
             // noi nhan hang
-            const province: string = cityName;
-            const district: string = districtName;
-            const ward: string = wardName;
+            const province: string = cityName.name;
+            const district: string = districtName.name;
+            const ward: string = wardName.name;
             // const address: string = '';
             const weight: number = 1000;
             const value: number = totalMoney;
@@ -168,22 +180,42 @@ function Cart() {
         }
     };
 
-    const handleSubmitForm = (values: ValuesForm) => {
-        console.log(values);
-
+    const handleSubmitForm = (values: any) => {
         let products: Array<any> = [];
         if (listCart.length > 0) {
             listCart.forEach((item: any) => {
                 products.push({ id_product: item.id, quantity: +item.quantity });
             });
+            let address = `${values.address}, ${values?.wardName.name}, ${values?.districtName?.name}, ${values?.cityName?.name}`;
             let dataSendRequest = {
-                ...values,
-                districtName,
-                cityName,
-                wardName,
+                address,
+                name: values.name,
+                phone: values.phone,
+                note: values.note,
                 products,
+                payment_method_id: +values?.payment,
+                total: totalMoney + fee,
             };
             console.log('dataSendRequest: ', dataSendRequest);
+            OrderService.CreateOrder(dataSendRequest).then((res: ResponseType) => {
+                console.log('res: ', res);
+                if (res.statusCode === 201) {
+                    toast({
+                        position: 'top-right',
+                        title: 'Đặt hàng thành công',
+                        duration: 1000,
+                        status: 'success',
+                    });
+                    console.log('+values?.payment: ', +values?.payment);
+                    if (+values?.payment === 3) {
+                        Navigate('/order-success');
+                    } else {
+                        OrderService.OrderVnPay(res.data.id).then((res) => {
+                            console.log(res);
+                        });
+                    }
+                }
+            });
         } else {
             toast({
                 position: 'top-right',
@@ -207,7 +239,7 @@ function Cart() {
                         <Formik
                             initialValues={defaultValue}
                             enableReinitialize={true}
-                            // validationSchema={orderCartSchema}
+                            validationSchema={orderCartSchema}
                             onSubmit={(values: ValuesForm) => handleSubmitForm(values)}
                         >
                             {(formik: FormikProps<ValuesForm>) => {
@@ -226,7 +258,7 @@ function Cart() {
                                         <div className="space-y-5">
                                             <div className="form-group grid gird-cols-1 md:grid-cols-2 gap-2">
                                                 <InputField
-                                                    name="fullName"
+                                                    name="name"
                                                     label="Họ và tên"
                                                     placeholder="Vd: Nguyễn Văn A"
                                                     className="flex-1"
@@ -253,12 +285,15 @@ function Cart() {
                                                     <select
                                                         className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
                                                         onChange={(e) => {
-                                                            setCityName(e.target.options[e.target.selectedIndex].text);
+                                                            setCityName({
+                                                                name: e.target.options[e.target.selectedIndex].id,
+                                                                code: +e.target.value,
+                                                            });
                                                             setDistrict([]);
                                                             setWard([]);
                                                             setDistrictName('');
                                                             setWardName('');
-                                                            getDistrict(+e.target.options[e.target.selectedIndex].id);
+                                                            getDistrict(+e.target.value);
                                                             setFee(0);
                                                             const element = document.querySelectorAll(
                                                                 "input[name='type_ship']",
@@ -269,42 +304,48 @@ function Cart() {
                                                                 }
                                                             });
                                                         }}
-                                                        value={cityName}
+                                                        value={+cityName?.code}
                                                     >
                                                         <option hidden>Tỉnh, Thành Phố</option>
                                                         {city?.map((item: any, index) => (
-                                                            <option key={index} id={item.code} value={item.name}>
+                                                            <option key={index} value={item.code} id={item.name}>
                                                                 {item.name}
                                                             </option>
                                                         ))}
                                                     </select>
                                                     <select
+                                                        value={+districtName?.code}
                                                         onChange={(e) => {
-                                                            setDistrictName(
-                                                                e.target.options[e.target.selectedIndex].text,
-                                                            );
+                                                            setDistrictName({
+                                                                name: e.target.options[e.target.selectedIndex].id,
+                                                                code: +e.target.value,
+                                                            });
                                                             setWard([]);
                                                             setWardName('');
-                                                            getWard(+e.target.options[e.target.selectedIndex].id);
+                                                            getWard(+e.target.value);
                                                         }}
                                                         className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
                                                     >
                                                         <option hidden>Quận, Huyện</option>
                                                         {district?.map((item: any, index) => (
-                                                            <option key={index} id={item.code} value={item.name}>
+                                                            <option key={index} value={item.code} id={item.name}>
                                                                 {item.name}
                                                             </option>
                                                         ))}
                                                     </select>
                                                     <select
+                                                        value={+wardName?.code}
                                                         onChange={(e) => {
-                                                            setWardName(e.target.options[e.target.selectedIndex].text);
+                                                            setWardName({
+                                                                name: e.target.options[e.target.selectedIndex].id,
+                                                                code: +e.target.value,
+                                                            });
                                                         }}
                                                         className="border border-slate-200 w-1/3 p-2 outline-none rounded-lg"
                                                     >
                                                         <option hidden>Xã, Phường</option>
                                                         {ward?.map((item: any, index) => (
-                                                            <option key={index} id={item.code} value={item.name}>
+                                                            <option key={index} value={item.code} id={item.name}>
                                                                 {item.name}
                                                             </option>
                                                         ))}
@@ -406,10 +447,10 @@ function Cart() {
                                                         className="hidden"
                                                         type="radio"
                                                         name="type_payment"
-                                                        value="cod"
+                                                        value="3"
                                                         id="cod"
                                                         onChange={(e) =>
-                                                            formik.setFieldValue('payment', e.target.value)
+                                                            formik.setFieldValue('payment', +e.target.value)
                                                         }
                                                     />
                                                     <label
@@ -459,9 +500,9 @@ function Cart() {
                                                         type="radio"
                                                         name="type_payment"
                                                         id="shopee"
-                                                        value="shopee"
+                                                        value="4"
                                                         onChange={(e) =>
-                                                            formik.setFieldValue('payment', e.target.value)
+                                                            formik.setFieldValue('payment', +e.target.value)
                                                         }
                                                     />
                                                     <label
@@ -487,7 +528,6 @@ function Cart() {
                                                 style: 'currency',
                                                 currency: 'VND',
                                             })}
-                                            (COD)
                                         </Button>
                                     </Form>
                                 );
@@ -593,11 +633,11 @@ function Cart() {
                                                     </div>
                                                     <div className="text-sm">
                                                         <h6 className="font-medium">
+                                                            {FormatPriceVND(cartItem?.price * +cartItem?.quantity)}
+                                                        </h6>
+                                                        <h6 className="text-slate-400">
                                                             {FormatPriceVND(cartItem?.price)}
                                                         </h6>
-                                                        <del className="text-slate-400">
-                                                            {FormatPriceVND(cartItem?.price + 9000)}
-                                                        </del>
                                                     </div>
                                                 </div>
                                             </div>

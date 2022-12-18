@@ -8,14 +8,14 @@ import { IoReorderThreeSharp } from 'react-icons/io5';
 import { MdOutlineDelete, MdOutlineManageAccounts } from 'react-icons/md';
 import { RiUserSharedLine } from 'react-icons/ri';
 import { TbUserCircle } from 'react-icons/tb';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import { FourSquaresIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Logo from '~/components/Logo';
 import Config from '~/config';
 import { getCart, getCartAsync, getProductInCart } from '~/features/cart/cartSlice';
-import { getUser } from '~/features/user/userSlice';
+import { getUser, resetUser } from '~/features/user/userSlice';
 import CartService from '~/services/CartService';
 import { ResponseType } from '~/utils/Types';
 import Search from '../Search';
@@ -25,6 +25,9 @@ function Header() {
     const listCart = useAppSelector(getCart);
     const productInCart = useAppSelector(getProductInCart);
     const infoUser: any = useAppSelector(getUser);
+
+    const Navigate = useNavigate();
+
     useEffect(() => {
         handleScroll();
     }, []);
@@ -39,6 +42,12 @@ function Header() {
                 dispatch(getCartAsync());
             }
         });
+    };
+
+    const handleLogout = () => {
+        Navigate('/login');
+        localStorage.removeItem('access_token');
+        dispatch(resetUser([]));
     };
 
     const handleSearch = (values: any) => {
@@ -203,7 +212,13 @@ function Header() {
                                                                     </li>
                                                                 )}
                                                                 {infoUser.length !== 0 && (
-                                                                    <li className="link-icon-header" onClick={onClose}>
+                                                                    <li
+                                                                        className="link-icon-header"
+                                                                        onClick={() => {
+                                                                            onClose();
+                                                                            handleLogout();
+                                                                        }}
+                                                                    >
                                                                         <span className="icon text-primary p-1 text-2xl mr-2">
                                                                             <FiLogOut />
                                                                         </span>
@@ -348,7 +363,15 @@ function Header() {
                                         className="hover:text-primary font-semibold duration-300 transition-all"
                                         to="/category"
                                     >
-                                        Danh mục
+                                        Sản phẩm
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink
+                                        className="hover:text-primary font-semibold duration-300 transition-all"
+                                        to="/blog"
+                                    >
+                                        Bài viết
                                     </NavLink>
                                 </li>
                                 <li>

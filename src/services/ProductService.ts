@@ -8,9 +8,12 @@ const getAllProduct = async (
     from: number | string = '',
     to: number | string = '',
     perPage: number = 9,
+    category: number | null = null,
 ) => {
     let dataAllProduct = await AxiosInstance.get(
-        Config.apiUrl + url + `?page=${page}&perPage=${perPage}&price_from=${from}&price_to=${to}`,
+        Config.apiUrl +
+            url +
+            `?page=${page}&perPage=${perPage}&price_from=${from}&price_to=${to}&id_category=${category}`,
     ).then((resAllProduct: any) => {
         if (resAllProduct.statusCode === 200) {
             resAllProduct.data.data.forEach((res: any) => {
