@@ -17,6 +17,7 @@ import ProductDetail from '~/pages/ProductDetail';
 import Register from '~/pages/Register';
 import StoreSystem from '~/pages/StoreSystem';
 import SizeGuide from '~/pages/SizeGuide';
+import Pending from '~/pages/Pending';
 interface Routes {
     path: string;
     Component: React.ComponentType | any;
@@ -122,6 +123,10 @@ const publicRoutes: Routes[] = [
         path: '*',
         Component: NotFound,
         layout: null,
+    },
+    {
+        path: 'pending',
+        Component: Pending,
     },
 ];
 
