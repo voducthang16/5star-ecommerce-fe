@@ -435,7 +435,7 @@ function BlogDetail() {
                     {/* comments */}
                     <div>
                         <div className="mt-[40px] mb-[10px]">
-                            <h3 className="text-[22px] font-[700]">Comments</h3>
+                            <h3 className="text-[22px] font-[700]">Bình luận</h3>
                         </div>
                         <div className="mt-[24px]">
                             <ul className="">
@@ -451,8 +451,8 @@ function BlogDetail() {
                                             </div>
 
                                             <div>
-                                                <h6 className="mb-[6px] text-[13px]">30 Jan, 2022</h6>
-                                                <h5 className="text-[15px] text-[#4a5568] font-[600]">Glenn Greer</h5>
+                                                <h6 className="mb-[6px] text-[13px]">10/18/2022</h6>
+                                                <h5 className="text-[15px] text-[#4a5568] font-[600]">Vo Duc Thang</h5>
                                             </div>
                                         </div>
 
@@ -472,7 +472,6 @@ function BlogDetail() {
                                         </p>
                                     </div>
                                 </li>
-
                                 <li>
                                     <div className="flex justify-between">
                                         <div className="flex">
@@ -500,14 +499,13 @@ function BlogDetail() {
 
                                     <div className="mt-[14px] mb-[35px]">
                                         <p className="text-[13px]">
-                                            "This proposal is a win-win situation which will cause a stellar paradigm
-                                            shift, and produce a multi-fold increase in deliverables a better
-                                            understanding"
+                                            Đề xuất này là một tình huống đôi bên cùng có lợi sẽ tạo ra một mô hình xuất
+                                            sắc thay đổi và tạo ra sự gia tăng gấp nhiều lần trong các sản phẩm tốt hơn
+                                            sự hiểu biết
                                         </p>
                                     </div>
                                 </li>
-
-                                {/* rep comment */}
+                                {/* rep comment
                                 <li className="ml-[32px]">
                                     <div className="flex justify-between">
                                         <div className="flex">
@@ -540,13 +538,13 @@ function BlogDetail() {
                                             understanding"
                                         </p>
                                     </div>
-                                </li>
+                                </li> */}
                             </ul>
                         </div>
                     </div>
 
                     {/* leave comment */}
-                    <div className="p-[18px] bg-[#f8f8f8]">
+                    {/* <div className="p-[18px] bg-[#f8f8f8]">
                         <div className="mb-[10px]">
                             <h3 className="text-[22px] text-[#4a5568] font-[700] capitalize">leave comment</h3>
                         </div>
@@ -594,7 +592,7 @@ function BlogDetail() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </section>

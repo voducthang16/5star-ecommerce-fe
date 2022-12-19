@@ -56,8 +56,6 @@ function Cart() {
     const toast = useToast();
     const listCart = useAppSelector(getCart);
     const infoUser: any = useAppSelector(getUser);
-    console.log('listCart: ', listCart);
-
     const totalMoney = listCart.reduce((a: any, b: any) => a + b.price, 0);
 
     const handleRemoveCart = (id: number) => {
@@ -70,20 +68,21 @@ function Cart() {
 
     const handlePatchValueOrder = () => {
         let name = infoUser?.first_name + ' ' + infoUser?.last_name;
-        infoUser?.address.forEach((item: any) => {
-            if (item.isDefault) {
-                const { address, cityName, wardName, districtName, phone } = item;
-                console.log('cityName: ', cityName);
-                setCityName(cityName);
-                getDistrict(cityName?.code);
-                setDistrictName(districtName);
-                getWard(districtName?.code);
-                setWardName(wardName);
-                let email = infoUser.email;
-                let newDefaultValues = { name, email, address, cityName, wardName, districtName, phone };
-                setDefaultValue(newDefaultValues);
-            }
-        });
+        if (Object.keys(infoUser?.address).length > 0) {
+            infoUser?.address?.forEach((item: any) => {
+                if (item.isDefault) {
+                    const { address, cityName, wardName, districtName, phone } = item;
+                    setCityName(cityName);
+                    getDistrict(cityName?.code);
+                    setDistrictName(districtName);
+                    getWard(districtName?.code);
+                    setWardName(wardName);
+                    let email = infoUser.email;
+                    let newDefaultValues = { name, email, address, cityName, wardName, districtName, phone };
+                    setDefaultValue(newDefaultValues);
+                }
+            });
+        }
     };
 
     useEffect(() => {
@@ -189,14 +188,13 @@ function Cart() {
             let address = `${values.address}, ${values?.wardName.name}, ${values?.districtName?.name}, ${values?.cityName?.name}`;
             let dataSendRequest = {
                 address,
-                name: values.name,
+                name: values?.name,
                 phone: values.phone,
                 note: values.note,
                 products,
                 payment_method_id: +values?.payment,
                 total: totalMoney + fee,
             };
-            console.log('dataSendRequest: ', dataSendRequest);
             OrderService.CreateOrder(dataSendRequest).then((res: ResponseType) => {
                 console.log('res: ', res);
                 if (res.statusCode === 201) {
@@ -206,12 +204,13 @@ function Cart() {
                         duration: 1000,
                         status: 'success',
                     });
-                    console.log('+values?.payment: ', +values?.payment);
-                    if (+values?.payment === 3) {
+                    if (+values?.payment === 1) {
                         Navigate('/order-success');
                     } else {
-                        OrderService.OrderVnPay(res.data.id).then((res) => {
-                            console.log(res);
+                        OrderService.OrderVnPay(res.data.id).then((res: ResponseType) => {
+                            if (res.statusCode === 200) {
+                                window.location.href = res.data;
+                            }
                         });
                     }
                 }
@@ -447,7 +446,7 @@ function Cart() {
                                                         className="hidden"
                                                         type="radio"
                                                         name="type_payment"
-                                                        value="3"
+                                                        value="1"
                                                         id="cod"
                                                         onChange={(e) =>
                                                             formik.setFieldValue('payment', +e.target.value)
@@ -500,7 +499,7 @@ function Cart() {
                                                         type="radio"
                                                         name="type_payment"
                                                         id="shopee"
-                                                        value="4"
+                                                        value="2"
                                                         onChange={(e) =>
                                                             formik.setFieldValue('payment', +e.target.value)
                                                         }

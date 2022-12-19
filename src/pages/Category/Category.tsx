@@ -190,7 +190,7 @@ function Category() {
                                         Áp dụng
                                     </button>
                                 </div>
-                                <div
+                                {/* <div
                                     className="pb-4 px-6 border-b border-slate-200"
                                     data-aos="fade-up"
                                     data-aos-delay="300"
@@ -246,7 +246,7 @@ function Category() {
                                 </div>
                                 <div className="pb-4 px-3">
                                     <h6 className="text-lg font-semibold pt-4">Màu</h6>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         <div className="col-span-12 lg:col-span-9">

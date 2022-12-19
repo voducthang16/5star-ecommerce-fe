@@ -368,7 +368,7 @@ function Home() {
                     </div>
                 </section>
                 {/* Best Accessories */}
-                <section className="container py-10 lg:py-24 ">
+                {/* <section className="container py-10 lg:py-24 ">
                     <div className="title-heading my-5 text-center mb-10">
                         <h3 className="uppercase font-bold text-4xl" data-aos="fade-up" data-aos-delay="200">
                             Thương hiệu yêu thích
@@ -443,7 +443,7 @@ function Home() {
                             <Image className="w-full object-contain" src={images.b_banner} alt={'Best Accessories'} />
                         </div>
                     </div>
-                </section>
+                </section> */}
             </div>
         </>
     );

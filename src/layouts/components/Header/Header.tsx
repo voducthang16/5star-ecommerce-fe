@@ -396,7 +396,7 @@ function Header() {
                     </div>
                 </div>
                 {/* MENU */}
-                <div className="hidden lg:block navbar container h-16">
+                <div className="menu-header hidden lg:block navbar container h-16">
                     <div className="grid grid-cols-8 gap-4 h-16">
                         <div className="col-span-2 flex items-center space-x-4">
                             <FourSquaresIcon width={16} height={16} />
@@ -406,7 +406,7 @@ function Header() {
                             <ul className="flex text-base space-x-8">
                                 <li>
                                     <NavLink
-                                        className="hover:text-primary font-semibold duration-300 transition-all"
+                                        className="nav-menu hover:text-primary font-semibold duration-300 transition-all"
                                         to="/"
                                     >
                                         Trang chủ
@@ -420,7 +420,7 @@ function Header() {
 
                                 <li>
                                     <NavLink
-                                        className="hover:text-primary font-semibold duration-300 transition-all"
+                                        className="hover:text-primary nav-menu font-semibold duration-300 transition-all"
                                         to="/about"
                                     >
                                         Giới thiệu
@@ -428,7 +428,7 @@ function Header() {
                                 </li>
                                 <li>
                                     <NavLink
-                                        className="hover:text-primary font-semibold duration-300 transition-all"
+                                        className="hover:text-primary nav-menu font-semibold duration-300 transition-all"
                                         to="/category"
                                     >
                                         Sản phẩm
@@ -436,7 +436,7 @@ function Header() {
                                 </li>
                                 <li>
                                     <NavLink
-                                        className="hover:text-primary font-semibold duration-300 transition-all"
+                                        className="hover:text-primary nav-menu font-semibold duration-300 transition-all"
                                         to="/blog"
                                     >
                                         Bài viết
@@ -444,7 +444,7 @@ function Header() {
                                 </li>
                                 <li>
                                     <NavLink
-                                        className="hover:text-primary font-semibold duration-300 transition-all"
+                                        className="hover:text-primary nav-menu font-semibold duration-300 transition-all"
                                         to="/contact"
                                     >
                                         Liên hệ
