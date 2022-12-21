@@ -11,7 +11,7 @@ import images from '~/assets/images';
 import { CodIcon, FastDeliveryIcon, SaveDeliveryIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Config from '~/config';
-import { getCart, getCartAsync } from '~/features/cart/cartSlice';
+import { getCart, getCartAsync, getTotalCart, setFee, getFee, clearFee } from '~/features/cart/cartSlice';
 import { getUser } from '~/features/user/userSlice';
 import { InputField, TextareaField } from '~/layouts/components/CustomField';
 import CartService from '~/services/CartService';
@@ -48,16 +48,16 @@ function Cart() {
     const [districtName, setDistrictName] = useState<any>();
     const [ward, setWard] = useState([]);
     const [wardName, setWardName] = useState<any>();
-    const [typeShip, setTypeShip] = useState('');
-    const [fee, setFee] = useState(0);
-
     const dispatch = useAppDispatch();
     const Navigate = useNavigate();
     const toast = useToast();
     const listCart = useAppSelector(getCart);
     const infoUser: any = useAppSelector(getUser);
-    const totalMoney = listCart.reduce((a: any, b: any) => a + b.price, 0);
 
+    // redux
+    const totalCart = useAppSelector(getTotalCart);
+    const fee = useAppSelector(getFee);
+    // end
     const handleRemoveCart = (id: number) => {
         CartService.deleteCart(id).then((res: ResponseType) => {
             if (res.statusCode === 200) {
@@ -146,7 +146,7 @@ function Cart() {
             .catch((err) => console.log(err));
     };
 
-    const feeShip = () => {
+    const feeShip = (type: string) => {
         if (cityName === '' || districtName === '' || wardName === '') {
         } else {
             // noi giao hang
@@ -158,9 +158,9 @@ function Cart() {
             const ward: string = wardName.name;
             // const address: string = '';
             const weight: number = 1000;
-            const value: number = totalMoney;
+            const value: number = totalCart;
             // fly, road
-            const transport: string = typeShip;
+            const transport: string = type;
 
             axios
                 .get(
@@ -173,7 +173,7 @@ function Cart() {
                     },
                 )
                 .then((res) => {
-                    setFee(res.data.fee.fee);
+                    dispatch(setFee(res.data.fee.fee));
                 })
                 .catch((err) => console.log(err));
         }
@@ -193,7 +193,7 @@ function Cart() {
                 note: values.note,
                 products,
                 payment_method_id: +values?.payment,
-                total: totalMoney + fee,
+                total: totalCart + fee,
             };
             OrderService.CreateOrder(dataSendRequest).then((res: ResponseType) => {
                 console.log('res: ', res);
@@ -204,6 +204,7 @@ function Cart() {
                         duration: 1000,
                         status: 'success',
                     });
+                    dispatch(clearFee());
                     if (+values?.payment === 1) {
                         Navigate('/order-success');
                     } else {
@@ -246,12 +247,6 @@ function Cart() {
                                     <Form className="space-y-5">
                                         <div className="flex flex-wrap space-y-4 lg:space-y-0 flex-col-reverse lg:flex-row justify-between items-center">
                                             <h5 className="text-2xl font-bold">Thông tin vận chuyển</h5>
-                                            <p className="text-base">
-                                                Bạn đã có tài khoản?{' '}
-                                                <Link className="text-primary font-semibold" to={'/login'}>
-                                                    Đăng nhập ngay
-                                                </Link>
-                                            </p>
                                         </div>
 
                                         <div className="space-y-5">
@@ -293,7 +288,7 @@ function Cart() {
                                                             setDistrictName('');
                                                             setWardName('');
                                                             getDistrict(+e.target.value);
-                                                            setFee(0);
+                                                            dispatch(clearFee());
                                                             const element = document.querySelectorAll(
                                                                 "input[name='type_ship']",
                                                             ) as any;
@@ -374,8 +369,7 @@ function Cart() {
                                             <div className="space-y-4">
                                                 <div
                                                     onClick={() => {
-                                                        setTypeShip('road');
-                                                        feeShip();
+                                                        feeShip('road');
                                                     }}
                                                     className="group"
                                                 >
@@ -406,8 +400,7 @@ function Cart() {
                                                 </div>
                                                 <div
                                                     onClick={() => {
-                                                        setTypeShip('fly');
-                                                        feeShip();
+                                                        feeShip('fly');
                                                     }}
                                                     className="group"
                                                 >
@@ -523,7 +516,7 @@ function Cart() {
                                         </div>
                                         <Button colorScheme="teal" type="submit" className="!w-full !py-6">
                                             Thanh toán {` `}
-                                            {(totalMoney + fee).toLocaleString('it-IT', {
+                                            {(totalCart + fee).toLocaleString('it-IT', {
                                                 style: 'currency',
                                                 currency: 'VND',
                                             })}
@@ -553,9 +546,12 @@ function Cart() {
                                         </div>
                                         <div className="flex-1 flex flex-col justify-between">
                                             <div>
-                                                <h6 className="text-base font-semibold mr-6">
+                                                <Link
+                                                    to={`/product/${cartItem?.product?.slug}`}
+                                                    className="text-base font-semibold mr-6"
+                                                >
                                                     {cartItem?.product?.name}
-                                                </h6>
+                                                </Link>
                                                 <div className="text-base font-light flex items-center space-x-2">
                                                     <p className="color flex items-center">
                                                         {cartItem?.classify_1 && (
@@ -671,7 +667,7 @@ function Cart() {
                             <p className="flex justify-between">
                                 <span>Tạm tính</span>
                                 <span className="text-right">
-                                    {FormatPriceVND(totalMoney)}
+                                    {FormatPriceVND(totalCart)}
 
                                     {/* <br /> (tiết kiệm 80k) */}
                                 </span>
@@ -689,8 +685,8 @@ function Cart() {
                             <p className="flex justify-between text-sm">
                                 <span>Tổng</span>
                                 <span className="text-right">
-                                    <span className="!text-2xl">{FormatPriceVND(totalMoney + fee)}</span> <br />
-                                    <span className="!text-xs text-red-500">(Đã giảm 21% trên giá gốc)</span>
+                                    <span className="!text-2xl">{FormatPriceVND(totalCart + fee)}</span> <br />
+                                    {/* <span className="!text-xs text-red-500">(Đã giảm 21% trên giá gốc)</span> */}
                                 </span>
                             </p>
                         </div>

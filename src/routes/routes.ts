@@ -36,6 +36,10 @@ const publicRoutes: Routes[] = [
         Component: Category,
     },
     {
+        path: '/search/',
+        Component: Category,
+    },
+    {
         path: '/category/:slug',
         Component: Category,
     },
@@ -54,6 +58,10 @@ const publicRoutes: Routes[] = [
     },
     {
         path: '/my-account/info',
+        Component: MyAccount,
+    },
+    {
+        path: '/my-account/address',
         Component: MyAccount,
     },
     {

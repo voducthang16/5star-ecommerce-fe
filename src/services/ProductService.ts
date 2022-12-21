@@ -86,9 +86,46 @@ const getOneProduct = async (slug: string) => {
     return result;
 };
 
+const searchProduct = async (keyword: string = '') => {
+    let searchProduct = await AxiosInstance.get(Config.apiUrl + url + `?name=${keyword}`).then((resAllProduct: any) => {
+        if (resAllProduct.statusCode === 200) {
+            resAllProduct.data.data.forEach((res: any) => {
+                let hash: any = {};
+                let hash2: any = {};
+                res.stocks.forEach((stock: any) => {
+                    if (!hash[stock?.classify_1?.attribute]) {
+                        hash[stock?.classify_1?.attribute] = stock.id_classify_1;
+                    }
+                    if (!hash2[stock?.classify_2?.attribute]) {
+                        hash2[stock?.classify_2?.attribute] = stock.id_classify_2;
+                    }
+                });
+                res.classify_1 = hash;
+                Object.keys(res.classify_1).forEach(
+                    (key) => res.classify_1[key] === null && delete res.classify_1[key],
+                );
+                res.classify_2 = hash2;
+                Object.keys(res.classify_2).forEach(
+                    (key) => res.classify_2[key] === null && delete res.classify_2[key],
+                );
+                if (Object.entries(res.classify_1).length > 0 && Object.entries(res.classify_2).length > 0) {
+                    res.classify_n = 2;
+                } else if (Object.entries(res.classify_1).length === 0 && Object.entries(res.classify_2).length === 0) {
+                    res.classify_n = 0;
+                } else {
+                    res.classify_n = 1;
+                }
+            });
+            return resAllProduct;
+        }
+    });
+    return searchProduct;
+};
+
 const ProductService = {
     getAllProduct,
     getOneProduct,
+    searchProduct,
 };
 
 export default ProductService;

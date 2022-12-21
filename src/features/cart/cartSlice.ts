@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import CartService from '~/services/CartService';
 import { RootState } from '../../app/store';
 
@@ -10,12 +10,16 @@ interface productCartState {
 export interface CartState {
     value: Array<any>;
     product: Array<productCartState>;
+    fee: number;
+    total: number;
     status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: CartState = {
     value: [],
     product: [],
+    fee: 0,
+    total: 0,
     status: 'idle',
 };
 
@@ -37,6 +41,12 @@ export const cartSlice = createSlice({
             );
             state.product = newQuantityCart;
         },
+        setFee: (state, action: PayloadAction<number>) => {
+            state.fee = action.payload;
+        },
+        clearFee: (state) => {
+            state.fee = 0;
+        },
     },
 
     extraReducers: (builder) => {
@@ -50,9 +60,13 @@ export const cartSlice = createSlice({
     },
 });
 
-export const { addToCart, updateToCart } = cartSlice.actions;
+export const { addToCart, updateToCart, setFee, clearFee } = cartSlice.actions;
 
 export const getCart = (state: RootState) => state.cart.value;
+
+export const getFee = (state: RootState) => state.cart.fee;
+export const getTotalCart = (state: RootState) =>
+    state.cart.value.reduce((a: any, b: any) => a + b.price * b.quantity, 0);
 
 export const getProductInCart = (state: RootState) => state.cart.product;
 

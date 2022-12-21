@@ -6,6 +6,7 @@ import userReducer from '~/features/user/userSlice';
 import categoryReducer from '~/features/category/categorySlice';
 import wishlistReducer from '~/features/wishlist/wishlistSlice';
 import blogReducer from '~/features/blog/blogSlice';
+import orderReducer from '~/features/order/orderSlice';
 import { persistStore, persistReducer, FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
     category: categoryReducer,
     wishlist: wishlistReducer,
     blog: blogReducer,
+    order: orderReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
