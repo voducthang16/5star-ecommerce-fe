@@ -29,6 +29,8 @@ const MyAccount = () => {
         const pathLink = location.pathname.split('/')[2];
         switch (pathLink) {
             case 'wish-list':
+                return 3;
+            case 'address':
                 return 2;
             case 'info':
                 return 0;
@@ -154,7 +156,7 @@ const MyAccount = () => {
                                             Danh sách đơn hàng
                                         </Tab>
                                     </NavLink>
-                                    <NavLink to="">
+                                    <NavLink to="/my-account/address">
                                         <Tab
                                             className="tab-col-item"
                                             _selected={{

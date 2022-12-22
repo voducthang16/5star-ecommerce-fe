@@ -1,8 +1,53 @@
-import { Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import { Badge, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import { RiVipCrown2Line } from 'react-icons/ri';
 import ModalViewOrder from './ModalViewOrder';
+import { useAppDispatch, useAppSelector } from '~/app/hooks';
+import { getOrderAsync, getOrder } from '~/features/order/orderSlice';
+import { getUser } from '~/features/user/userSlice';
+import { useEffect } from 'react';
+import { convertDate } from '~/pages/Blog/Blog';
+import { FormatPriceVND } from '~/utils/FormatPriceVND';
 
 const Order = () => {
+    const dispatch = useAppDispatch();
+    const infoUser: any = useAppSelector(getUser);
+    const order = useAppSelector(getOrder);
+    console.log(order);
+    useEffect(() => {
+        if (infoUser.length !== 0) {
+            dispatch(getOrderAsync(+infoUser?.id));
+        }
+    }, []);
+    const handleStatus = (status: number) => {
+        let resultStatus: any = { name: '', scheme: '' };
+        switch (status) {
+            case 1:
+                resultStatus.name = 'Chưa xử lý';
+                resultStatus.scheme = 'red';
+                break;
+            case 2:
+                resultStatus.name = 'Đang xử lý';
+                resultStatus.scheme = 'yellow';
+                break;
+            case 3:
+                resultStatus.name = 'Đang giao hàng';
+                resultStatus.scheme = 'blue';
+                break;
+            case 4:
+                resultStatus.name = 'Thành công';
+                resultStatus.scheme = 'green';
+                break;
+            case 5:
+                resultStatus.name = 'Hủy';
+                resultStatus.scheme = 'red';
+                break;
+            default:
+                resultStatus.name = 'Chưa xử lý';
+                resultStatus.scheme = 'red';
+                break;
+        }
+        return resultStatus;
+    };
     return (
         <div className="tab-order bg-[#f8f8f8] p-6 rounded-md shadow-sm">
             <div className="title inline-block">
@@ -17,39 +62,47 @@ const Order = () => {
             <div className="content-order">
                 <div className="card p-4 py-6 rounded-lg my-3">
                     <div className="table-responsive">
-                        <TableContainer>
-                            <Table variant="simple">
-                                <Thead>
-                                    <Tr>
-                                        <Th>Mã Đơn Hàng</Th>
-                                        <Th>Ngày Đặt Hàng</Th>
-                                        <Th>Trạng thái</Th>
-                                        <Th>Tổng tiền</Th>
-                                        <Th>Hành động</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody className="text-lg">
-                                    <Tr>
-                                        <Td>#29</Td>
-                                        <Td>11/08/2022</Td>
-                                        <Td>Đang giao</Td>
-                                        <Td>739.000đ</Td>
-                                        <Td>
-                                            <ModalViewOrder />
-                                        </Td>
-                                    </Tr>
-                                    <Tr>
-                                        <Td>#9283</Td>
-                                        <Td>11/08/2022</Td>
-                                        <Td>Đang giao</Td>
-                                        <Td>739.000đ</Td>
-                                        <Td>
-                                            <ModalViewOrder />
-                                        </Td>
-                                    </Tr>
-                                </Tbody>
-                            </Table>
-                        </TableContainer>
+                        {order.length > 0 ? (
+                            <>
+                                <TableContainer>
+                                    <Table variant="simple">
+                                        <Thead>
+                                            <Tr>
+                                                <Th>Mã Đơn Hàng</Th>
+                                                <Th>Ngày Đặt Hàng</Th>
+                                                <Th>Trạng thái</Th>
+                                                <Th>Tổng tiền</Th>
+                                                <Th>Hành động</Th>
+                                            </Tr>
+                                        </Thead>
+                                        <Tbody className="text-lg">
+                                            {order?.map((item: any, index: number) => (
+                                                <Tr key={index}>
+                                                    <Td>#{item.id}</Td>
+                                                    <Td>{convertDate(item.create_at)}</Td>
+                                                    <Td>
+                                                        <Badge
+                                                            py={2}
+                                                            px={3}
+                                                            borderRadius="15px !important"
+                                                            colorScheme={handleStatus(item?.status).scheme}
+                                                        >
+                                                            {handleStatus(item?.status).name}
+                                                        </Badge>
+                                                    </Td>
+                                                    <Td>{FormatPriceVND(item.total)}</Td>
+                                                    <Td>
+                                                        <ModalViewOrder id={item?.id} />
+                                                    </Td>
+                                                </Tr>
+                                            ))}
+                                        </Tbody>
+                                    </Table>
+                                </TableContainer>
+                            </>
+                        ) : (
+                            'Chưa có đơn hàng'
+                        )}
                     </div>
                 </div>
             </div>

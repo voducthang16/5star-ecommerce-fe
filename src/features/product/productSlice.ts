@@ -17,6 +17,7 @@ export interface ProductProps {
 export interface ProductState {
     value: Array<ProductProps>;
     detail: any;
+    search: Array<ProductProps>;
     total: number;
     status: 'idle' | 'loading' | 'failed';
 }
@@ -25,6 +26,7 @@ const initialState: ProductState = {
     value: [],
     total: 0,
     detail: {},
+    search: [],
     status: 'idle',
 };
 
@@ -39,6 +41,14 @@ export const fetchProductAsync = createAsyncThunk('product/fetchProducts', async
 export const fetchDetailProductAsync = createAsyncThunk('product/fetchDetailProducts', async (slug: string) => {
     const response = await ProductService.getOneProduct(slug);
     return response.data;
+});
+
+export const searchProductAsync = createAsyncThunk('product/searchProducts', async (keyword: any) => {
+    // const { page, keyword } = filter;
+    const response: ResponseType = await ProductService.searchProduct(keyword);
+    if (response.statusCode === 200) {
+        return response.data;
+    }
 });
 
 export const productSlice = createSlice({
@@ -61,6 +71,10 @@ export const productSlice = createSlice({
             .addCase(fetchDetailProductAsync.fulfilled, (state, action) => {
                 state.status = 'idle';
                 state.detail = action.payload;
+            })
+            .addCase(searchProductAsync.fulfilled, (state, action: any) => {
+                state.status = 'idle';
+                state.search = action.payload.data;
             });
     },
 });
@@ -70,4 +84,5 @@ export const productSlice = createSlice({
 export const getProducts = (state: RootState) => state.product.value;
 export const totalProduct = (state: RootState) => state.product.total;
 export const getDetail = (state: RootState) => state.product.detail;
+export const getSearch = (state: RootState) => state.product.search;
 export default productSlice.reducer;

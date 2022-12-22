@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { IoMdClose } from 'react-icons/io';
 import ReactPaginate from 'react-paginate';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import CurrencyInput from 'react-currency-input-field';
 import Breadcrumb from '~/components/Breadcrumb';
@@ -17,7 +17,7 @@ import {
 } from '~/features/category/categorySlice';
 
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
-import { fetchProductAsync, getProducts, totalProduct } from '~/features/product/productSlice';
+import { fetchProductAsync, getProducts, getSearch, totalProduct } from '~/features/product/productSlice';
 import Product from '~/layouts/components/Product';
 import './Category.scss';
 
@@ -27,6 +27,14 @@ function Category() {
     const [pageNumber, setPageNumber] = useState<number>(0);
     const [fromToPrice, setFromToPrice] = useState<any>({ from: '', to: '' });
     const { slug } = useParams();
+    // search
+    const location = useLocation();
+    let keyword: any = '';
+    if (location.search) {
+        keyword = location.search.substring(9);
+    }
+    const getSearchList = useAppSelector(getSearch);
+
     const dispatch = useAppDispatch();
     const products = useAppSelector(getProducts);
     const totalCountProduct = useAppSelector(totalProduct);
@@ -85,11 +93,20 @@ function Category() {
         <>
             <Helmet>
                 <meta charSet="utf-8" />
-                <title>Danh mục</title>
+                {keyword === '' ? <title>Danh mục</title> : <title>Tìm kiếm</title>}
             </Helmet>
             <div className="category-page">
-                <Breadcrumb page={slug ? `${slug}` : 'Tất cả'} parentPage="Danh mục" share={false} />
+                <Breadcrumb
+                    page={slug ? `${slug}` : keyword === '' ? 'Tất cả' : 'Tìm kiếm'}
+                    parentPage={keyword === '' ? 'Danh mục' : ''}
+                    share={false}
+                />
                 <div className="container pb-20">
+                    {keyword !== '' && (
+                        <div className="mb-2">
+                            <h5 className="text-lg font-semibold">Kết quả tìm kiếm: {keyword}</h5>
+                        </div>
+                    )}
                     <div className="grid grid-cols-12 gap-5">
                         <div
                             className="filters-wrapper hidden
@@ -262,43 +279,81 @@ function Category() {
                             </div>
                             <div className="product-list">
                                 <div className="grid grid-cols-12 gap-4">
-                                    {products.length > 0 &&
-                                        products?.map((item: any, index) => (
-                                            <div
-                                                key={index}
-                                                className="col-span-12 md:col-span-4"
-                                                data-aos="zoom-in-down"
-                                                data-aos-delay="200"
-                                            >
-                                                <Product
-                                                    idProduct={item.id}
-                                                    name={item.name}
-                                                    slug={item.slug}
-                                                    color={item.classify_1}
-                                                    size={item.classify_2}
-                                                    type={item.classify_n}
-                                                    images={item.images}
-                                                    stocks={item.stocks}
-                                                />
-                                            </div>
-                                        ))}
+                                    {getSearchList ? (
+                                        <>
+                                            {getSearchList.length > 0 ? (
+                                                <>
+                                                    {getSearchList?.map((item: any, index) => (
+                                                        <div
+                                                            key={index}
+                                                            className="col-span-12 md:col-span-4"
+                                                            data-aos="zoom-in-down"
+                                                            data-aos-delay="200"
+                                                        >
+                                                            <Product
+                                                                idProduct={item.id}
+                                                                name={item.name}
+                                                                slug={item.slug}
+                                                                color={item.classify_1}
+                                                                size={item.classify_2}
+                                                                type={item.classify_n}
+                                                                images={item.images}
+                                                                stocks={item.stocks}
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </>
+                                            ) : (
+                                                <div className="col-span-12">Không tìm thấy sản phẩm</div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {products.length > 0 &&
+                                                products?.map((item: any, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="col-span-12 md:col-span-4"
+                                                        data-aos="zoom-in-down"
+                                                        data-aos-delay="200"
+                                                    >
+                                                        <Product
+                                                            idProduct={item.id}
+                                                            name={item.name}
+                                                            slug={item.slug}
+                                                            color={item.classify_1}
+                                                            size={item.classify_2}
+                                                            type={item.classify_n}
+                                                            images={item.images}
+                                                            stocks={item.stocks}
+                                                        />
+                                                    </div>
+                                                ))}
+                                        </>
+                                    )}
                                 </div>
                                 <div className="pagination-feature">
-                                    {totalPage > 0 && (
-                                        <div className="pagination-feature flex">
-                                            <ReactPaginate
-                                                previousLabel={<BiChevronLeft className="inline text-xl" />}
-                                                nextLabel={<BiChevronRight className="inline text-xl" />}
-                                                pageCount={totalPage}
-                                                onPageChange={handlePageChange}
-                                                activeClassName={'page-item active'}
-                                                disabledClassName={'page-item disabled'}
-                                                containerClassName={'pagination'}
-                                                previousLinkClassName={'page-link'}
-                                                nextLinkClassName={'page-link'}
-                                                pageLinkClassName={'page-link'}
-                                            />
-                                        </div>
+                                    {getSearchList ? (
+                                        <></>
+                                    ) : (
+                                        <>
+                                            {totalPage > 0 && (
+                                                <div className="pagination-feature flex">
+                                                    <ReactPaginate
+                                                        previousLabel={<BiChevronLeft className="inline text-xl" />}
+                                                        nextLabel={<BiChevronRight className="inline text-xl" />}
+                                                        pageCount={totalPage}
+                                                        onPageChange={handlePageChange}
+                                                        activeClassName={'page-item active'}
+                                                        disabledClassName={'page-item disabled'}
+                                                        containerClassName={'pagination'}
+                                                        previousLinkClassName={'page-link'}
+                                                        nextLinkClassName={'page-link'}
+                                                        pageLinkClassName={'page-link'}
+                                                    />
+                                                </div>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </div>
