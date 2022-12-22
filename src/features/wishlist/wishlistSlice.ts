@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import GetWishlist from '~/services/WishlistService';
 import { ResponseType } from '~/utils/Types';
 import { RootState } from '../../app/store';
@@ -33,7 +33,13 @@ export const getWishlistAsync = createAsyncThunk('wishlist/getWishlist', async (
 export const wishlistSlice = createSlice({
     name: 'wishlist',
     initialState,
-    reducers: {},
+    reducers: {
+        remove: (state, { payload }: PayloadAction<number>) => {
+            const removeProduct = state.value.find((item: any) => item.id === payload) as any;
+            const index = state.value.indexOf(removeProduct);
+            state.value.splice(index, 1);
+        },
+    },
     extraReducers: (builder) => {
         builder
             // .addCase(fetchProductAsync.pending, (state) => {
@@ -49,7 +55,7 @@ export const wishlistSlice = createSlice({
     },
 });
 
-// export const { increment, decrement, incrementByAmount } = productSlice.actions;
+export const { remove } = wishlistSlice.actions;
 
 export const getWishlist = (state: RootState) => state.wishlist.value;
 export default wishlistSlice.reducer;

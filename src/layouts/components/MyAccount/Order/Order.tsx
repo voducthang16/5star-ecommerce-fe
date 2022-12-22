@@ -12,7 +12,6 @@ const Order = () => {
     const dispatch = useAppDispatch();
     const infoUser: any = useAppSelector(getUser);
     const order = useAppSelector(getOrder);
-    console.log(order);
     useEffect(() => {
         if (infoUser.length !== 0) {
             dispatch(getOrderAsync(+infoUser?.id));

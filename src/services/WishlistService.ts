@@ -17,6 +17,7 @@ const deleteProductInWishlist = (id: any) => {
 const WishlistService = {
     GetWishlist,
     createWishlist,
+    deleteProductInWishlist,
 };
 
 export default WishlistService;

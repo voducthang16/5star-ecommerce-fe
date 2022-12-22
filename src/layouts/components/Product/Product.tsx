@@ -235,7 +235,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
                                                 title: 'Thông báo',
                                                 description: 'Thêm vào danh sách yêu thích',
                                                 status: 'success',
-                                                position: 'top-right',
+                                                position: 'bottom-right',
                                                 duration: 3000,
                                                 isClosable: true,
                                             });
