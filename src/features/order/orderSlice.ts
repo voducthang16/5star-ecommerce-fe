@@ -50,7 +50,7 @@ export const orderSlice = createSlice({
             // })
             .addCase(getOrderAsync.fulfilled, (state, action: any) => {
                 state.status = 'idle';
-                state.value = action.payload;
+                state.value = action.payload.data;
             })
             .addCase(getOrderDetailAsync.fulfilled, (state, action: any) => {
                 state.status = 'idle';

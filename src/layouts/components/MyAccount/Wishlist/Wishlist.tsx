@@ -2,12 +2,17 @@ import { RiVipCrown2Line } from 'react-icons/ri';
 import { DeleteIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
-import { getWishlist, getWishlistAsync } from '~/features/wishlist/wishlistSlice';
+import { getWishlist, remove } from '~/features/wishlist/wishlistSlice';
 import './Wishlist.scss';
+import WishlistService from '~/services/WishlistService';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import Config from '~/config';
+import { useToast } from '@chakra-ui/react';
 const Wishlist = () => {
     const dispatch = useAppDispatch();
     const wishlist = useAppSelector(getWishlist);
+    const toast = useToast();
     return (
         <div className="tab-wishlist bg-[#f8f8f8] p-6 rounded-md shadow-sm">
             <div className="title inline-block">
@@ -20,30 +25,44 @@ const Wishlist = () => {
                 </span>
             </div>
             <div>
-                {wishlist.length > 0 ? (
+                {wishlist?.length > 0 ? (
                     <>
-                        {wishlist.map((item: any, index) => (
+                        {wishlist?.map((item: any, index) => (
                             <div
                                 key={index}
                                 className="flex flex-col md:flex-row items-center space-y-4 py-4 border-b border-slate-200"
                             >
                                 <Image
                                     className="w-[160px] lg:w-40 mr-4 rounded-lg"
-                                    src="https://i.imgur.com/TnQejuQ.jpg"
+                                    src={`${Config.apiUrl}upload/${item?.products.images[0].file_name}`}
                                     alt="Product"
                                 />
                                 <div className="flex-1 flex flex-col justify-around items-center md:items-baseline">
-                                    <Link
-                                        to={`/product/${item.stocks.product.slug}`}
-                                        className="text-2xl font-semibold"
-                                    >
-                                        {item.stocks.product.name}
+                                    <Link to={`/product/${item?.products.slug}`} className="text-xl font-semibold">
+                                        {item?.products.name}
                                     </Link>
                                     <h6 className="text-lg font-normal">Thể Thao</h6>
-                                    <span className="text-base text-secondary">{item.stocks.price}</span>
+                                    {/* <span className="text-base text-secondary">{item?.price}</span> */}
                                 </div>
                                 <div className="ml-4">
                                     <div
+                                        onClick={() => {
+                                            WishlistService.deleteProductInWishlist(item?.id)
+                                                .then((res: any) => {
+                                                    if (res.data.affected === 1) {
+                                                        toast({
+                                                            title: 'Thông báo',
+                                                            description: 'Xóa thành công',
+                                                            status: 'success',
+                                                            position: 'bottom-right',
+                                                            duration: 3000,
+                                                            isClosable: true,
+                                                        });
+                                                        dispatch(remove(item?.id));
+                                                    }
+                                                })
+                                                .catch((err) => console.log(err));
+                                        }}
                                         className="flex items-center text-lg space-x-4 py-1 px-4 group transition-all hover:bg-[#f34770] hover:text-white
                         text-[#f34770] rounded-lg border border-[#f34770] cursor-pointer"
                                     >
