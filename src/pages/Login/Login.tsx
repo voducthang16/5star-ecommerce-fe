@@ -17,7 +17,7 @@ import { RiLockPasswordLine } from 'react-icons/ri';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '~/app/hooks';
 import images from '~/assets/images';
-
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import Image from '~/components/Image';
 import Logo from '~/components/Logo';
 import { addUser } from '~/features/user/userSlice';
@@ -69,6 +69,10 @@ const Login = () => {
                 console.log(err);
             },
         );
+    };
+
+    const responseFacebook = (response: any) => {
+        console.log(response);
     };
 
     const HandleTogglePassword = () => {
@@ -194,9 +198,25 @@ const Login = () => {
                                         <p className="text-base text-tbase">Hoặc đăng nhập với :</p>
                                         <div className="login-social flex gap-2 grid-cols-2 w-full flex-wrap md:flex-nowrap">
                                             <div className="facebook w-full">
-                                                <Button colorScheme="facebook" width="100%">
-                                                    <MdOutlineFacebook className="text-xl mx-1" /> Facebook
-                                                </Button>
+                                                <FacebookLogin
+                                                    appId="694046029102732"
+                                                    //  autoLoad={true}
+                                                    fields="name,email,picture"
+                                                    callback={responseFacebook}
+                                                    render={(renderProps: any) => {
+                                                        return (
+                                                            <Button
+                                                                colorScheme="facebook"
+                                                                width="100%"
+                                                                onClick={renderProps.onClick}
+                                                            >
+                                                                <MdOutlineFacebook className="text-xl mx-1" /> Facebook
+                                                            </Button>
+                                                        );
+                                                    }}
+                                                    //  cssClass="my-facebook-button-class"
+                                                    //  icon="fa-facebook"
+                                                ></FacebookLogin>
                                             </div>
                                             <div className="google w-full">
                                                 <Button colorScheme="red" width="100%">
