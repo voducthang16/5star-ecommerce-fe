@@ -7,6 +7,7 @@ import {
     Box,
     Button,
     useDisclosure,
+    useToast,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { AiFillHeart, AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
@@ -37,6 +38,10 @@ import {
     ModalCloseButton,
 } from '@chakra-ui/react';
 import SizeGuideComp from '~/layouts/components/SizeGuideComp';
+import { getUser } from '~/features/user/userSlice';
+import CartService from '~/services/CartService';
+import { ResponseType } from '~/utils/Types';
+import { addToCart, getProductInCart, updateToCart } from '~/features/cart/cartSlice';
 function ProductDetail() {
     const dispatch = useAppDispatch();
     const detail = useAppSelector(getDetail);
@@ -46,7 +51,9 @@ function ProductDetail() {
     const [paginationImage, setPaginationImage] = useState<any>('');
     const { slug } = useParams();
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [imgInCart, setImgInCart] = useState<any>('');
     const products = useAppSelector(getProducts);
+
     const location = useLocation();
     useEffect(() => {
         dispatch(fetchProductAsync({}));
@@ -56,6 +63,8 @@ function ProductDetail() {
         dispatch(fetchDetailProductAsync(slug!));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    const infoUser: any = useAppSelector(getUser);
+    const productAddCart = useAppSelector(getProductInCart);
 
     const handleQuantity = (type: string) => {
         if (type === 'asc') {
@@ -82,8 +91,9 @@ function ProductDetail() {
     detail?.stocks?.forEach((item: any) => {
         money.push(item.price);
     });
-
-    const img = detail.images;
+    const toast = useToast();
+    const img = detail?.images;
+    console.log(img);
     // custom bullets
 
     const [width, setWidth] = useState(0);
@@ -105,6 +115,125 @@ function ProductDetail() {
             </span>`;
             return string;
         },
+    };
+
+    const requestAddToCart = (idStock: number) => {
+        let dataSendRequest: any = {
+            id_product: idStock,
+            quantity: quantity,
+            image: imgInCart,
+        };
+        CartService.addToCart(dataSendRequest).then((res: ResponseType) => {
+            if (res.statusCode === 201) {
+                const existProduct = productAddCart.find((item: any) => item.id_product === idStock);
+                if (existProduct) {
+                    let dataRedux: any = {
+                        id_product: idStock,
+                        quantity: existProduct.quantity + quantity,
+                    };
+                    dispatch(updateToCart(dataRedux));
+                } else {
+                    dispatch(addToCart(dataSendRequest));
+                }
+                toast({
+                    title: 'Thông báo',
+                    description: 'Thêm vào giỏ hàng',
+                    status: 'success',
+                    position: 'bottom-right',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            }
+        });
+    };
+
+    const handleAddToCart = (e: any, idProduct: number, type: number) => {
+        e.preventDefault();
+        if (infoUser.length === 0) {
+            toast({
+                title: 'Thông báo',
+                description: 'Vui lòng đăng nhập',
+                status: 'warning',
+                position: 'top-right',
+                duration: 3000,
+                isClosable: true,
+            });
+            return;
+        }
+        let idColor: number = 0;
+        let idSize: number = 0;
+        let idAttr: number = 0;
+        const colorArray = document.querySelectorAll('.color');
+        colorArray.forEach((item: any) => {
+            if (item.checked === true) {
+                idColor = +item.value;
+            }
+        });
+        const sizeArray = document.querySelectorAll('.size');
+        sizeArray.forEach((item: any) => {
+            if (item.checked === true) {
+                idSize = +item.value;
+            }
+        });
+
+        if (type === 0) {
+            const find_product = products.find((item: any) => item.id === idProduct) as any;
+            let stockProduct = find_product?.stocks;
+            if (stockProduct?.length === 1) {
+                let idAttr = stockProduct[0].id;
+                requestAddToCart(idAttr);
+            }
+        } else if (type === 1) {
+            if (idColor) {
+                const find_product = products.find((item: any) => item.id === idProduct) as any;
+                idAttr = find_product.stocks.find((item: any) => item.id_classify_1 === idColor).id;
+                requestAddToCart(idAttr);
+            } else {
+                toast({
+                    title: 'Thông báo',
+                    description: 'Vui lòng chọn màu',
+                    status: 'warning',
+                    position: 'top-right',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            }
+        } else if (type === 2) {
+            if (idColor && idSize) {
+                const find_product = products.find((item: any) => item.id === idProduct) as any;
+                idAttr = find_product.stocks.find(
+                    (item: any) => item.id_classify_1 === idColor && item.id_classify_2 === idSize,
+                ).id;
+                requestAddToCart(idAttr);
+            } else if (idSize) {
+                toast({
+                    title: 'Thông báo',
+                    description: 'Vui lòng chọn màu',
+                    status: 'warning',
+                    position: 'top-right',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            } else if (idColor) {
+                toast({
+                    title: 'Thông báo',
+                    description: 'Vui lòng chọn size',
+                    status: 'warning',
+                    position: 'top-right',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            } else {
+                toast({
+                    title: 'Thông báo',
+                    description: 'Vui lòng chọn thuộc tính',
+                    status: 'warning',
+                    position: 'top-right',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            }
+        }
     };
 
     return loading ? (
@@ -144,7 +273,7 @@ function ProductDetail() {
                     </div>
                     <div className="col-span-12 lg:col-span-5">
                         <div className="space-y-4 mt-4 lg:mt-0 px-7 lg:px-0">
-                            <h3 className="text-2xl font-bold">{detail.name}</h3>
+                            <h3 className="text-2xl font-bold">{detail?.name}</h3>
                             <h4 className="text-base font-normal flex items-center space-x-2">
                                 <PackageIcon width={16} height={16} className="mr-2" />
                                 Tình trạng:<span className="inline-block text-[#29b474]">Còn hàng</span>
@@ -153,7 +282,7 @@ function ProductDetail() {
                                 <Rate className="flex space-x-1" average={3.7} />
                                 <span className="ml-1 inline-block text-sm text-[#aeb4be]">(17)</span>
                                 <span className="ml-2 inline-block text-sm text-[#aeb4be]">
-                                    Đã bán (web): {detail.sold}
+                                    Đã bán (web): {detail?.sold}
                                 </span>
                             </div>
                             <div className="flex space-x-4 text-base items-end">
@@ -174,6 +303,9 @@ function ProductDetail() {
                                                     name="color"
                                                     id={`c_${detail.id}_${value}`}
                                                     value={value}
+                                                    onClick={() => {
+                                                        setImgInCart(img[index].file_name);
+                                                    }}
                                                 />
                                                 <label
                                                     className="color-label bg-white cursor-pointer relative inline-block w-8 h-8 border-[3px] border-slate-400 shadow-sm rounded-full"
@@ -266,6 +398,7 @@ function ProductDetail() {
                             </div>
                             <div className="flex items-center space-x-4 pb-6">
                                 <Button
+                                    onClick={(e) => handleAddToCart(e, detail?.id, detail?.classify_n)}
                                     rightIcon={<HiOutlineShoppingCart />}
                                     colorScheme="teal"
                                     size="lg"
@@ -296,7 +429,7 @@ function ProductDetail() {
                                     </AccordionButton>
                                 </h2>
                                 <AccordionPanel pb={4} className="text-base bg-gray-100 rounded-md text-left !p-4">
-                                    <p dangerouslySetInnerHTML={{ __html: detail.description }}></p>
+                                    <p dangerouslySetInnerHTML={{ __html: detail?.description }}></p>
                                 </AccordionPanel>
                             </AccordionItem>
                             <AccordionItem border="none">
