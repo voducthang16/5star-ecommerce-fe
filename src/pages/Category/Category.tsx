@@ -1,12 +1,13 @@
 import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import CurrencyInput from 'react-currency-input-field';
 import { Helmet } from 'react-helmet-async';
 import { IoMdClose } from 'react-icons/io';
+import { TiThSmall } from 'react-icons/ti';
 import ReactPaginate from 'react-paginate';
-import { useParams, useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
-import CurrencyInput from 'react-currency-input-field';
 import Breadcrumb from '~/components/Breadcrumb';
 import { AccessoriesIcon, BagIcon, JeansIcon, ShirtIcon, ShoesIcon, WatchIcon } from '~/components/Icons';
 import {
@@ -17,9 +18,11 @@ import {
 } from '~/features/category/categorySlice';
 
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
-import { fetchProductAsync, getProducts, getSearch, totalProduct } from '~/features/product/productSlice';
+import LoadingSpin from '~/components/LoadingSpin';
+import { fetchProductAsync, getProducts, getStatusFetchProduct, totalProduct } from '~/features/product/productSlice';
 import Product from '~/layouts/components/Product';
 import './Category.scss';
+import { AiOutlineFilter } from 'react-icons/ai';
 
 const PER_PAGE = 9;
 
@@ -33,10 +36,9 @@ function Category() {
     if (location.search) {
         keyword = location.search.substring(9);
     }
-    const getSearchList = useAppSelector(getSearch);
-
     const dispatch = useAppDispatch();
     const products = useAppSelector(getProducts);
+    const loadingStatus = useAppSelector(getStatusFetchProduct);
     const totalCountProduct = useAppSelector(totalProduct);
     const category = useAppSelector(getCategory);
     const subCategory = useAppSelector(getSubCategory);
@@ -71,6 +73,18 @@ function Category() {
             page: pageNumber,
             fromPrice,
             toPrice,
+        };
+        dispatch(fetchProductAsync(requestParams));
+    };
+
+    const handleFilterCategory = (id: number | string) => {
+        const fromPrice = fromToPrice.from;
+        const toPrice = fromToPrice.to;
+        let requestParams = {
+            page: pageNumber,
+            fromPrice,
+            toPrice,
+            id_category: id,
         };
         dispatch(fetchProductAsync(requestParams));
     };
@@ -114,15 +128,22 @@ function Category() {
                         lg:rounded-xl overflow-y-auto lg:overflow-y-hidden
                         "
                         >
-                            <div className="lg:px-2 lg:shadow-inner">
+                            <div className="lg:px-2 lg:shadow-inner" data-aos="fade-up">
                                 <div className="filter-title lg:hidden px-6 py-2 border-b border-slate-200 flex justify-between items-center text-2xl">
-                                    <h4>Filters</h4>
+                                    <h4>Lọc</h4>
                                     <div className="cursor-pointer hide-filters">
                                         <IoMdClose />
                                     </div>
                                 </div>
-                                <div className="pb-4 px-6 border-b border-slate-200" data-aos="fade-up">
+                                <div className="pb-4 px-6 border-b border-slate-200">
                                     <h6 className="text-lg font-semibold pt-4">Danh mục</h6>
+                                    <div
+                                        className="filter-all px-5 mt-5 flex cursor-pointer"
+                                        onClick={() => handleFilterCategory('')}
+                                    >
+                                        <TiThSmall className="ml-[5px] mr-2 text-xl text-primary mb-3" />
+                                        <p>Tất cả</p>
+                                    </div>
                                     <Accordion allowToggle px={5} borderBottom="transparent">
                                         {category?.map((item: any, index: number) => (
                                             <AccordionItem key={index} borderTop={0}>
@@ -147,16 +168,12 @@ function Category() {
                                                 </AccordionButton>
 
                                                 <div className="sub-category border-l-2 border-primary ml-[44px]">
-                                                    <AccordionPanel py="4px">
-                                                        <p
-                                                            className="flex justify-between text-gray-500 hover:text-primary transition-all 
-                                                        duration-300 cursor-pointer text-base"
-                                                        >
-                                                            <span>Xem Tất Cả</span>
-                                                        </p>
-                                                    </AccordionPanel>
                                                     {fetchCategoryNoParent(item.id)?.map((sub: any, index: number) => (
-                                                        <AccordionPanel py="4px" key={index}>
+                                                        <AccordionPanel
+                                                            py="4px"
+                                                            key={index}
+                                                            onClick={() => handleFilterCategory(sub?.id)}
+                                                        >
                                                             <p className="flex justify-between text-gray-500  cursor-pointer text-base">
                                                                 <motion.span
                                                                     whileHover={{
@@ -176,17 +193,14 @@ function Category() {
                                         ))}
                                     </Accordion>
                                 </div>
-                                <div
-                                    className="pb-4 px-6 border-b border-slate-200"
-                                    data-aos="fade-up"
-                                    data-aos-delay="300"
-                                >
+                                <div className="pb-4 px-6 border-b border-slate-200">
                                     <h6 className="text-lg font-semibold pt-4">Giá</h6>
                                     <div className="flex h-[40px] mb-2 gap-2">
                                         <CurrencyInput
                                             placeholder="Từ"
                                             className="input flex-1 border rounded-md"
                                             decimalsLimit={2}
+                                            value={fromToPrice?.from || ''}
                                             onValueChange={(value) =>
                                                 setFromToPrice({ ...fromToPrice, from: Number(value) })
                                             }
@@ -195,17 +209,28 @@ function Category() {
                                             placeholder="Đến"
                                             className="input flex-1 border rounded-md"
                                             decimalsLimit={2}
+                                            value={fromToPrice?.to || ''}
                                             onValueChange={(value) =>
                                                 setFromToPrice({ ...fromToPrice, to: Number(value) })
                                             }
                                         />
                                     </div>
-                                    <button
-                                        className="bg-primary text-center text-base w-full py-3 text-white rounded-lg"
-                                        onClick={applyFilterPrice}
-                                    >
-                                        Áp dụng
-                                    </button>
+                                    <div className="btn-action flex gap-2">
+                                        <button
+                                            className="bg-primary text-center text-base w-full py-3 text-white rounded-lg"
+                                            onClick={applyFilterPrice}
+                                        >
+                                            Áp dụng
+                                        </button>
+                                        {fromToPrice?.from && (
+                                            <button
+                                                className="bg-red-500 text-center text-base w-full py-3 text-white rounded-lg"
+                                                onClick={() => setFromToPrice({ from: '', to: '' })}
+                                            >
+                                                Hủy
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                                 {/* <div
                                     className="pb-4 px-6 border-b border-slate-200"
@@ -266,98 +291,70 @@ function Category() {
                                 </div> */}
                             </div>
                         </div>
-                        <div className="col-span-12 lg:col-span-9">
-                            {/* top right */}
-                            <div className="text-base mb-4">
-                                <span>Sắp xếp theo: </span>
-                                <select name="" id="">
-                                    <option value="1">Giá</option>
-                                    <option value="1">abc</option>
-                                    <option value="1">abc</option>
-                                    <option value="1">abc</option>
-                                </select>
-                            </div>
-                            <div className="product-list">
-                                <div className="grid grid-cols-12 gap-4">
-                                    {getSearchList ? (
-                                        <>
-                                            {getSearchList.length > 0 ? (
-                                                <>
-                                                    {getSearchList?.map((item: any, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="col-span-12 md:col-span-4"
-                                                            data-aos="zoom-in-down"
-                                                            data-aos-delay="200"
-                                                        >
-                                                            <Product
-                                                                idProduct={item.id}
-                                                                name={item.name}
-                                                                slug={item.slug}
-                                                                color={item.classify_1}
-                                                                size={item.classify_2}
-                                                                type={item.classify_n}
-                                                                images={item.images}
-                                                                stocks={item.stocks}
-                                                            />
-                                                        </div>
-                                                    ))}
-                                                </>
-                                            ) : (
-                                                <div className="col-span-12">Không tìm thấy sản phẩm</div>
-                                            )}
-                                        </>
-                                    ) : (
-                                        <>
-                                            {products.length > 0 &&
-                                                products?.map((item: any, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="col-span-12 md:col-span-4"
-                                                        data-aos="zoom-in-down"
-                                                        data-aos-delay="200"
-                                                    >
-                                                        <Product
-                                                            idProduct={item.id}
-                                                            name={item.name}
-                                                            slug={item.slug}
-                                                            color={item.classify_1}
-                                                            size={item.classify_2}
-                                                            type={item.classify_n}
-                                                            images={item.images}
-                                                            stocks={item.stocks}
-                                                        />
-                                                    </div>
-                                                ))}
-                                        </>
-                                    )}
+                        {loadingStatus === 'loading' ? (
+                            <LoadingSpin className="col-span-6" />
+                        ) : (
+                            <div className="col-span-12 lg:col-span-9">
+                                {/* top right */}
+                                <div className="text-base mb-4">
+                                    <span>Sắp xếp theo: </span>
+                                    <select name="" id="">
+                                        <option value="1">Giá</option>
+                                        <option value="1">abc</option>
+                                        <option value="1">abc</option>
+                                        <option value="1">abc</option>
+                                    </select>
                                 </div>
-                                <div className="pagination-feature">
-                                    {getSearchList ? (
-                                        <></>
-                                    ) : (
-                                        <>
-                                            {totalPage > 0 && (
-                                                <div className="pagination-feature flex">
-                                                    <ReactPaginate
-                                                        previousLabel={<BiChevronLeft className="inline text-xl" />}
-                                                        nextLabel={<BiChevronRight className="inline text-xl" />}
-                                                        pageCount={totalPage}
-                                                        onPageChange={handlePageChange}
-                                                        activeClassName={'page-item active'}
-                                                        disabledClassName={'page-item disabled'}
-                                                        containerClassName={'pagination'}
-                                                        previousLinkClassName={'page-link'}
-                                                        nextLinkClassName={'page-link'}
-                                                        pageLinkClassName={'page-link'}
+                                <div className="product-list">
+                                    <div className="grid grid-cols-12 gap-4">
+                                        {products.length > 0 &&
+                                            products?.map((item: any, index: number) => (
+                                                <div
+                                                    key={index}
+                                                    className="col-span-12 md:col-span-4"
+                                                    data-aos="zoom-in-down"
+                                                    data-aos-delay="200"
+                                                >
+                                                    <Product
+                                                        idProduct={item.id}
+                                                        name={item.name}
+                                                        slug={item.slug}
+                                                        color={item.classify_1}
+                                                        size={item.classify_2}
+                                                        type={item.classify_n}
+                                                        images={item.images}
+                                                        stocks={item.stocks}
                                                     />
                                                 </div>
-                                            )}
-                                        </>
-                                    )}
+                                            ))}
+                                        {products.length === 0 && (
+                                            <p className="col-span-12 text-2xl font-semibold text-center">
+                                                Không có sản phẩm nào
+                                                <AiOutlineFilter className="inline-block text-3xl text-red-500" />
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className="pagination-feature">
+                                        {totalPage > 0 && (
+                                            <div className="pagination-feature flex">
+                                                <ReactPaginate
+                                                    previousLabel={<BiChevronLeft className="inline text-xl" />}
+                                                    nextLabel={<BiChevronRight className="inline text-xl" />}
+                                                    pageCount={totalPage}
+                                                    onPageChange={handlePageChange}
+                                                    activeClassName={'page-item active'}
+                                                    disabledClassName={'page-item disabled'}
+                                                    containerClassName={'pagination'}
+                                                    previousLinkClassName={'page-link'}
+                                                    nextLinkClassName={'page-link'}
+                                                    pageLinkClassName={'page-link'}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -1,9 +1,7 @@
 import { Button, Popover, PopoverContent, PopoverTrigger, Tooltip, useToast } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { AiOutlineHeart, AiOutlineShoppingCart, AiOutlineUser } from 'react-icons/ai';
-import { BiMessageSquareCheck } from 'react-icons/bi';
 import { FiLogOut } from 'react-icons/fi';
-import { IoMdNotificationsOutline } from 'react-icons/io';
 import { IoReorderThreeSharp } from 'react-icons/io5';
 import { MdOutlineDelete, MdOutlineManageAccounts } from 'react-icons/md';
 import { RiUserSharedLine } from 'react-icons/ri';
@@ -507,7 +505,7 @@ const handleScroll = () => {
 
     document.addEventListener('scroll', () => {
         const header = document.querySelector('.header');
-        header!.classList.toggle('sticky', window.scrollY > 200);
+        header?.classList.toggle('sticky', window.scrollY > 200);
 
         if (document.querySelector('.header-scroll')) {
             const headerScroll = document.querySelector('.header-scroll');

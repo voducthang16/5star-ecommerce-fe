@@ -56,7 +56,7 @@ function ProductDetail() {
 
     const location = useLocation();
     useEffect(() => {
-        dispatch(fetchProductAsync({}));
+        dispatch(fetchProductAsync({ page: 0 }));
     }, [dispatch]);
 
     useEffect(() => {
