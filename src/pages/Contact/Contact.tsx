@@ -1,10 +1,59 @@
-import { Button } from '@chakra-ui/react';
+import { Button, useToast } from '@chakra-ui/react';
 import { BsChevronRight, BsClock, BsEnvelope, BsGeoAlt, BsTelephone } from 'react-icons/bs';
 import { MdOutlineAttachEmail } from 'react-icons/md';
 import Breadcrumb from '~/components/Breadcrumb';
 import { Helmet } from 'react-helmet-async';
-
+import Config from '~/config';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import ContactService from '~/services/ContactService';
 function Contact() {
+    const [list, setList] = useState([]);
+
+    const getStoreSystem = () => {
+        axios
+            .get(`${Config.apiUrl}store-system?perPage=3`)
+            .then((res: any) => {
+                if (res.data.statusCode === 200) {
+                    setList(res.data.data.data);
+                }
+            })
+            .catch((err) => console.log(err));
+    };
+    useEffect(() => {
+        getStoreSystem();
+    }, []);
+    const toast = useToast();
+    const onSubmit = (e: any) => {
+        e.preventDefault();
+        const name = document.querySelector('#name') as any;
+        const mail = document.querySelector('#name') as any;
+        const phone = document.querySelector('#phone') as any;
+        const message = document.querySelector('#message') as any;
+        const data = {
+            name: name.value,
+            address: '',
+            email: mail.value,
+            message: message.value,
+            phone: phone.value,
+        };
+        ContactService.Contact(data)
+            .then((res) => {
+                toast({
+                    title: 'Thông báo',
+                    description: 'Cảm ơn bạn đã liên hệ. Chúng tôi sẽ trả lời sớm nhất',
+                    status: 'success',
+                    position: 'top-right',
+                    duration: 3000,
+                    isClosable: true,
+                });
+                name.value = '';
+                message.value = '';
+                mail.value = '';
+                phone.value = '';
+            })
+            .catch((err) => console.log(err));
+    };
     return (
         <>
             <Helmet>
@@ -87,7 +136,7 @@ function Contact() {
                         </h4>
 
                         <div className="md:flex justify-center">
-                            {[1, 2, 3].map((item, index) => (
+                            {list?.map((item: any, index) => (
                                 <div
                                     key={index}
                                     className="store-item pt-[24px] md:px-[15px]"
@@ -100,7 +149,7 @@ function Contact() {
                                         alt=""
                                     />
                                     <div className="p-[20px] pb-[0] shadow-slate-800 text-left">
-                                        <h6 className="mb-[12px] text-[18px] font-semibold">Thành phố Hồ Chí Minh</h6>
+                                        <h6 className="mb-[12px] text-[18px] font-semibold">{item.name}</h6>
                                         <ul>
                                             <li
                                                 className="mb-[12px] pb-[16px] flex text-[14px] border-b border-solid border-[#e3e9ef]"
@@ -109,7 +158,7 @@ function Contact() {
                                                 <BsGeoAlt className="text-primary text-3xl text-[20px]" />
                                                 <div className="pl-[16px] text-base">
                                                     <span>Địa chỉ</span>
-                                                    <p>603 Quang Trung, Quận Gò Vấp, Thành Phố Hồ Chí Minh</p>
+                                                    <p>{item.address}</p>
                                                 </div>
                                             </li>
                                             <li
@@ -119,7 +168,7 @@ function Contact() {
                                                 <BsTelephone className="text-primary text-3xl text-[20px]" />
                                                 <div className="pl-[16px] text-base">
                                                     <span>Liên hệ</span>
-                                                    <p>+1 (786) 322 560 40</p>
+                                                    <p>{item.phone}</p>
                                                 </div>
                                             </li>
                                             <li
@@ -129,7 +178,7 @@ function Contact() {
                                                 <MdOutlineAttachEmail className="text-primary text-3xl text-[20px]" />
                                                 <div className="pl-[16px] text-base">
                                                     <span>Email</span>
-                                                    <p>5star@fashion.com</p>
+                                                    <p>{item.email}</p>
                                                 </div>
                                             </li>
                                         </ul>
@@ -162,7 +211,7 @@ function Contact() {
                         <h2 className="mb-[24px] text-[24px] font-medium">
                             Để lại thông tin cho chúng tôi sẽ liên hệ sớm nhất
                         </h2>
-                        <div>
+                        <form onSubmit={onSubmit}>
                             <div className="md:flex justify-between">
                                 <div className="md:w-[50%]">
                                     <div className="mb-[16px]">
@@ -173,6 +222,7 @@ function Contact() {
                                             Họ và tên <span className="text-[#f34770]">*</span>
                                         </label>
                                         <input
+                                            id="name"
                                             className="relative md:text-[18px] text-[14px] text-[#85888a] w-full md:py-[15px] py-[14px] px-[16px] border-solid border-[1px] border-[rgba(0,0,0,.085)] bg-[#f8f9fa] outline-none focus:text-[#07142e] focus-visible:border-[#e59700]"
                                             type="text"
                                             placeholder="Nguyễn Văn A"
@@ -183,9 +233,10 @@ function Contact() {
                                             className="font-medium block mb-[14px] md:text-[18px] text-[14px] text-[#07142e]"
                                             htmlFor=""
                                         >
-                                            Dịa chỉ email <span className="text-[#f34770]">*</span>
+                                            Địa chỉ email <span className="text-[#f34770]">*</span>
                                         </label>
                                         <input
+                                            id="mail"
                                             className="relative md:text-[18px] text-[14px] text-[#85888a] w-full md:py-[15px] py-[14px] px-[16px] border-solid border-[1px] border-[rgba(0,0,0,.085)] bg-[#f8f9fa] outline-none focus:text-[#07142e] focus-visible:border-[#e59700]"
                                             type="email"
                                             placeholder="contact@gmail.com"
@@ -199,9 +250,10 @@ function Contact() {
                                             Số điện thoại <span className="text-[#f34770]">*</span>
                                         </label>
                                         <input
+                                            id="phone"
                                             className="relative md:text-[18px] text-[14px] text-[#85888a] w-full md:py-[15px] py-[14px] px-[16px] border-solid border-[1px] border-[rgba(0,0,0,.085)] bg-[#f8f9fa] outline-none focus:text-[#07142e] focus-visible:border-[#e59700]"
                                             type="text"
-                                            placeholder="+1 (212) 00 000 000"
+                                            placeholder="033456789"
                                         />
                                     </div>
                                 </div>
@@ -214,17 +266,17 @@ function Contact() {
                                             Tin nhắn
                                         </label>
                                         <textarea
+                                            id="message"
                                             className="w-full h-[158px] md:h-[300px] border-solid border-[1px] border-[rgba(0,0,0,.085)] text-[14px] p-[16px] bg-[#f8f9fa]"
-                                            id="cf-message"
                                             placeholder="Nội dung tin nhắn"
                                         ></textarea>
                                     </div>
                                 </div>
                             </div>
-                            <Button colorScheme="teal" size="lg" padding="0px 40px">
+                            <Button type="submit" colorScheme="teal" size="lg" padding="0px 40px">
                                 Gửi
                             </Button>
-                        </div>
+                        </form>
                     </section>
                 </div>
             </div>

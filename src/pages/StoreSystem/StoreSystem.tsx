@@ -13,7 +13,7 @@ function StoreSystem() {
         axios
             .get(`${Config.apiUrl}store-system`)
             .then((res: any) => {
-                if (res.data.data.statusCode === 200) {
+                if (res.data.statusCode === 200) {
                     setList(res.data.data.data);
                 }
             })
