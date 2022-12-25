@@ -14,7 +14,7 @@ const getAllProduct = async ({
     let dataAllProduct = await AxiosInstance.get(
         Config.apiUrl +
             url +
-            `?page=${page}&perPage=${perPage}&price_from=${fromPrice}&price_to=${toPrice}&id_category=${id_category}&name=${name}`,
+            `?page=${page}&perPage=${perPage}&price_from=${fromPrice}&price_to=${toPrice}&id_category=${id_category}&name=${name}&status=1`,
     ).then((resAllProduct: any) => {
         if (resAllProduct.statusCode === 200) {
             resAllProduct.data.data.forEach((res: any) => {

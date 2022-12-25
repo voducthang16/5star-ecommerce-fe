@@ -42,10 +42,12 @@ import { getUser } from '~/features/user/userSlice';
 import CartService from '~/services/CartService';
 import { ResponseType } from '~/utils/Types';
 import { addToCart, getProductInCart, updateToCart } from '~/features/cart/cartSlice';
+import RatingService from '~/services/RatingService';
+import { convertDate } from '../Blog/Blog';
 function ProductDetail() {
     const dispatch = useAppDispatch();
     const detail = useAppSelector(getDetail);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [filled, setFilled] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [paginationImage, setPaginationImage] = useState<any>('');
@@ -53,6 +55,7 @@ function ProductDetail() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [imgInCart, setImgInCart] = useState<any>('');
     const products = useAppSelector(getProducts);
+    const [listRating, setListRating] = useState<any>([]);
 
     const location = useLocation();
     useEffect(() => {
@@ -62,7 +65,7 @@ function ProductDetail() {
     useEffect(() => {
         dispatch(fetchDetailProductAsync(slug!));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [slug]);
     const infoUser: any = useAppSelector(getUser);
     const productAddCart = useAppSelector(getProductInCart);
 
@@ -82,18 +85,15 @@ function ProductDetail() {
         let quantity = +e.target.value;
         setQuantity(quantity);
     };
-    const lengthImage = detail?.images?.length;
 
     const color = Object.entries(detail?.classify_1 || {});
     const size = Object.entries(detail?.classify_2 || {});
     const money: Array<any> = [];
-
     detail?.stocks?.forEach((item: any) => {
         money.push(item.price);
     });
     const toast = useToast();
     const img = detail?.images;
-    console.log(img);
     // custom bullets
 
     const [width, setWidth] = useState(0);
@@ -111,7 +111,7 @@ function ProductDetail() {
         renderBullet: function (index: number, className: any) {
             let string = '';
             string += `<span class=${className}>
-                <img src='${Config.apiUrl}upload/${img[index].file_name}'/>
+                <img src='${Config.apiUrl}upload/${detail?.images[index].file_name}'/>
             </span>`;
             return string;
         },
@@ -235,7 +235,41 @@ function ProductDetail() {
             }
         }
     };
-
+    const [average, setAverage] = useState(0);
+    const filterRate = (id: any, rate: any) => {
+        if (average > 0) {
+            RatingService.filterRateProduct(id, rate)
+                .then((res: any) => {
+                    setListRating(res.data.data);
+                    setAverage(res.data.data.reduce((a: any, b: any) => a + b.rating, 0) / res.data.data.length);
+                })
+                .catch((err) => console.log(err));
+        }
+    };
+    const getRating = () => {
+        RatingService.GetRateByIdProduct(detail?.id)
+            .then((res: any) => {
+                setAverage(res.data.data.reduce((a: any, b: any) => a + b.rating, 0) / res.data.data.length);
+                setListRating(res.data.data);
+            })
+            .catch((err) => console.log(err));
+        // RatingService.GetAverageRating(detail?.id)
+        //     .then((res: any) => {
+        //         if (res.data.data.length > 0) {
+        //             setAverage(res.data.rating);
+        //         } else {
+        //             setAverage(0);
+        //         }
+        //     })
+        //     .catch((err) => console.log(err));
+    };
+    useEffect(() => {
+        getRating();
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000);
+    }, [detail?.id]);
+    const [filterBg, setFilterBg] = useState(0);
     return loading ? (
         <Loading />
     ) : (
@@ -248,7 +282,7 @@ function ProductDetail() {
                             <div style={{ height: `${filled}%` }} className={`progressbar`}></div>
                             <Swiper
                                 onSlideChange={(item) => {
-                                    setFilled(+(((1 + item.realIndex) / lengthImage) * 100).toFixed(2));
+                                    setFilled(+(((1 + item.realIndex) / detail?.images.length) * 100).toFixed(2));
                                 }}
                                 direction={width > 0 ? 'vertical' : 'horizontal'}
                                 slidesPerView={1}
@@ -454,51 +488,69 @@ function ProductDetail() {
             <section className="container pb-10 lg:pb-20">
                 <div className="grid grid-cols-12 gap-5 py-10 lg:py-20 border-b border-slate-200">
                     <div className="col-span-12 lg:col-span-4">
-                        <h6 className="text-2xl text-gray-800 font-bold mb-4">70 Đánh giá</h6>
+                        <h6 className="text-2xl text-gray-800 font-bold mb-4">{listRating.length} Đánh giá</h6>
                         <div className="flex text-base items-center space-x-2">
-                            <Rate className="flex space-x-1" average={4.5} />
-                            <span>4.5</span>
+                            <Rate className="flex space-x-1" average={average || 0} />
+                            <span>{(average || 0).toFixed(2)}</span>
                         </div>
                     </div>
-                    <div className="col-span-12 lg:col-span-8 flex flex-wrap items-center justify-start gap-2 text-base">
-                        <div className="w-24 py-2 my-2 font-semibold text-center rounded-lg border border-slate-500">
+                    <div className="col-span-12 lg:col-span-8 flex flex-wrap items-center justify-start lg:justify-end gap-2 text-base">
+                        <div
+                            onClick={() => {
+                                getRating();
+                                setFilterBg(0);
+                            }}
+                            className={`cursor-pointer ${
+                                filterBg === 0 && 'bg-primary text-white'
+                            } w-24 py-2 my-2 font-semibold text-center rounded-lg border border-slate-500`}
+                        >
                             Tất cả
                         </div>
-                        <div className="w-24 py-2 my-2 font-semibold text-center rounded-lg border border-slate-500">
-                            5 Sao
-                        </div>
-                        <div className="w-24 py-2 my-2 font-semibold text-center rounded-lg border border-slate-500">
-                            4 Sao
-                        </div>
-                        <div className="w-24 py-2 my-2 font-semibold text-center rounded-lg border border-slate-500">
-                            3 Sao
-                        </div>
-                        <div className="w-24 py-2 my-2 font-semibold text-center rounded-lg border border-slate-500">
-                            2 Sao
-                        </div>
-                        <div className="w-24 py-2 my-2 font-semibold text-center rounded-lg border border-slate-500">
-                            1 Sao
-                        </div>
+                        {[5, 4, 3, 2, 1].map((item: any) => (
+                            <div
+                                key={item}
+                                onClick={() => {
+                                    filterRate(detail?.id, item);
+                                    setFilterBg(item);
+                                }}
+                                className={`cursor-pointer ${
+                                    filterBg === item && 'bg-primary text-white'
+                                } w-24 py-2 my-2 font-semibold text-center rounded-lg border border-slate-500`}
+                            >
+                                {item} Sao
+                            </div>
+                        ))}
                     </div>
                 </div>
                 <div className="mt-10 lg:mt-20">
                     {/* Loop Here */}
-                    <div className="flex space-x-4 border-slate-200 border-b py-4">
-                        <div className="w-20 h-20">
-                            <Image
-                                className="w-full object-contain rounded-full"
-                                src="https://cartzilla.createx.studio/img/shop/reviews/01.jpg"
-                            />
-                        </div>
-                        <div className="flex flex-col justify-between space-y-2">
-                            <span className="text-sm text-gray-600">Tên người dùng</span>
-                            <Rate className="flex space-x-1" average={3} />
-                            <div className="text-base">10.10.2022</div>
-                            <p className="text-base">Phản hồi</p>
-                        </div>
-                    </div>
+                    {listRating.length > 0 ? (
+                        <>
+                            {listRating?.map((item: any, index: number) => (
+                                <div key={index} className="flex space-x-4 border-slate-200 border-b py-4">
+                                    <div className="w-20 h-20">
+                                        <Image
+                                            className="w-full h-full rounded-full"
+                                            src={`${Config.apiUrl}upload/${item?.user.avatar.file_name}`}
+                                        />
+                                    </div>
+                                    <div className="flex flex-col justify-between space-y-2">
+                                        <span className="text-sm text-gray-600">
+                                            {item?.user.last_name} {item?.user.first_name}
+                                        </span>
+                                        <Rate className="flex space-x-1" average={item?.rating} />
+                                        <div className="text-base">{convertDate(item?.create_at)}</div>
+                                        <p className="text-base">{item?.content}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </>
+                    ) : (
+                        <div>Chưa có đánh giá</div>
+                    )}
+
                     {/* End Loop */}
-                    <div className="flex space-x-4 border-slate-200 border-b py-4">
+                    {/* <div className="flex space-x-4 border-slate-200 border-b py-4">
                         <div className="w-20 h-20">
                             <Image
                                 className="w-full object-contain rounded-full"
@@ -526,12 +578,12 @@ function ProductDetail() {
                             <div className="text-base">10.10.2022</div>
                             <p className="text-base">Feedback</p>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </section>
 
             {/* San pham lien quan */}
-            <section className="py-20 mb-40 border-t border-slate-200">
+            <section className="lg:py-20 py-10 border-t border-slate-200">
                 <div className="title-heading my-5 text-center mb-10">
                     <h3 className="font-bold text-4xl">Sản phẩm liên quan</h3>
                     <span className="title-divider">
