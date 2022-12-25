@@ -17,9 +17,9 @@ import {
     BsSearch,
 } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
-import { getBlogAsync, getBlogs } from '~/features/blog/blogSlice';
+import { getBlogAsync, getBlogs, getRecentPost, recentPost, searchBlogAsync } from '~/features/blog/blogSlice';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Image from '~/components/Image';
 import Config from '~/config';
 export const convertDate = (create_at: any) => {
@@ -42,7 +42,20 @@ function Blog() {
         dispatch(getBlogAsync());
     }, [dispatch]);
     const blogs = useAppSelector(getBlogs);
-
+    const inputRef = useRef(null);
+    const recentPosts = useAppSelector(getRecentPost);
+    const onSubmit = (e: any) => {
+        e.preventDefault();
+        const inputElement = inputRef.current as any;
+        const keyword: any = inputElement.value;
+        if (keyword.trim() !== '') {
+            dispatch(searchBlogAsync(keyword));
+            // navigate(`/search?keyword=${keyword}`);
+        }
+    };
+    useEffect(() => {
+        dispatch(recentPost());
+    }, []);
     return (
         <section className="py-[32px] md:py-[36px] lg:py-[38px] xl:py-[44px]">
             <div className="px-[20px] md:px-[54px] lg:px-[78px] xl:px-[108px] 2xl:px-[124px]">
@@ -51,47 +64,53 @@ function Blog() {
                     <div className="lg:order-1 lg:col-span-3 xl:col-span-6 2xl:col-span-3">
                         {/* post item */}
                         <div className="md:grid md:grid-cols-2 2xl:grid-cols-3 md:gap-6">
-                            {blogs.map((item: any, index: number) => (
-                                <div key={index} className="mt-6 px-3 md:mt-0">
-                                    <div className="mx-[-12px] border border-slate-200 overflow-hidden rounded-[10px]">
-                                        <div className="mb-[15px]">
-                                            <Link
-                                                className="flex items-center justify-center"
-                                                to={`/blog/${item?.slug}`}
-                                            >
-                                                <Image
-                                                    className="min-h-[250px] max-h-[250px] object-contain"
-                                                    src={`${Config.apiUrl}upload/${item?.media.file_name}`}
-                                                />
-                                            </Link>
-                                        </div>
-                                        <div className="px-[20px] pb-[20px]">
-                                            <div className="flex align-center gap-[15px] text-[13px] uppercase">
-                                                <span className="flex items-center">
-                                                    <BsClock className="mr-1 inline w-4 h-4" />
-                                                    <span>{convertDate(item?.create_at)}</span>
-                                                </span>
-                                                <span className="flex items-center">
-                                                    <BsPerson className="mr-1 inline w-4 h-4" />
-                                                    <span>James M.Martin</span>
-                                                </span>
+                            {blogs.map.length > 0 ? (
+                                <>
+                                    {blogs?.map((item: any, index: number) => (
+                                        <div key={index} className="mt-6 px-3 md:mt-0">
+                                            <div className="mx-[-12px] border border-slate-200 overflow-hidden rounded-[10px]">
+                                                <div className="mb-[15px]">
+                                                    <Link
+                                                        className="flex items-center justify-center"
+                                                        to={`/blog/${item?.slug}`}
+                                                    >
+                                                        <Image
+                                                            className="min-h-[250px] max-h-[250px] object-contain"
+                                                            src={`${Config.apiUrl}upload/${item?.media.file_name}`}
+                                                        />
+                                                    </Link>
+                                                </div>
+                                                <div className="px-[20px] pb-[20px]">
+                                                    <div className="flex align-center gap-[15px] text-[13px] uppercase">
+                                                        <span className="flex items-center">
+                                                            <BsClock className="mr-1 inline w-4 h-4" />
+                                                            <span>{convertDate(item?.create_at)}</span>
+                                                        </span>
+                                                        <span className="flex items-center">
+                                                            <BsPerson className="mr-1 inline w-4 h-4" />
+                                                            <span>James M.Martin</span>
+                                                        </span>
+                                                    </div>
+                                                    <Link to={`/blog/${item?.slug}`}>
+                                                        <h3 className="mt-[10px] mb-4 text-base font-[600] leading-6">
+                                                            {item?.title}
+                                                        </h3>
+                                                    </Link>
+                                                    <Link
+                                                        to={`/blog/${item?.slug}`}
+                                                        className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]"
+                                                    >
+                                                        Đọc tiếp
+                                                        <BsArrowRight className="inline ml-2" />
+                                                    </Link>
+                                                </div>
                                             </div>
-                                            <Link to={`/blog/${item?.slug}`}>
-                                                <h3 className="mt-[10px] mb-4 text-base font-[600] leading-6">
-                                                    {item?.title}
-                                                </h3>
-                                            </Link>
-                                            <Link
-                                                to={`/blog/${item?.slug}`}
-                                                className="mt-[8px] px-[22px] py-[10px] rounded-[5px] text-[14px] bg-[#e6f6f3] text-[#0da487] hover:bg-[#0DA487] hover:text-[#fff]"
-                                            >
-                                                Đọc tiếp
-                                                <BsArrowRight className="inline ml-2" />
-                                            </Link>
                                         </div>
-                                    </div>
-                                </div>
-                            ))}
+                                    ))}
+                                </>
+                            ) : (
+                                <div>Không có bài viết</div>
+                            )}
                         </div>
 
                         {/* pagination */}
@@ -132,15 +151,22 @@ function Blog() {
                         <div className="mt-[24px] lg:mt-0">
                             <div>
                                 {/* search */}
-                                <div className="py-[5px] w-full relative bg-[#f8f8f8] rounded-[5px]">
+                                <form
+                                    onSubmit={onSubmit}
+                                    className="py-[5px] w-full relative bg-[#f8f8f8] rounded-[5px]"
+                                >
                                     <input
+                                        ref={inputRef}
                                         className="w-full pl-[20px] pr-[68px] py-[8px] outline-none text-[14px] font-[600] bg-[#f8f8f8]"
                                         type="text"
                                         placeholder="Tìm kiếm..."
                                     />
+                                    <input type="submit" hidden />
                                     <div className="w-[2px] h-[20px] bg-[#ccc] absolute right-[54px] top-[25%]"></div>
-                                    <BsSearch className="w-[14px] h-[20px] absolute right-[20px] top-[25%] text-[#000] hover:cursor-pointer" />
-                                </div>
+                                    <button type="submit">
+                                        <BsSearch className="w-[14px] h-[20px] absolute right-[20px] top-[25%] text-[#000] hover:cursor-pointer" />
+                                    </button>
+                                </form>
                             </div>
                         </div>
 
@@ -159,29 +185,29 @@ function Blog() {
                                         </h2>
                                         <AccordionPanel>
                                             <div>
-                                                <div className="min-h-[74px] pt-[16px] flex items-center">
-                                                    <div className="w-[110px]">
-                                                        <Link className="w-full h-full" to="#">
-                                                            <img
-                                                                className="w-full h-full"
-                                                                src="https://lzd-img-global.slatic.net/g/p/3173dccba40c40aa43599a742f678efd.png_200x200q80.png_.webp"
-                                                                alt=""
-                                                            />
-                                                        </Link>
+                                                {recentPosts?.map((item: any, index: number) => (
+                                                    <div className="min-h-[74px] pt-[16px] flex items-center">
+                                                        <div className="w-[110px]">
+                                                            <Link className="w-full h-full" to="#">
+                                                                <Image
+                                                                    className="w-full h-full"
+                                                                    src={`${Config.apiUrl}upload/${item?.media.file_name}`}
+                                                                    alt=""
+                                                                />
+                                                            </Link>
+                                                        </div>
+                                                        <div className="pl-[15px] w-full">
+                                                            <Link to="/">
+                                                                <h5 className="text-[16px] font-[600]">{item.title}</h5>
+                                                            </Link>
+                                                            <h6 className="mt-[8px] text-[13px] flex justify-between">
+                                                                <span>{convertDate(item?.create_at)}</span>
+                                                                <BsHandThumbsUp className="w-[18px] h-[18px]" />
+                                                            </h6>
+                                                        </div>
                                                     </div>
-                                                    <div className="pl-[15px] w-full">
-                                                        <Link to="/">
-                                                            <h5 className="text-[16px] font-[600]">
-                                                                Áo khoác Davies nam nữ DSW Reflect Track Jacket
-                                                            </h5>
-                                                        </Link>
-                                                        <h6 className="mt-[8px] text-[13px] flex justify-between">
-                                                            <span>25 Jan, 2022</span>
-                                                            <BsHandThumbsUp className="w-[18px] h-[18px]" />
-                                                        </h6>
-                                                    </div>
-                                                </div>
-
+                                                ))}
+                                                {/* 
                                                 <div className="min-h-[74px] pt-[16px] flex items-center">
                                                     <div className="w-[110px]">
                                                         <Link className="w-full h-full" to="#">
@@ -250,7 +276,7 @@ function Blog() {
                                                             <BsHandThumbsUp className="w-[18px] h-[18px]" />
                                                         </h6>
                                                     </div>
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </AccordionPanel>
                                     </AccordionItem>

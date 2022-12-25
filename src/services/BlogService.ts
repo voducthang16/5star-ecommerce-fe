@@ -10,9 +10,14 @@ const getBlogDetail = (slug: any) => {
     return AxiosInstance.get(Config.apiUrl + url + `/${slug}`);
 };
 
+const searchBlog = (keyword: string) => {
+    return AxiosInstance.get(Config.apiUrl + url + `?title=${keyword}`);
+};
+
 const BlogService = {
     GetBlogs,
     getBlogDetail,
+    searchBlog,
 };
 
 export default BlogService;
