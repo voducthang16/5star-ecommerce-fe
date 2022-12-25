@@ -15,7 +15,7 @@ import { motion, useAnimation } from 'framer-motion';
 import Rate from '../Rate';
 import './Product.scss';
 import { getUser } from '~/features/user/userSlice';
-import { getWishlist, getWishlistAsync } from '~/features/wishlist/wishlistSlice';
+import { getWishlist, getWishlistAsync, remove } from '~/features/wishlist/wishlistSlice';
 interface ProductProps {
     idProduct: number;
     name?: string;
@@ -50,12 +50,17 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
 
     const checkProductInWishlist = (id: number) => {
         let flag = false;
+        let id_wishlist = 0;
         wishlist?.find((item: any) => {
             if (item.id_product === id) {
                 flag = true;
+                id_wishlist = item.id;
             }
         });
-        return flag;
+        return {
+            flag,
+            id_wishlist,
+        };
     };
 
     stocks.forEach((item: any) => {
@@ -75,7 +80,6 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
             }
         });
     };
-
     const requestAddToCart = (idStock: number) => {
         let dataSendRequest: any = {
             id_product: idStock,
@@ -225,8 +229,23 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
                 <div className="action-product absolute z-[21] top-[22%] right-2">
                     <motion.div
                         onClick={() => {
-                            if (checkProductInWishlist(idProduct)) {
-                                alert('Xoa khoi danh sach');
+                            if (checkProductInWishlist(idProduct).flag) {
+                                WishlistService.deleteProductInWishlist(checkProductInWishlist(idProduct).id_wishlist)
+                                    .then((res: any) => {
+                                        console.log(res);
+                                        if (res.data.affected === 1) {
+                                            toast({
+                                                title: 'Thông báo',
+                                                description: 'Xóa khỏi danh sách yêu thích',
+                                                status: 'success',
+                                                position: 'bottom-right',
+                                                duration: 3000,
+                                                isClosable: true,
+                                            });
+                                            dispatch(remove(checkProductInWishlist(idProduct).id_wishlist));
+                                        }
+                                    })
+                                    .catch((err) => console.log(err));
                             } else {
                                 WishlistService.createWishlist({ id_product: idProduct, quantity: 1 })
                                     .then((res: any) => {
@@ -239,7 +258,9 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
                                                 duration: 3000,
                                                 isClosable: true,
                                             });
-                                            dispatch(getWishlistAsync(infoUser?.id));
+                                            setTimeout(() => {
+                                                dispatch(getWishlistAsync(infoUser?.id));
+                                            }, 1000);
                                         }
                                     })
                                     .catch((err) => console.log(err));
@@ -251,7 +272,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
                         animate={controls}
                         transition={{ type: 'spring', damping: 12, stiffness: 90 }}
                     >
-                        {checkProductInWishlist(idProduct) ? (
+                        {checkProductInWishlist(idProduct).flag ? (
                             <FaHeart className="text-xl inline-block text-primary" />
                         ) : (
                             <FaRegHeart className="text-xl inline-block text-primary" />

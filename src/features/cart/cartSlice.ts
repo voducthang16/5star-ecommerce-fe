@@ -47,6 +47,9 @@ export const cartSlice = createSlice({
         clearFee: (state) => {
             state.fee = 0;
         },
+        clearCart: (state) => {
+            state.value = [];
+        },
     },
 
     extraReducers: (builder) => {
@@ -60,7 +63,7 @@ export const cartSlice = createSlice({
     },
 });
 
-export const { addToCart, updateToCart, setFee, clearFee } = cartSlice.actions;
+export const { addToCart, updateToCart, setFee, clearFee, clearCart } = cartSlice.actions;
 
 export const getCart = (state: RootState) => state.cart.value;
 

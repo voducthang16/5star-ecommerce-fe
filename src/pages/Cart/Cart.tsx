@@ -11,7 +11,7 @@ import images from '~/assets/images';
 import { CodIcon, FastDeliveryIcon, SaveDeliveryIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Config from '~/config';
-import { getCart, getCartAsync, getTotalCart, setFee, getFee, clearFee } from '~/features/cart/cartSlice';
+import { getCart, getCartAsync, getTotalCart, setFee, getFee, clearFee, clearCart } from '~/features/cart/cartSlice';
 import { getUser } from '~/features/user/userSlice';
 import { InputField, TextareaField } from '~/layouts/components/CustomField';
 import CartService from '~/services/CartService';
@@ -205,6 +205,7 @@ function Cart() {
                         status: 'success',
                     });
                     dispatch(clearFee());
+                    dispatch(clearCart());
                     if (+values?.payment === 1) {
                         Navigate('/order-success');
                     } else {
