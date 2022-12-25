@@ -11,7 +11,19 @@ import images from '~/assets/images';
 import { CodIcon, FastDeliveryIcon, SaveDeliveryIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Config from '~/config';
-import { getCart, getCartAsync, getTotalCart, setFee, getFee, clearFee, clearCart } from '~/features/cart/cartSlice';
+import {
+    getCart,
+    getCartAsync,
+    getTotalCart,
+    setFee,
+    getFee,
+    clearFee,
+    clearCart,
+    getCoupon,
+    getCouponAsync,
+    getDiscount,
+    clearCoupon,
+} from '~/features/cart/cartSlice';
 import { getUser } from '~/features/user/userSlice';
 import { InputField, TextareaField } from '~/layouts/components/CustomField';
 import CartService from '~/services/CartService';
@@ -57,6 +69,8 @@ function Cart() {
     // redux
     const totalCart = useAppSelector(getTotalCart);
     const fee = useAppSelector(getFee);
+    const coupon = useAppSelector(getCoupon);
+    const discount = useAppSelector(getDiscount);
     // end
     const handleRemoveCart = (id: number) => {
         CartService.deleteCart(id).then((res: ResponseType) => {
@@ -135,7 +149,6 @@ function Cart() {
             .catch((err) => console.log(err));
     }, []);
     const getDistrict = (cityId: number) => {
-        console.log('cityId: ', cityId);
         CartService.getDistrict(cityId)
             .then((res) => setDistrict(res.data.districts))
             .catch((err) => console.log(err));
@@ -192,11 +205,11 @@ function Cart() {
                 phone: values.phone,
                 note: values.note,
                 products,
+                coupon_id: String(coupon?.id) || null,
                 payment_method_id: +values?.payment,
                 total: totalCart + fee,
             };
             OrderService.CreateOrder(dataSendRequest).then((res: ResponseType) => {
-                console.log('res: ', res);
                 if (res.statusCode === 201) {
                     toast({
                         position: 'top-right',
@@ -206,6 +219,10 @@ function Cart() {
                     });
                     dispatch(clearFee());
                     dispatch(clearCart());
+                    dispatch(clearCoupon());
+                    CartService.ClearCart()
+                        .then((res) => console.log(res))
+                        .catch((err) => console.log(err));
                     if (+values?.payment === 1) {
                         Navigate('/order-success');
                     } else {
@@ -517,7 +534,7 @@ function Cart() {
                                         </div>
                                         <Button colorScheme="teal" type="submit" className="!w-full !py-6">
                                             Thanh toán {` `}
-                                            {(totalCart + fee).toLocaleString('it-IT', {
+                                            {(totalCart + fee - discount).toLocaleString('it-IT', {
                                                 style: 'currency',
                                                 currency: 'VND',
                                             })}
@@ -649,8 +666,13 @@ function Cart() {
                             {listCart.length === 0 && <p>Chưa có sản phẩm nào trong giỏ hàng</p>}
                         </div>
                         <div className="flex pt-4 border-t border-slate-200 gap-2">
-                            <Input type="text" placeholder="Mã giảm giá" />
+                            <Input id="coupon-input" type="text" placeholder="Mã giảm giá" />
                             <motion.button
+                                onClick={() => {
+                                    const couponElm = document.querySelector('#coupon-input') as any;
+                                    const value = couponElm.value;
+                                    dispatch(getCouponAsync(value));
+                                }}
                                 whileHover={{
                                     backgroundColor: '#fff',
                                     border: '1px solid #000',
@@ -675,7 +697,7 @@ function Cart() {
                             </p>
                             <p className="flex justify-between">
                                 <span>Giảm giá</span>
-                                <span className="text-right">0đ</span>
+                                <span className="text-right">{FormatPriceVND(discount)}</span>
                             </p>
                             <p className="flex justify-between">
                                 <span>Phí giao hàng</span>
@@ -686,7 +708,8 @@ function Cart() {
                             <p className="flex justify-between text-sm">
                                 <span>Tổng</span>
                                 <span className="text-right">
-                                    <span className="!text-2xl">{FormatPriceVND(totalCart + fee)}</span> <br />
+                                    <span className="!text-2xl">{FormatPriceVND(totalCart + fee - discount)}</span>{' '}
+                                    <br />
                                     {/* <span className="!text-xs text-red-500">(Đã giảm 21% trên giá gốc)</span> */}
                                 </span>
                             </p>
