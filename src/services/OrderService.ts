@@ -18,11 +18,16 @@ const getOrderDetail = (id: number) => {
     return AxiosInstance.get(Config.apiUrl + url + `/${id}`);
 };
 
+const RatingProduct = (data: any) => {
+    return AxiosInstance.post(Config.apiUrl + 'rating', data);
+};
+
 const OrderService = {
     CreateOrder,
     OrderVnPay,
     getOrderByUserId,
     getOrderDetail,
+    RatingProduct,
 };
 
 export default OrderService;

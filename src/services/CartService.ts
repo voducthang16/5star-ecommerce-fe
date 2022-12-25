@@ -28,6 +28,14 @@ const getWard = (code: number) => {
     return axios.get(`https://provinces.open-api.vn/api/d/${code}?depth=2`);
 };
 
+const getCoupon = (code: string) => {
+    return AxiosInstance.get(Config.apiUrl + 'coupon/?code=' + code);
+};
+
+const ClearCart = () => {
+    return AxiosInstance.delete(Config.apiUrl + 'cart/clear-cart');
+};
+
 const CartService = {
     addToCart,
     getCart,
@@ -35,6 +43,8 @@ const CartService = {
     getCity,
     getDistrict,
     getWard,
+    getCoupon,
+    ClearCart,
 };
 
 export default CartService;
