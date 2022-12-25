@@ -31,7 +31,6 @@ const initialState: ProductState = {
 };
 
 export const fetchProductAsync = createAsyncThunk('product/fetchProducts', async (filter: any = '') => {
-    console.log('filter: ', filter);
     const { page, fromPrice, toPrice, name, id_category } = filter;
     const response: ResponseType = await ProductService.getAllProduct({ page, fromPrice, toPrice, name, id_category });
     if (response.statusCode === 200) {

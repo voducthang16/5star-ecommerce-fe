@@ -14,6 +14,7 @@ import {
     Thead,
     Tr,
     useDisclosure,
+    useToast,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
@@ -55,7 +56,7 @@ const ModalViewOrder = ({ id }: OrderDetailProps) => {
                 .catch((err) => console.log(err));
         }
     }, [isDetailOpen]);
-    // console.log(list);
+    const toast = useToast();
     const inputRef = useRef(null);
     const [idProduct, setIdProduct] = useState(0);
     const onRatingSubmit = (e: any) => {
@@ -70,7 +71,16 @@ const ModalViewOrder = ({ id }: OrderDetailProps) => {
         if (content.trim() !== '') {
             OrderService.RatingProduct(data)
                 .then((res) => {
-                    console.log(res);
+                    onDetailClose();
+                    onRatingClose();
+                    toast({
+                        title: 'Thông báo',
+                        description: 'Đánh giá thành công',
+                        status: 'success',
+                        position: 'bottom-right',
+                        duration: 3000,
+                        isClosable: true,
+                    });
                 })
                 .catch((err) => console.log(err));
         }
@@ -156,12 +166,12 @@ const ModalViewOrder = ({ id }: OrderDetailProps) => {
                                                                                     {[1, 2, 3, 4, 5].map(
                                                                                         (item: any, index: number) => (
                                                                                             <span
+                                                                                                key={index}
                                                                                                 onClick={() =>
                                                                                                     setStar(item)
                                                                                                 }
                                                                                             >
                                                                                                 <StartIcon
-                                                                                                    key={index}
                                                                                                     width={16}
                                                                                                     height={16}
                                                                                                     className={`cursor-pointer ${
