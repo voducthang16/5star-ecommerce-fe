@@ -8,6 +8,14 @@ const signIn = (data: LoginType) => {
     return AxiosInstance.post(Config.apiUrl + url + '/login', data);
 };
 
+const LoginFacebook = (data: any) => {
+    return AxiosInstance.post(Config.apiUrl + 'fb-account/login', data);
+};
+
+const LoginGoogle = (data: any) => {
+    return AxiosInstance.post(Config.apiUrl + 'gg-account/login', data);
+};
+
 const Register = (data: RegisterType) => {
     return AxiosInstance.post(Config.apiUrl + 'internalaccount', data);
 };
@@ -36,10 +44,12 @@ const AuthService = {
     signIn,
     Register,
     ActiveAccount,
+    LoginGoogle,
     ReActiveAccount,
     ForgotPassword,
     ResetPassword,
     updatePassword,
+    LoginFacebook,
 };
 
 export default AuthService;
