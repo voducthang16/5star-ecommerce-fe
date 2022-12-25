@@ -27,7 +27,7 @@ function Home() {
     const products = useAppSelector(getProducts);
 
     useEffect(() => {
-        dispatch(fetchProductAsync({}));
+        dispatch(fetchProductAsync({ page: 0 }));
     }, [dispatch]);
 
     return (
