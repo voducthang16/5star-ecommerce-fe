@@ -7,8 +7,10 @@ import {
     InputRightElement,
     useToast,
 } from '@chakra-ui/react';
+import { GoogleLogin, GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 import { ErrorMessage, Field, Form, Formik, FormikProps } from 'formik';
 import { useState } from 'react';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import { AiOutlineGooglePlus } from 'react-icons/ai';
 import { FiUserCheck } from 'react-icons/fi';
 import { HiEye, HiEyeOff } from 'react-icons/hi';
@@ -17,13 +19,12 @@ import { RiLockPasswordLine } from 'react-icons/ri';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '~/app/hooks';
 import images from '~/assets/images';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import Image from '~/components/Image';
 import Logo from '~/components/Logo';
 import { addUser } from '~/features/user/userSlice';
 import InputFieldIcon from '~/layouts/components/CustomField/InputFieldIcon';
 import { AuthService } from '~/services';
-import { LoginType } from '~/utils/Types';
+import { LoginType, ResponseType } from '~/utils/Types';
 import { LoginSchema } from '~/utils/validationSchema';
 import './Login.scss';
 
@@ -42,7 +43,7 @@ const Login = () => {
     // HANDLE LOGIC
     const handleSubmitLogin = (values: LoginType) => {
         AuthService.signIn(values).then(
-            (res: any) => {
+            (res: ResponseType) => {
                 if (res.statusCode === 200) {
                     let accessToken = res?.data?.accessToken;
                     if (accessToken) {
@@ -72,9 +73,67 @@ const Login = () => {
     };
 
     const responseFacebook = (response: any) => {
-        console.log(response);
+        const { userID, accessToken } = response;
+        if (accessToken && userID) {
+            let dataPost = {
+                uid: userID,
+                token: accessToken,
+            };
+            AuthService.LoginFacebook(dataPost).then((res: ResponseType) => {
+                if (res.statusCode === 200) {
+                    let accessToken = res?.data?.accessToken;
+                    if (accessToken) {
+                        localStorage.setItem('access_token', accessToken);
+                        Navigate('/');
+                        dispatch(addUser(res?.data?.user_info.profile));
+                        toast({
+                            position: 'top-right',
+                            title: 'Đăng nhập thành công',
+                            duration: 1000,
+                            status: 'success',
+                        });
+                    }
+                } else {
+                    toast({
+                        position: 'top-right',
+                        title: 'Đăng nhập thất bại',
+                        duration: 1000,
+                        status: 'error',
+                    });
+                }
+            });
+        }
     };
 
+    const responseGoogle = (response: any) => {
+        const { credential } = response;
+        if (credential) {
+            AuthService.LoginGoogle({ token: credential }).then((res: ResponseType) => {
+                console.log(res);
+                if (res.statusCode === 200) {
+                    let accessToken = res?.data?.accessToken;
+                    if (accessToken) {
+                        localStorage.setItem('access_token', accessToken);
+                        Navigate('/');
+                        dispatch(addUser(res?.data?.user_info));
+                        toast({
+                            position: 'top-right',
+                            title: 'Đăng nhập thành công',
+                            duration: 1000,
+                            status: 'success',
+                        });
+                    }
+                } else {
+                    toast({
+                        position: 'top-right',
+                        title: 'Đăng nhập thất bại',
+                        duration: 1000,
+                        status: 'error',
+                    });
+                }
+            });
+        }
+    };
     const HandleTogglePassword = () => {
         setShowPassword(!showPassword);
     };
@@ -200,7 +259,6 @@ const Login = () => {
                                             <div className="facebook w-full">
                                                 <FacebookLogin
                                                     appId="694046029102732"
-                                                    //  autoLoad={true}
                                                     fields="name,email,picture"
                                                     callback={responseFacebook}
                                                     render={(renderProps: any) => {
@@ -214,14 +272,15 @@ const Login = () => {
                                                             </Button>
                                                         );
                                                     }}
-                                                    //  cssClass="my-facebook-button-class"
-                                                    //  icon="fa-facebook"
                                                 ></FacebookLogin>
                                             </div>
                                             <div className="google w-full">
-                                                <Button colorScheme="red" width="100%">
+                                                <GoogleOAuthProvider clientId="545276130953-o2mg12b3ks4qqq88grnid2j63qqhotdl.apps.googleusercontent.com">
+                                                    <GoogleLogin onSuccess={responseGoogle} />
+                                                    {/* <Button colorScheme="red" width="100%" onClick={responseGoogle}>
                                                     <AiOutlineGooglePlus className="text-xl mx-1" /> Google
-                                                </Button>
+                                                </Button> */}
+                                                </GoogleOAuthProvider>
                                             </div>
                                         </div>
                                     </div>
