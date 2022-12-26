@@ -342,7 +342,7 @@ function Home() {
                                         </p>
                                         <Countdown date="2022-12-30T01:02:03" renderer={renderer} />
                                         <div className="mt-6">
-                                            <Link to="/">
+                                            <Link to="/category">
                                                 <Button
                                                     colorScheme="teal"
                                                     className="!py-[25px] !px-[50px] !text-2xl"
