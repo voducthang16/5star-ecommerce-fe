@@ -53,7 +53,11 @@ const MyAccount = () => {
                 };
                 UserService.UpdateUser(dataSend, infoUser.id).then((res: any) => {
                     if (res.statusCode === 200) {
-                        dispatch(getOneInfoUser(infoUser?.id));
+                        console.log('vo day');
+
+                        setTimeout(() => {
+                            dispatch(getOneInfoUser(infoUser?.id));
+                        }, 1);
                     }
                 });
             }
@@ -121,7 +125,8 @@ const MyAccount = () => {
 
                                     <div className="fullname">
                                         <h3 className="text-lg font-semibold mt-2 text-[#4a5568]">
-                                            {infoUser && infoUser?.first_name + ' ' + infoUser?.last_name}
+                                            {infoUser && infoUser?.first_name + ' '}{' '}
+                                            {infoUser?.last_name && infoUser?.last_name}
                                         </h3>
                                     </div>
                                 </div>

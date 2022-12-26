@@ -35,7 +35,10 @@ const Info = () => {
                                         <tbody>
                                             <tr>
                                                 <td width={20}>Họ & tên: </td>
-                                                <td>{infoUser && infoUser?.first_name + ' ' + infoUser?.last_name}</td>
+                                                <td>
+                                                    {infoUser && infoUser?.first_name + ' '}{' '}
+                                                    {infoUser?.last_name && infoUser?.last_name}
+                                                </td>
                                             </tr>
 
                                             <tr>

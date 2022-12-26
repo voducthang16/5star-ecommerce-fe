@@ -1,6 +1,14 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box } from '@chakra-ui/react';
+import {
+    Accordion,
+    AccordionButton,
+    AccordionIcon,
+    AccordionItem,
+    AccordionPanel,
+    Box,
+    Select,
+} from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import CurrencyInput from 'react-currency-input-field';
 import { Helmet } from 'react-helmet-async';
 import { IoMdClose } from 'react-icons/io';
@@ -10,21 +18,14 @@ import { useLocation, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import Breadcrumb from '~/components/Breadcrumb';
 import { AccessoriesIcon, BagIcon, JeansIcon, ShirtIcon, ShoesIcon, WatchIcon } from '~/components/Icons';
-import {
-    fetchCategoryAsync,
-    fetchSubCategoryAsync,
-    getCategory,
-    getSubCategory,
-} from '~/features/category/categorySlice';
+import { getCategory, getSubCategory } from '~/features/category/categorySlice';
 
+import { AiOutlineFilter } from 'react-icons/ai';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
 import LoadingSpin from '~/components/LoadingSpin';
 import { fetchProductAsync, getProducts, getStatusFetchProduct, totalProduct } from '~/features/product/productSlice';
 import Product from '~/layouts/components/Product';
 import './Category.scss';
-import { AiOutlineFilter } from 'react-icons/ai';
-
-const PER_PAGE = 9;
 
 function Category() {
     const [pageNumber, setPageNumber] = useState<number>(0);
@@ -43,17 +44,7 @@ function Category() {
     const category = useAppSelector(getCategory);
     const subCategory = useAppSelector(getSubCategory);
 
-    useEffect(() => {
-        dispatch(fetchProductAsync({}));
-    }, [dispatch]);
-    useEffect(() => {
-        dispatch(fetchCategoryAsync());
-    }, [dispatch]);
-    useEffect(() => {
-        dispatch(fetchSubCategoryAsync());
-    }, [dispatch]);
-
-    const totalPage = Math.ceil(totalCountProduct / PER_PAGE);
+    const totalPage = Math.ceil(totalCountProduct / 9);
     const handlePageChange = ({ selected }: any) => {
         setPageNumber(selected);
         const fromPrice = fromToPrice.from;
@@ -85,6 +76,19 @@ function Category() {
             fromPrice,
             toPrice,
             id_category: id,
+        };
+        dispatch(fetchProductAsync(requestParams));
+    };
+
+    const filterSort = (e: any) => {
+        const fromPrice = fromToPrice.from;
+        const toPrice = fromToPrice.to;
+        let requestParams = {
+            page: pageNumber,
+            fromPrice,
+            toPrice,
+            orderType: e.target.value,
+            orderBy: 'price',
         };
         dispatch(fetchProductAsync(requestParams));
     };
@@ -291,20 +295,19 @@ function Category() {
                                 </div> */}
                             </div>
                         </div>
-                        {loadingStatus === 'loading' ? (
-                            <LoadingSpin className="col-span-6" />
-                        ) : (
-                            <div className="col-span-12 lg:col-span-9">
-                                {/* top right */}
-                                <div className="text-base mb-4">
-                                    <span>Sắp xếp theo: </span>
-                                    <select name="" id="">
-                                        <option value="1">Giá</option>
-                                        <option value="1">abc</option>
-                                        <option value="1">abc</option>
-                                        <option value="1">abc</option>
-                                    </select>
-                                </div>
+
+                        <div className="col-span-12 lg:col-span-9">
+                            {/* top right */}
+                            <div className="text-base mb-4 w-[150px]">
+                                <span>Sắp xếp theo: </span>
+                                <Select onChange={filterSort}>
+                                    <option value="ASC">Tăng dần</option>
+                                    <option value="DESC">Giảm dần</option>
+                                </Select>
+                            </div>
+                            {loadingStatus === 'loading' ? (
+                                <LoadingSpin className="col-span-6" />
+                            ) : (
                                 <div className="product-list">
                                     <div className="grid grid-cols-12 gap-4">
                                         {products.length > 0 &&
@@ -353,8 +356,8 @@ function Category() {
                                         )}
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

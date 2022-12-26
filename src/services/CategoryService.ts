@@ -17,7 +17,6 @@ const getOneCategory = (slug: string) => {
 const getCategoryParent = async () => {
     try {
         let resCategory: any = await AxiosInstance.get(Config.apiUrl + url);
-        console.log('resCategory: ', resCategory);
         let dataCategory: any = [];
         if (resCategory.statusCode === 200) {
             for (let category of resCategory.data.data) {

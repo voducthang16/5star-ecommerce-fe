@@ -1,5 +1,5 @@
 import { Button } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Countdown from 'react-countdown';
 import { AiOutlineArrowRight } from 'react-icons/ai';
 import { BsSearch } from 'react-icons/bs';
@@ -21,14 +21,41 @@ import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import { fetchProductAsync, getProducts } from '~/features/product/productSlice';
 import './Home.scss';
 import { Helmet } from 'react-helmet-async';
+import ProductService from '~/services/ProductService';
+import { ResponseType } from '~/utils/Types';
+import { FormatPriceVND } from '~/utils/FormatPriceVND';
+import Config from '~/config';
 
 function Home() {
+    const [productSold, setProductSold] = useState<any>([]);
+    const [productNew, setProductNew] = useState<any>([]);
     const dispatch = useAppDispatch();
     const products = useAppSelector(getProducts);
 
     useEffect(() => {
-        dispatch(fetchProductAsync({ page: 0 }));
+        dispatch(fetchProductAsync({ page: 0, perPage: 8 }));
     }, [dispatch]);
+
+    const getProductTopSold = () => {
+        ProductService.getProductOrderBy({ orderBy: 'sold', perPage: 5 }).then((res: ResponseType) => {
+            if (res.statusCode === 200) {
+                setProductSold(res.data.data);
+            }
+        });
+    };
+
+    const getProductTopNew = () => {
+        ProductService.getProductOrderBy({ orderBy: 'create_at', perPage: 5 }).then((res: ResponseType) => {
+            if (res.statusCode === 200) {
+                setProductNew(res.data.data);
+            }
+        });
+    };
+
+    useEffect(() => {
+        getProductTopNew();
+        getProductTopSold();
+    }, []);
 
     return (
         <>
@@ -368,7 +395,7 @@ function Home() {
                     </div>
                 </section>
                 {/* Best Accessories */}
-                {/* <section className="container py-10 lg:py-24 ">
+                <section className="container py-10 lg:py-24 ">
                     <div className="title-heading my-5 text-center mb-10">
                         <h3 className="uppercase font-bold text-4xl" data-aos="fade-up" data-aos-delay="200">
                             Thương hiệu yêu thích
@@ -384,7 +411,7 @@ function Home() {
                                 Bán chạy nhất
                             </h3>
                             <div className="space-y-2">
-                                {[1, 2, 3, 4].map((item, index) => (
+                                {productSold?.map((item: any, index: any) => (
                                     <div
                                         key={index}
                                         className="pb-2 flex items-center space-x-4 border-b border-slate-200"
@@ -393,57 +420,53 @@ function Home() {
                                     >
                                         <div className="min-w-[64px] h-16">
                                             <Image
-                                                src={'https://cartzilla.createx.studio/img/shop/cart/widget/01.jpg'}
+                                                src={`${Config.apiUrl}upload/${item?.images[0]?.file_name}`}
                                                 alt={'Product'}
                                                 className={'w-full h-full object-contain'}
                                             />
                                         </div>
                                         <div className="flex flex-col justify-center space-y-2">
-                                            <h5 className="text-sm font-semibold text-gray-700">Giày Nike</h5>
-                                            <span className="text-xs font-medium text-blue-700/90">1000.000VND</span>
+                                            <h5 className="text-sm font-semibold text-gray-700">{item?.name}</h5>
+                                            <span className="text-xs font-medium text-blue-700/90">
+                                                {FormatPriceVND(item?.stocks[0].price)}
+                                            </span>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <span className="block text-lg text-gray-800">...</span>
-                            <a className="inline-flex items-center text-base text-pink-400" href="/">
-                                Xem thêm <AiOutlineArrowRight className="ml-2" />
-                            </a>
                         </div>
                         <div className="col-span-1">
                             <h3 className="mb-4 text-base font-medium">Hàng mới</h3>
                             <div className="space-y-2">
-                                {[1, 2, 3, 4].map((item, index) => (
+                                {productNew?.map((item: any, index: any) => (
                                     <div
                                         key={index}
                                         className="pb-2 flex items-center space-x-4 border-b border-slate-200"
                                         data-aos="fade-up"
                                         data-aos-delay={index * 200}
                                     >
-                                        <div className="min-w-[64px] h-16" data-aos="zoom-in" data-aos-delay="400">
+                                        <div className="min-w-[64px] h-16">
                                             <Image
-                                                src={'https://cartzilla.createx.studio/img/shop/cart/widget/01.jpg'}
+                                                src={`${Config.apiUrl}upload/${item?.images[0]?.file_name}`}
                                                 alt={'Product'}
                                                 className={'w-full h-full object-contain'}
                                             />
                                         </div>
                                         <div className="flex flex-col justify-center space-y-2">
-                                            <h5 className="text-sm font-semibold text-gray-700">Giày Adidas</h5>
-                                            <span className="text-xs font-medium text-blue-700/90">1000.000VND</span>
+                                            <h5 className="text-sm font-semibold text-gray-700">{item?.name}</h5>
+                                            <span className="text-xs font-medium text-blue-700/90">
+                                                {FormatPriceVND(item?.stocks[0].price)}
+                                            </span>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <span className="block text-lg text-gray-800">...</span>
-                            <a className="inline-flex items-center text-base text-pink-400" href="/">
-                                Xem thêm <AiOutlineArrowRight className="ml-2" />
-                            </a>
                         </div>
                         <div className="hidden lg:block lg:col-span-1">
                             <Image className="w-full object-contain" src={images.b_banner} alt={'Best Accessories'} />
                         </div>
                     </div>
-                </section> */}
+                </section>
             </div>
         </>
     );

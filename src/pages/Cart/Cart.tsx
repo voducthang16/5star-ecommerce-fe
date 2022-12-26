@@ -193,12 +193,15 @@ function Cart() {
     };
 
     const handleSubmitForm = (values: any) => {
+        console.log('values: ', values);
         let products: Array<any> = [];
+
         if (listCart.length > 0) {
             listCart.forEach((item: any) => {
                 products.push({ id_product: item.id, quantity: +item.quantity });
             });
-            let address = `${values.address}, ${values?.wardName.name}, ${values?.districtName?.name}, ${values?.cityName?.name}`;
+
+            let address = `${values?.address}, ${wardName?.name}, ${districtName?.name}, ${cityName?.name}`;
             let dataSendRequest = {
                 address,
                 name: values?.name,

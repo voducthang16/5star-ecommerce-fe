@@ -1,27 +1,15 @@
-import {
-    Accordion,
-    AccordionButton,
-    AccordionIcon,
-    AccordionItem,
-    AccordionPanel,
-    Box,
-    ChakraProvider,
-} from '@chakra-ui/react';
-import {
-    BsArrowRight,
-    BsChevronDoubleLeft,
-    BsChevronDoubleRight,
-    BsClock,
-    BsHandThumbsUp,
-    BsPerson,
-    BsSearch,
-} from 'react-icons/bs';
+import { useCallback, useEffect, useState } from 'react';
+import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
+import { BsArrowRight, BsClock, BsHandThumbsUp, BsPerson, BsSearch } from 'react-icons/bs';
+import ReactPaginate from 'react-paginate';
 import { Link } from 'react-router-dom';
-import { getBlogAsync, getBlogs, getRecentPost, recentPost, searchBlogAsync } from '~/features/blog/blogSlice';
-import { useAppDispatch, useAppSelector } from '~/app/hooks';
-import { useEffect, useRef } from 'react';
+import { useAppDispatch } from '~/app/hooks';
 import Image from '~/components/Image';
 import Config from '~/config';
+import BlogService from '~/services/BlogService';
+import { Debounce } from '~/utils/Debouce';
+import { subString } from '~/utils/MinString';
+import { ResponseType } from '~/utils/Types';
 export const convertDate = (create_at: any) => {
     let date = new Date(create_at);
     let year = date.getFullYear();
@@ -37,25 +25,60 @@ export const convertDate = (create_at: any) => {
     return `${dt}/${month}/${year}`;
 };
 function Blog() {
+    const [blog, setBlog] = useState<any>([]);
+    const [recentBlog, setRecentBlog] = useState<any>([]);
+    const [totalCount, setTotalCount] = useState<number>(0);
+    const [pageNumber, setPageNumber] = useState<number>(0);
     const dispatch = useAppDispatch();
-    useEffect(() => {
-        dispatch(getBlogAsync());
-    }, [dispatch]);
-    const blogs = useAppSelector(getBlogs);
-    const inputRef = useRef(null);
-    const recentPosts = useAppSelector(getRecentPost);
-    const onSubmit = (e: any) => {
-        e.preventDefault();
-        const inputElement = inputRef.current as any;
-        const keyword: any = inputElement.value;
-        if (keyword.trim() !== '') {
-            dispatch(searchBlogAsync(keyword));
-            // navigate(`/search?keyword=${keyword}`);
-        }
+    // END STATE
+    const totalPage = Math.ceil(totalCount / 9);
+
+    const handlePageChange = ({ selected }: any) => {
+        setPageNumber(selected);
+        BlogService.GetAllBlogs({ page: selected }).then((res: ResponseType) => {
+            if (res.statusCode === 200) {
+                setBlog(res.data.data);
+                setTotalCount(res.data.total);
+            }
+        });
     };
+
+    const getAllBlog = () => {
+        BlogService.GetAllBlogs({}).then((res: ResponseType) => {
+            if (res.statusCode === 200) {
+                setBlog(res.data.data);
+                setTotalCount(res.data.total);
+            }
+        });
+    };
+
+    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        BlogService.GetAllBlogs({ title: value }).then((res: ResponseType) => {
+            if (res.statusCode === 200) {
+                setBlog(res.data.data);
+                setTotalCount(res.data.total);
+            }
+        });
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const debounceSearch = useCallback(Debounce(handleSearch, 1000), []);
+
+    const getRecentBlog = () => {
+        BlogService.GetAllBlogs({ orderBy: 'create_at', type: 'DESC', perPage: 8 }).then((res: ResponseType) => {
+            console.log('res: ', res);
+            if (res.statusCode === 200) {
+                setRecentBlog(res.data.data);
+            }
+        });
+    };
+
     useEffect(() => {
-        dispatch(recentPost());
+        getAllBlog();
+        getRecentBlog();
     }, []);
+
     return (
         <section className="py-[32px] md:py-[36px] lg:py-[38px] xl:py-[44px]">
             <div className="px-[20px] md:px-[54px] lg:px-[78px] xl:px-[108px] 2xl:px-[124px]">
@@ -64,9 +87,9 @@ function Blog() {
                     <div className="lg:order-1 lg:col-span-3 xl:col-span-6 2xl:col-span-3">
                         {/* post item */}
                         <div className="md:grid md:grid-cols-2 2xl:grid-cols-3 md:gap-6">
-                            {blogs.map.length > 0 ? (
+                            {blog?.length > 0 ? (
                                 <>
-                                    {blogs?.map((item: any, index: number) => (
+                                    {blog?.map((item: any, index: number) => (
                                         <div key={index} className="mt-6 px-3 md:mt-0">
                                             <div className="mx-[-12px] border border-slate-200 overflow-hidden rounded-[10px]">
                                                 <div className="mb-[15px]">
@@ -75,7 +98,7 @@ function Blog() {
                                                         to={`/blog/${item?.slug}`}
                                                     >
                                                         <Image
-                                                            className="min-h-[250px] max-h-[250px] object-contain"
+                                                            className="h-[250px] object-contain"
                                                             src={`${Config.apiUrl}upload/${item?.media.file_name}`}
                                                         />
                                                     </Link>
@@ -88,12 +111,12 @@ function Blog() {
                                                         </span>
                                                         <span className="flex items-center">
                                                             <BsPerson className="mr-1 inline w-4 h-4" />
-                                                            <span>James M.Martin</span>
+                                                            <span>Admin</span>
                                                         </span>
                                                     </div>
                                                     <Link to={`/blog/${item?.slug}`}>
                                                         <h3 className="mt-[10px] mb-4 text-base font-[600] leading-6">
-                                                            {item?.title}
+                                                            {subString(item?.title, 70)}
                                                         </h3>
                                                     </Link>
                                                     <Link
@@ -113,36 +136,24 @@ function Blog() {
                             )}
                         </div>
 
-                        {/* pagination */}
-                        <nav className="mt-[22px]">
-                            <ul className="flex justify-center items-center text-[14px]">
-                                <li className="mr-2">
-                                    <Link to="/#" className="px-[12px] py-[6px] rounded-[5px]">
-                                        <BsChevronDoubleLeft className="w-4 h-4 mr-4" />
-                                    </Link>
-                                </li>
-                                <li className="mr-2">
-                                    <Link to="/#" className="px-[12px] py-[6px] rounded-[5px] bg-[#0DA487] text-[#fff]">
-                                        1
-                                    </Link>
-                                </li>
-                                <li className="mr-2">
-                                    <Link to="/#" className="px-[12px] py-[6px] rounded-[5px]">
-                                        2
-                                    </Link>
-                                </li>
-                                <li className="mr-2">
-                                    <Link to="/#" className="px-[12px] py-[6px] rounded-[5px]">
-                                        3
-                                    </Link>
-                                </li>
-                                <li className="mr-2">
-                                    <Link to="/#" className="px-[12px] py-[6px] rounded-[5px]">
-                                        <BsChevronDoubleRight className="w-4 h-4 ml-4" />
-                                    </Link>
-                                </li>
-                            </ul>
-                        </nav>
+                        <div className="pagination-feature">
+                            {totalPage > 0 && (
+                                <div className="pagination-feature flex">
+                                    <ReactPaginate
+                                        previousLabel={<BiChevronLeft className="inline text-xl" />}
+                                        nextLabel={<BiChevronRight className="inline text-xl" />}
+                                        pageCount={totalPage}
+                                        onPageChange={handlePageChange}
+                                        activeClassName={'page-item active'}
+                                        disabledClassName={'page-item disabled'}
+                                        containerClassName={'pagination'}
+                                        previousLinkClassName={'page-link'}
+                                        nextLinkClassName={'page-link'}
+                                        pageLinkClassName={'page-link'}
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* search and options */}
@@ -151,232 +162,50 @@ function Blog() {
                         <div className="mt-[24px] lg:mt-0">
                             <div>
                                 {/* search */}
-                                <form
-                                    onSubmit={onSubmit}
-                                    className="py-[5px] w-full relative bg-[#f8f8f8] rounded-[5px]"
-                                >
+                                <div className="py-[5px] w-full relative bg-[#f8f8f8] rounded-[5px]">
                                     <input
-                                        ref={inputRef}
                                         className="w-full pl-[20px] pr-[68px] py-[8px] outline-none text-[14px] font-[600] bg-[#f8f8f8]"
                                         type="text"
                                         placeholder="Tìm kiếm..."
+                                        onChange={debounceSearch}
                                     />
                                     <input type="submit" hidden />
                                     <div className="w-[2px] h-[20px] bg-[#ccc] absolute right-[54px] top-[25%]"></div>
                                     <button type="submit">
                                         <BsSearch className="w-[14px] h-[20px] absolute right-[20px] top-[25%] text-[#000] hover:cursor-pointer" />
                                     </button>
-                                </form>
+                                </div>
                             </div>
                         </div>
 
                         {/* Recent post */}
-                        <ChakraProvider>
-                            <div className="mt-[20px] bg-[#f8f8f8]">
-                                <Accordion allowToggle>
-                                    <AccordionItem className="p-[6px] md:p-[8px] lg:p-[9px] xl:p-[10px]">
-                                        <h2 className="text-[16px] font-[700]">
-                                            <AccordionButton className="hover:!bg-[transparent]">
-                                                <Box flex="1" textAlign="left">
-                                                    Bài viết gần đây
-                                                </Box>
-                                                <AccordionIcon />
-                                            </AccordionButton>
-                                        </h2>
-                                        <AccordionPanel>
-                                            <div>
-                                                {recentPosts?.map((item: any, index: number) => (
-                                                    <div className="min-h-[74px] pt-[16px] flex items-center">
-                                                        <div className="w-[110px]">
-                                                            <Link className="w-full h-full" to="#">
-                                                                <Image
-                                                                    className="w-full h-full"
-                                                                    src={`${Config.apiUrl}upload/${item?.media.file_name}`}
-                                                                    alt=""
-                                                                />
-                                                            </Link>
-                                                        </div>
-                                                        <div className="pl-[15px] w-full">
-                                                            <Link to="/">
-                                                                <h5 className="text-[16px] font-[600]">{item.title}</h5>
-                                                            </Link>
-                                                            <h6 className="mt-[8px] text-[13px] flex justify-between">
-                                                                <span>{convertDate(item?.create_at)}</span>
-                                                                <BsHandThumbsUp className="w-[18px] h-[18px]" />
-                                                            </h6>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                                {/* 
-                                                <div className="min-h-[74px] pt-[16px] flex items-center">
-                                                    <div className="w-[110px]">
-                                                        <Link className="w-full h-full" to="#">
-                                                            <img
-                                                                className="w-full h-full"
-                                                                src="https://lzd-img-global.slatic.net/g/p/377dcd238e2eb9b4dc6d6255b1db6dc2.png_720x720q80.jpg_.webp"
-                                                                alt=""
-                                                            />
-                                                        </Link>
-                                                    </div>
-                                                    <div className="pl-[15px] w-full">
-                                                        <Link to="/">
-                                                            <h5 className="text-[16px] font-[600]">
-                                                                Áo bomber bóng chày nam nữ Davies brand
-                                                            </h5>
-                                                        </Link>
-                                                        <h6 className="mt-[8px] text-[13px] flex justify-between">
-                                                            <span>25 Jan, 2022</span>
-                                                            <BsHandThumbsUp className="w-[18px] h-[18px]" />
-                                                        </h6>
-                                                    </div>
-                                                </div>
-
-                                                <div className="min-h-[74px] pt-[16px] flex items-center">
-                                                    <div className="w-[110px]">
-                                                        <Link className="w-full h-full" to="#">
-                                                            <img
-                                                                className="w-full h-full"
-                                                                src="https://lzd-img-global.slatic.net/g/p/db1f9e51eae19240195a7c5035335d5b.jpg_720x720q80.jpg_.webp"
-                                                                alt=""
-                                                            />
-                                                        </Link>
-                                                    </div>
-                                                    <div className="pl-[15px] w-full">
-                                                        <Link to="/">
-                                                            <h5 className="text-[16px] font-[600]">
-                                                                Áo phông nam nữ form rộng tay lỡ
-                                                            </h5>
-                                                        </Link>
-                                                        <h6 className="mt-[8px] text-[13px] flex justify-between">
-                                                            <span>25 Jan, 2022</span>
-                                                            <BsHandThumbsUp className="w-[18px] h-[18px]" />
-                                                        </h6>
-                                                    </div>
-                                                </div>
-
-                                                <div className="min-h-[74px] pt-[16px] flex items-center">
-                                                    <div className="w-[110px]">
-                                                        <Link className="w-full h-full" to="#">
-                                                            <img
-                                                                className="w-full h-full"
-                                                                src="https://lzd-img-global.slatic.net/g/p/7589333ae1832ef3741a593fc4e52980.jpg_720x720q80.jpg_.webp
-                                                                "
-                                                                alt=""
-                                                            />
-                                                        </Link>
-                                                    </div>
-                                                    <div className="pl-[15px] w-full">
-                                                        <Link to="/">
-                                                            <h5 className="text-[16px] font-[600]">
-                                                                Hoodie zip local brand áo khoác nỉ form rộng
-                                                            </h5>
-                                                        </Link>
-                                                        <h6 className="mt-[8px] text-[13px] flex justify-between">
-                                                            <span>25 Jan, 2022</span>
-                                                            <BsHandThumbsUp className="w-[18px] h-[18px]" />
-                                                        </h6>
-                                                    </div>
-                                                </div> */}
-                                            </div>
-                                        </AccordionPanel>
-                                    </AccordionItem>
-                                </Accordion>
+                        <div className="post-list-left">
+                            <div className="title my-3 mt-5">
+                                <h3 className="text-lg font-semibold">Bài viết gần đây</h3>
                             </div>
-                        </ChakraProvider>
-
-                        {/* Category */}
-                        <ChakraProvider>
-                            <div className="mt-[20px] bg-[#f8f8f8]">
-                                <Accordion allowToggle>
-                                    <AccordionItem className="p-[6px] md:p-[8px] lg:p-[9px] xl:p-[10px]">
-                                        <h2 className="text-[16px] font-[700]">
-                                            <AccordionButton className="hover:!bg-[transparent]">
-                                                <Box flex="1" textAlign="left">
-                                                    Danh mục
-                                                </Box>
-                                                <AccordionIcon />
-                                            </AccordionButton>
-                                        </h2>
-                                        <AccordionPanel>
-                                            <ul>
-                                                <li className="my-4">
-                                                    <Link to="/">
-                                                        <div className="flex justify-between">
-                                                            <h5 className="text-[15px] text-[#4a5568] font-[600]">
-                                                                Latest Recipes
-                                                            </h5>
-                                                            <span className="w-[24px] h-[24px] text-[#fff] text-[13px] text-center bg-[#0da487] leading-[24px] rounded-[50%]">
-                                                                10
-                                                            </span>
-                                                        </div>
-                                                    </Link>
-                                                </li>
-                                                <li className="my-4">
-                                                    <Link to="/">
-                                                        <div className="flex justify-between">
-                                                            <h5 className="text-[15px] text-[#4a5568] font-[600]">
-                                                                Latest Recipes
-                                                            </h5>
-                                                            <span className="w-[24px] h-[24px] text-[#fff] text-[13px] text-center bg-[#0da487] leading-[24px] rounded-[50%]">
-                                                                10
-                                                            </span>
-                                                        </div>
-                                                    </Link>
-                                                </li>
-                                                <li className="my-4">
-                                                    <Link to="/">
-                                                        <div className="flex justify-between">
-                                                            <h5 className="text-[15px] text-[#4a5568] font-[600]">
-                                                                Latest Recipes
-                                                            </h5>
-                                                            <span className="w-[24px] h-[24px] text-[#fff] text-[13px] text-center bg-[#0da487] leading-[24px] rounded-[50%]">
-                                                                10
-                                                            </span>
-                                                        </div>
-                                                    </Link>
-                                                </li>
-                                                <li className="my-4">
-                                                    <Link to="/">
-                                                        <div className="flex justify-between">
-                                                            <h5 className="text-[15px] text-[#4a5568] font-[600]">
-                                                                Latest Recipes
-                                                            </h5>
-                                                            <span className="w-[24px] h-[24px] text-[#fff] text-[13px] text-center bg-[#0da487] leading-[24px] rounded-[50%]">
-                                                                12
-                                                            </span>
-                                                        </div>
-                                                    </Link>
-                                                </li>
-                                                <li className="my-4">
-                                                    <Link to="/">
-                                                        <div className="flex justify-between">
-                                                            <h5 className="text-[15px] text-[#4a5568] font-[600]">
-                                                                Latest Recipes
-                                                            </h5>
-                                                            <span className="w-[24px] h-[24px] text-[#fff] text-[13px] text-center bg-[#0da487] leading-[24px] rounded-[50%]">
-                                                                8
-                                                            </span>
-                                                        </div>
-                                                    </Link>
-                                                </li>
-                                                <li className="my-4">
-                                                    <Link to="/">
-                                                        <div className="flex justify-between">
-                                                            <h5 className="text-[15px] text-[#4a5568] font-[600]">
-                                                                Latest Recipes
-                                                            </h5>
-                                                            <span className="w-[24px] h-[24px] text-[#fff] text-[13px] text-center bg-[#0da487] leading-[24px] rounded-[50%]">
-                                                                6
-                                                            </span>
-                                                        </div>
-                                                    </Link>
-                                                </li>
-                                            </ul>
-                                        </AccordionPanel>
-                                    </AccordionItem>
-                                </Accordion>
-                            </div>
-                        </ChakraProvider>
+                            {recentBlog?.map((item: any, index: number) => (
+                                <div className="min-h-[74px] pt-[16px] flex items-center" key={index}>
+                                    <div className="w-[110px]">
+                                        <Link className="w-full h-full" to="#">
+                                            <Image
+                                                className="w-full h-full"
+                                                src={`${Config.apiUrl}upload/${item?.media.file_name}`}
+                                                alt=""
+                                            />
+                                        </Link>
+                                    </div>
+                                    <div className="pl-[15px] w-full">
+                                        <Link to="/">
+                                            <h5 className="text-[16px] font-[600]">{item.title}</h5>
+                                        </Link>
+                                        <h6 className="mt-[8px] text-[13px] flex justify-between">
+                                            <span>{convertDate(item?.create_at)}</span>
+                                            <BsHandThumbsUp className="w-[18px] h-[18px]" />
+                                        </h6>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

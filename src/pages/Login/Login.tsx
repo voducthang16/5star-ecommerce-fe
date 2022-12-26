@@ -275,7 +275,7 @@ const Login = () => {
                                                 ></FacebookLogin>
                                             </div>
                                             <div className="google w-full">
-                                                <GoogleOAuthProvider clientId="545276130953-o2mg12b3ks4qqq88grnid2j63qqhotdl.apps.googleusercontent.com">
+                                                <GoogleOAuthProvider clientId="256312378406-ddmilb0u3on67nqau1aat7ci6c53q9t6.apps.googleusercontent.com">
                                                     <GoogleLogin onSuccess={responseGoogle} />
                                                     {/* <Button colorScheme="red" width="100%" onClick={responseGoogle}>
                                                     <AiOutlineGooglePlus className="text-xl mx-1" /> Google
