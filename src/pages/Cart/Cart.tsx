@@ -193,18 +193,19 @@ function Cart() {
     };
 
     const handleSubmitForm = (values: any) => {
+        console.log('values: ', values);
         let products: Array<any> = [];
+
         if (listCart.length > 0) {
             listCart.forEach((item: any) => {
                 products.push({ id_product: item.id, quantity: +item.quantity });
             });
-            let address = `${values.address}, ${values?.wardName.name}, ${values?.districtName?.name}, ${values?.cityName?.name}`;
-            console.log(coupon?.id);
             let couponId = null;
             if (coupon) {
                 couponId = String(coupon?.id);
             }
-            console.log(coupon);
+
+            let address = `${values?.address}, ${wardName?.name}, ${districtName?.name}, ${cityName?.name}`;
             let dataSendRequest = {
                 address,
                 name: values?.name,
@@ -215,7 +216,6 @@ function Cart() {
                 payment_method_id: +values?.payment,
                 total: totalCart + fee,
             };
-            console.log(dataSendRequest);
             OrderService.CreateOrder(dataSendRequest).then((res: ResponseType) => {
                 if (res.statusCode === 201) {
                     toast({
@@ -564,7 +564,7 @@ function Cart() {
                                                 className="object-contain w-full mr-3"
                                                 src={
                                                     cartItem?.image
-                                                        ? `${cartItem?.image}`
+                                                        ? `${Config.apiUrl}upload/${cartItem?.image}`
                                                         : `${Config.apiUrl}upload/${cartItem?.product?.images[0].file_name}`
                                                 }
                                             />

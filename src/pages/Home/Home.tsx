@@ -21,22 +21,42 @@ import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import { fetchProductAsync, getProducts } from '~/features/product/productSlice';
 import './Home.scss';
 import { Helmet } from 'react-helmet-async';
-import HomeService from '~/services/HomeService';
+import ProductService from '~/services/ProductService';
+import { ResponseType } from '~/utils/Types';
+import { FormatPriceVND } from '~/utils/FormatPriceVND';
 import Config from '~/config';
+
 function Home() {
+    const [productSold, setProductSold] = useState<any>([]);
+    const [productNew, setProductNew] = useState<any>([]);
     const dispatch = useAppDispatch();
     const products = useAppSelector(getProducts);
-    const [listBanner, setListBanner] = useState<any>([]);
+
     useEffect(() => {
         dispatch(fetchProductAsync({ page: 0, perPage: 8 }));
     }, [dispatch]);
-    const [productsView, setProductsView] = useState<any>([]);
-    const [productsSold, setProductsSold] = useState<any>([]);
+
+    const getProductTopSold = () => {
+        ProductService.getProductOrderBy({ orderBy: 'sold', perPage: 5 }).then((res: ResponseType) => {
+            if (res.statusCode === 200) {
+                setProductSold(res.data.data);
+            }
+        });
+    };
+
+    const getProductTopNew = () => {
+        ProductService.getProductOrderBy({ orderBy: 'create_at', perPage: 5 }).then((res: ResponseType) => {
+            if (res.statusCode === 200) {
+                setProductNew(res.data.data);
+            }
+        });
+    };
+
     useEffect(() => {
-        HomeService.GetBanner()
-            .then((res) => setListBanner(res.data.data))
-            .catch((err) => console.log(err));
+        getProductTopNew();
+        getProductTopSold();
     }, []);
+
     return (
         <>
             <Helmet>
@@ -95,18 +115,18 @@ function Home() {
                                     navigation={true}
                                     modules={[Autoplay, Pagination, Navigation, EffectCreative]}
                                 >
-                                    {listBanner?.map((slide: any, index: number) => (
+                                    {configSlide.map((slide: any, index: number) => (
                                         <SwiperSlide key={index}>
                                             <div className="relative pt-12 lg:py-44 cursor-pointer">
                                                 <div className="pb-8 lg:pb-0">
                                                     <span className="desc-active block text-base md:text-xl text-slate-700 font-medium">
-                                                        {slide?.sub_title}
+                                                        Trong mùa hè này, chúng tôi đang có 🔥
                                                     </span>
                                                     <h2
                                                         className="title-active mt-6 font-semibold text-3xl sm:text-4xl md:text-5xl w-[70%]
                                                     xl:text-5xl 2xl:text-6xl !leading-[114%] text-slate-900 relative z-10 break-words"
                                                     >
-                                                        {slide?.title}
+                                                        {slide.title}
                                                     </h2>
                                                     <Link
                                                         className="relative h-auto inline-flex items-center justify-center 
@@ -115,7 +135,7 @@ function Home() {
                                                             text-slate-50 dark:text-slate-800 shadow-xl focus:outline-none focus:ring-2 
                                                             focus:ring-offset-2 focus:ring-primary-6000 mt-10 link-active"
                                                         rel="noopener noreferrer"
-                                                        to="/category"
+                                                        to="/"
                                                     >
                                                         <span>Mua ngay</span>
                                                         <span>
@@ -126,7 +146,7 @@ function Home() {
                                                 <div className="lg:absolute lg:top-0 lg:bottom-0 lg:-right-[1rem] lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl z-[5]">
                                                     <Image
                                                         className="w-full h-full object-contain object-right-top img-active"
-                                                        src={`${Config.apiUrl}upload/${slide?.media?.file_name}`}
+                                                        src={slide.logo}
                                                         alt="Slide"
                                                     />
                                                 </div>
@@ -139,7 +159,7 @@ function Home() {
                     </div>
                 </section>
 
-                {/* 6 Slide  */}
+                {/* 3 Slide  */}
                 <section className="px-5 my-10 lg:my-20 ">
                     <div className="bg-white h-60">
                         <Swiper
@@ -213,17 +233,17 @@ function Home() {
                             </p>
                         </div>
                         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 mt-10">
-                            {products?.map((item: any, index: number) => (
+                            {products.map((item: any, index: number) => (
                                 <div key={index} className="col-span-1" data-aos="zoom-in" data-aos-delay="200">
                                     <Product
-                                        idProduct={item?.id}
-                                        name={item?.name}
-                                        slug={item?.slug}
-                                        color={item?.classify_1}
-                                        size={item?.classify_2}
-                                        type={item?.classify_n}
-                                        images={item?.images}
-                                        stocks={item?.stocks}
+                                        idProduct={item.id}
+                                        name={item.name}
+                                        slug={item.slug}
+                                        color={item.classify_1}
+                                        size={item.classify_2}
+                                        type={item.classify_n}
+                                        images={item.images}
+                                        stocks={item.stocks}
                                     />
                                 </div>
                             ))}
@@ -314,7 +334,7 @@ function Home() {
                                         </p>
                                         <Countdown date="2022-12-30T01:02:03" renderer={renderer} />
                                         <div className="mt-6">
-                                            <Link to="/category">
+                                            <Link to="/">
                                                 <Button
                                                     colorScheme="teal"
                                                     className="!py-[25px] !px-[50px] !text-2xl"
@@ -391,7 +411,7 @@ function Home() {
                                 Bán chạy nhất
                             </h3>
                             <div className="space-y-2">
-                                {[1, 2, 3, 4].map((item, index) => (
+                                {productSold?.map((item: any, index: any) => (
                                     <div
                                         key={index}
                                         className="pb-2 flex items-center space-x-4 border-b border-slate-200"
@@ -400,51 +420,47 @@ function Home() {
                                     >
                                         <div className="min-w-[64px] h-16">
                                             <Image
-                                                src={'https://cartzilla.createx.studio/img/shop/cart/widget/01.jpg'}
+                                                src={`${Config.apiUrl}upload/${item?.images[0]?.file_name}`}
                                                 alt={'Product'}
                                                 className={'w-full h-full object-contain'}
                                             />
                                         </div>
                                         <div className="flex flex-col justify-center space-y-2">
-                                            <h5 className="text-sm font-semibold text-gray-700">Giày Nike</h5>
-                                            <span className="text-xs font-medium text-blue-700/90">1000.000VND</span>
+                                            <h5 className="text-sm font-semibold text-gray-700">{item?.name}</h5>
+                                            <span className="text-xs font-medium text-blue-700/90">
+                                                {FormatPriceVND(item?.stocks[0].price)}
+                                            </span>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <span className="block text-lg text-gray-800">...</span>
-                            <a className="inline-flex items-center text-base text-pink-400" href="/">
-                                Xem thêm <AiOutlineArrowRight className="ml-2" />
-                            </a>
                         </div>
                         <div className="col-span-1">
                             <h3 className="mb-4 text-base font-medium">Hàng mới</h3>
                             <div className="space-y-2">
-                                {[1, 2, 3, 4].map((item, index) => (
+                                {productNew?.map((item: any, index: any) => (
                                     <div
                                         key={index}
                                         className="pb-2 flex items-center space-x-4 border-b border-slate-200"
                                         data-aos="fade-up"
                                         data-aos-delay={index * 200}
                                     >
-                                        <div className="min-w-[64px] h-16" data-aos="zoom-in" data-aos-delay="400">
+                                        <div className="min-w-[64px] h-16">
                                             <Image
-                                                src={'https://cartzilla.createx.studio/img/shop/cart/widget/01.jpg'}
+                                                src={`${Config.apiUrl}upload/${item?.images[0]?.file_name}`}
                                                 alt={'Product'}
                                                 className={'w-full h-full object-contain'}
                                             />
                                         </div>
                                         <div className="flex flex-col justify-center space-y-2">
-                                            <h5 className="text-sm font-semibold text-gray-700">Giày Adidas</h5>
-                                            <span className="text-xs font-medium text-blue-700/90">1000.000VND</span>
+                                            <h5 className="text-sm font-semibold text-gray-700">{item?.name}</h5>
+                                            <span className="text-xs font-medium text-blue-700/90">
+                                                {FormatPriceVND(item?.stocks[0].price)}
+                                            </span>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <span className="block text-lg text-gray-800">...</span>
-                            <a className="inline-flex items-center text-base text-pink-400" href="/">
-                                Xem thêm <AiOutlineArrowRight className="ml-2" />
-                            </a>
                         </div>
                         <div className="hidden lg:block lg:col-span-1">
                             <Image className="w-full object-contain" src={images.b_banner} alt={'Best Accessories'} />

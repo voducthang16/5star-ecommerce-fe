@@ -31,19 +31,22 @@ const initialState: ProductState = {
 };
 
 export const fetchProductAsync = createAsyncThunk('product/fetchProducts', async (filter: any = '') => {
-    const { page, perPage, fromPrice, toPrice, name, id_category } = filter;
+    const { page, fromPrice, toPrice, name, id_category, perPage, orderType, orderBy } = filter;
     const response: ResponseType = await ProductService.getAllProduct({
         page,
-        perPage,
         fromPrice,
         toPrice,
         name,
         id_category,
+        perPage,
+        orderType,
+        orderBy,
     });
     if (response.statusCode === 200) {
         return response.data;
     }
 });
+
 
 export const fetchDetailProductAsync = createAsyncThunk('product/fetchDetailProducts', async (slug: string) => {
     const response = await ProductService.getOneProduct(slug);

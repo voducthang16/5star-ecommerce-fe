@@ -10,11 +10,13 @@ const getAllProduct = async ({
     perPage = 8,
     name = '',
     id_category = '',
+    orderType = 'ASC',
+    orderBy = '',
 }: any) => {
     let dataAllProduct = await AxiosInstance.get(
         Config.apiUrl +
             url +
-            `?page=${page}&perPage=${perPage}&price_from=${fromPrice}&price_to=${toPrice}&id_category=${id_category}&name=${name}&status=1`,
+            `?page=${page}&perPage=${perPage}&price_from=${fromPrice}&price_to=${toPrice}&id_category=${id_category}&name=${name}&orderType=${orderType}&orderBy=${orderBy}&status=1`,
     ).then((resAllProduct: any) => {
         if (resAllProduct.statusCode === 200) {
             resAllProduct.data.data.forEach((res: any) => {
