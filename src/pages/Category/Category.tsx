@@ -101,7 +101,7 @@ function Category() {
         return result;
     };
 
-    const icons: any = [<JeansIcon />, <ShoesIcon />, <BagIcon />, <ShirtIcon />, <WatchIcon />, <AccessoriesIcon />];
+    const icons: any = [<ShirtIcon />, <JeansIcon />, <ShoesIcon />, <BagIcon />, <WatchIcon />, <AccessoriesIcon />];
 
     return (
         <>
