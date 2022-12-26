@@ -282,7 +282,7 @@ function ProductDetail() {
                             <div style={{ height: `${filled}%` }} className={`progressbar`}></div>
                             <Swiper
                                 onSlideChange={(item) => {
-                                    setFilled(+(((1 + item.realIndex) / detail?.images.length) * 100).toFixed(2));
+                                    setFilled(+(((1 + item.realIndex) / detail?.images?.length) * 100).toFixed(2));
                                 }}
                                 direction={width > 0 ? 'vertical' : 'horizontal'}
                                 slidesPerView={1}
@@ -297,7 +297,7 @@ function ProductDetail() {
                                     <SwiperSlide key={index}>
                                         <Image
                                             className="md:mx-auto object-contain h-full"
-                                            src={`${Config.apiUrl}upload/${item.file_name}`}
+                                            src={`${Config.apiUrl}upload/${item?.file_name}`}
                                             alt={'Product'}
                                         />
                                     </SwiperSlide>
@@ -313,8 +313,8 @@ function ProductDetail() {
                                 Tình trạng:<span className="inline-block text-[#29b474]">Còn hàng</span>
                             </h4>
                             <div className="flex items-center">
-                                <Rate className="flex space-x-1" average={3.7} />
-                                <span className="ml-1 inline-block text-sm text-[#aeb4be]">(17)</span>
+                                <Rate className="flex space-x-1" average={average || 0} />
+                                <span className="ml-1 inline-block text-sm text-[#aeb4be]">({average || 0})</span>
                                 <span className="ml-2 inline-block text-sm text-[#aeb4be]">
                                     Đã bán (web): {detail?.sold}
                                 </span>
@@ -335,15 +335,15 @@ function ProductDetail() {
                                                     className="color w-px h-px appearance-none"
                                                     type="radio"
                                                     name="color"
-                                                    id={`c_${detail.id}_${value}`}
+                                                    id={`c_${detail?.id}_${value}`}
                                                     value={value}
                                                     onClick={() => {
-                                                        setImgInCart(img[index].file_name);
+                                                        setImgInCart(detail?.images[index]?.file_name);
                                                     }}
                                                 />
                                                 <label
                                                     className="color-label bg-white cursor-pointer relative inline-block w-8 h-8 border-[3px] border-slate-400 shadow-sm rounded-full"
-                                                    htmlFor={`c_${detail.id}_${value}`}
+                                                    htmlFor={`c_${detail?.id}_${value}`}
                                                 >
                                                     <span
                                                         style={{ backgroundColor: `${key}` }}
@@ -369,12 +369,12 @@ function ProductDetail() {
                                                     type="radio"
                                                     value={value}
                                                     name="size"
-                                                    id={`s_${detail.id}_${value}`}
+                                                    id={`s_${detail?.id}_${value}`}
                                                 />
                                                 <label
                                                     className="size-label bg-white w-8 h-8 text-center cursor-pointer
                                                 leading-8 inline-block border border-slate-200 rounded-lg"
-                                                    htmlFor={`s_${detail.id}_${value}`}
+                                                    htmlFor={`s_${detail?.id}_${value}`}
                                                 >
                                                     {key}
                                                 </label>
@@ -488,7 +488,7 @@ function ProductDetail() {
             <section className="container pb-10 lg:pb-20">
                 <div className="grid grid-cols-12 gap-5 py-10 lg:py-20 border-b border-slate-200">
                     <div className="col-span-12 lg:col-span-4">
-                        <h6 className="text-2xl text-gray-800 font-bold mb-4">{listRating.length} Đánh giá</h6>
+                        <h6 className="text-2xl text-gray-800 font-bold mb-4">{listRating?.length} Đánh giá</h6>
                         <div className="flex text-base items-center space-x-2">
                             <Rate className="flex space-x-1" average={average || 0} />
                             <span>{(average || 0).toFixed(2)}</span>
@@ -531,12 +531,12 @@ function ProductDetail() {
                                     <div className="w-20 h-20">
                                         <Image
                                             className="w-full h-full rounded-full"
-                                            src={`${Config.apiUrl}upload/${item?.user.avatar.file_name}`}
+                                            src={`${Config.apiUrl}upload/${item?.user?.avatar?.file_name}`}
                                         />
                                     </div>
                                     <div className="flex flex-col justify-between space-y-2">
                                         <span className="text-sm text-gray-600">
-                                            {item?.user.last_name} {item?.user.first_name}
+                                            {item?.user?.last_name} {item?.user?.first_name}
                                         </span>
                                         <Rate className="flex space-x-1" average={item?.rating} />
                                         <div className="text-base">{convertDate(item?.create_at)}</div>

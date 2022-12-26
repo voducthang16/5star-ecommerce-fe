@@ -126,7 +126,7 @@ export const specialProduct = [
         sub_title: '',
         image: `${images.special_1}`,
         column: 'row-span-1',
-        link: '',
+        link: '/category',
     },
     {
         title: 'Áo Khoác',
@@ -134,21 +134,21 @@ export const specialProduct = [
         image: `${images.special_2}`,
         column: 'row-span-2',
 
-        link: '',
+        link: '/category',
     },
     {
         title: 'Đồng Hồ Nữ',
         sub_title: '',
         image: `${images.special_3}`,
         column: 'row-span-auto',
-        link: '',
+        link: '/category',
     },
     {
         title: 'Quần Jeans',
         sub_title: '',
         image: `${images.special_4}`,
         column: 'row-span-2',
-        link: '',
+        link: '/category',
     },
     {
         title: 'Quần Tây',
@@ -156,31 +156,31 @@ export const specialProduct = [
         image: `${images.special_6}`,
 
         column: 'row-span-2',
-        link: '',
+        link: '/category',
     },
     {
         title: 'Giày Sneaker',
         sub_title: '',
         image: `${images.special_5}`,
         column: 'row-span-1',
-        link: '',
+        link: '/category',
     },
 ];
 
 export const threeSmallSlide = [
     {
         title: 'Giảm 20%',
-        link: '',
+        link: '/category',
         img: images.sm1,
     },
     {
         title: 'Giảm 50%',
-        link: '',
+        link: '/category',
         img: images.sm2,
     },
     {
         title: 'Giảm 40%',
-        link: '',
+        link: '/category',
         img: images.sm3,
     },
 ];
@@ -189,37 +189,37 @@ export const sixSmallSlide = [
     {
         brand: 'Thời trang nam',
         title: 'Giá bùng nổ áo Polo giảm sốc 35%',
-        link: '/ao-po-lo',
+        link: '/category',
         img: images.s1,
     },
     {
         brand: 'Đồng hồ nam',
         title: 'Nhận ưu đãi lớn trong hôm nay',
-        link: '/dong-ho-thong-minh',
+        link: '/category',
         img: images.s2,
     },
     {
         brand: 'Áo khoác nam',
         title: 'Bớt lạnh khi mùa đông về chỉ hơn 200k',
-        link: '/ao-khoac-nam',
+        link: '/category',
         img: images.s3,
     },
     {
         brand: 'Áo sơ mi',
         title: 'Ưu đãi giảm 20% trong hôm nay',
-        link: '/ao-so-mi',
+        link: '/category',
         img: images.s4,
     },
     {
         brand: 'Giày Sneaker',
         title: 'Giảm 20% khi mua 2 sản phẩm trở lên',
-        link: '/giay-sneaker',
+        link: '/category',
         img: images.s5,
     },
     {
         brand: 'Thời trang nữ',
         title: 'Phụ kiện phải có cho dịp cuối năm',
-        link: '/thoi-trang-nu',
+        link: '/category',
         img: images.s6,
     },
 ];

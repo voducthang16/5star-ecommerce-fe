@@ -14,10 +14,15 @@ const filterRateProduct = (id_product: any, rate: any) => {
     return AxiosInstance.get(Config.apiUrl + url + `?id_product=${id_product}&rating=${rate}`);
 };
 
+const getRate5Star = () => {
+    return AxiosInstance.get(Config.apiUrl + url + '?rating=5');
+};
+
 const RatingService = {
     GetRateByIdProduct,
     GetAverageRating,
     filterRateProduct,
+    getRate5Star,
 };
 
 export default RatingService;
