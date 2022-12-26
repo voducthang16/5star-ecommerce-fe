@@ -22,12 +22,17 @@ const RatingProduct = (data: any) => {
     return AxiosInstance.post(Config.apiUrl + 'rating', data);
 };
 
+const PaymentSuccess = (data: any) => {
+    return AxiosInstance.post(Config.apiUrl + '/payment-success', data);
+};
+
 const OrderService = {
     CreateOrder,
     OrderVnPay,
     getOrderByUserId,
     getOrderDetail,
     RatingProduct,
+    PaymentSuccess,
 };
 
 export default OrderService;

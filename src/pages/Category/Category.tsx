@@ -305,10 +305,10 @@ function Category() {
                                     <option value="DESC">Giảm dần</option>
                                 </Select>
                             </div>
-                            {loadingStatus === 'loading' ? (
-                                <LoadingSpin className="col-span-6" />
-                            ) : (
-                                <div className="product-list">
+                            <div className="product-list">
+                                {loadingStatus === 'loading' ? (
+                                    <LoadingSpin className="col-span-6" />
+                                ) : (
                                     <div className="grid grid-cols-12 gap-4">
                                         {products.length > 0 &&
                                             products?.map((item: any, index: number) => (
@@ -337,26 +337,28 @@ function Category() {
                                             </p>
                                         )}
                                     </div>
-                                    <div className="pagination-feature">
-                                        {totalPage > 0 && (
-                                            <div className="pagination-feature flex">
-                                                <ReactPaginate
-                                                    previousLabel={<BiChevronLeft className="inline text-xl" />}
-                                                    nextLabel={<BiChevronRight className="inline text-xl" />}
-                                                    pageCount={totalPage}
-                                                    onPageChange={handlePageChange}
-                                                    activeClassName={'page-item active'}
-                                                    disabledClassName={'page-item disabled'}
-                                                    containerClassName={'pagination'}
-                                                    previousLinkClassName={'page-link'}
-                                                    nextLinkClassName={'page-link'}
-                                                    pageLinkClassName={'page-link'}
-                                                />
-                                            </div>
-                                        )}
-                                    </div>
+                                )}
+
+                                <div className="pagination-feature">
+                                    {totalPage > 0 && (
+                                        <div className="pagination-feature flex">
+                                            <ReactPaginate
+                                                previousLabel={<BiChevronLeft className="inline text-xl" />}
+                                                nextLabel={<BiChevronRight className="inline text-xl" />}
+                                                pageCount={totalPage}
+                                                onPageChange={handlePageChange}
+                                                activeClassName={'page-item active'}
+                                                disabledClassName={'page-item disabled'}
+                                                containerClassName={'pagination'}
+                                                previousLinkClassName={'page-link'}
+                                                nextLinkClassName={'page-link'}
+                                                pageLinkClassName={'page-link'}
+                                                activeLinkClassName={'active'}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            </div>
                         </div>
                     </div>
                 </div>

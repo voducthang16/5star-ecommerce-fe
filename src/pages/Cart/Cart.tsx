@@ -193,16 +193,16 @@ function Cart() {
     };
 
     const handleSubmitForm = (values: any) => {
-        console.log('values: ', values);
         let products: Array<any> = [];
 
         if (listCart.length > 0) {
             listCart.forEach((item: any) => {
                 products.push({ id_product: item.id, quantity: +item.quantity });
             });
-            let couponId = null;
+            let couponCode = null;
+            console.log('coupon: ', coupon);
             if (coupon) {
-                couponId = String(coupon?.id);
+                couponCode = coupon?.code || null;
             }
 
             let address = `${values?.address}, ${wardName?.name}, ${districtName?.name}, ${cityName?.name}`;
@@ -212,10 +212,11 @@ function Cart() {
                 phone: values.phone,
                 note: values.note,
                 products,
-                coupon_id: couponId,
+                coupon: couponCode,
                 payment_method_id: +values?.payment,
                 total: totalCart + fee,
             };
+            console.log('dataSendRequest: ', dataSendRequest);
             OrderService.CreateOrder(dataSendRequest).then((res: ResponseType) => {
                 if (res.statusCode === 201) {
                     toast({
@@ -464,7 +465,7 @@ function Cart() {
                                                         className="hidden"
                                                         type="radio"
                                                         name="type_payment"
-                                                        value="1"
+                                                        value="2"
                                                         id="cod"
                                                         onChange={(e) =>
                                                             formik.setFieldValue('payment', +e.target.value)
@@ -517,7 +518,7 @@ function Cart() {
                                                         type="radio"
                                                         name="type_payment"
                                                         id="shopee"
-                                                        value="2"
+                                                        value="3"
                                                         onChange={(e) =>
                                                             formik.setFieldValue('payment', +e.target.value)
                                                         }
@@ -555,7 +556,7 @@ function Cart() {
 
                     <div className="col-span-12 md:col-span-5 space-y-5">
                         <h5 className="text-2xl font-bold">Giỏ hàng</h5>
-                        <div className="space-y-4 max-h-[256px] overflow-y-auto pr-2">
+                        <div className="space-y-4 max-h-[256px] overflow-y-auto pr-2    ">
                             {listCart &&
                                 listCart?.map((cartItem: any) => (
                                     <div className="flex relative" key={cartItem.id}>
@@ -564,7 +565,7 @@ function Cart() {
                                                 className="object-contain w-full mr-3"
                                                 src={
                                                     cartItem?.image
-                                                        ? `${Config.apiUrl}upload/${cartItem?.image}`
+                                                        ? `${cartItem?.image}`
                                                         : `${Config.apiUrl}upload/${cartItem?.product?.images[0].file_name}`
                                                 }
                                             />
