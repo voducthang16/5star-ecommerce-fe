@@ -199,16 +199,23 @@ function Cart() {
                 products.push({ id_product: item.id, quantity: +item.quantity });
             });
             let address = `${values.address}, ${values?.wardName.name}, ${values?.districtName?.name}, ${values?.cityName?.name}`;
+            console.log(coupon?.id);
+            let couponId = null;
+            if (coupon) {
+                couponId = String(coupon?.id);
+            }
+            console.log(coupon);
             let dataSendRequest = {
                 address,
                 name: values?.name,
                 phone: values.phone,
                 note: values.note,
                 products,
-                coupon_id: String(coupon?.id) || null,
+                coupon_id: couponId,
                 payment_method_id: +values?.payment,
                 total: totalCart + fee,
             };
+            console.log(dataSendRequest);
             OrderService.CreateOrder(dataSendRequest).then((res: ResponseType) => {
                 if (res.statusCode === 201) {
                     toast({

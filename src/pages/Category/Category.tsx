@@ -162,13 +162,13 @@ function Category() {
                                                         justifyContent={'space-between'}
                                                         width={'100%'}
                                                     >
-                                                        {item.name}
+                                                        {item?.name}
                                                     </Box>
                                                     <AccordionIcon />
                                                 </AccordionButton>
 
                                                 <div className="sub-category border-l-2 border-primary ml-[44px]">
-                                                    {fetchCategoryNoParent(item.id)?.map((sub: any, index: number) => (
+                                                    {fetchCategoryNoParent(item?.id)?.map((sub: any, index: number) => (
                                                         <AccordionPanel
                                                             py="4px"
                                                             key={index}
@@ -183,7 +183,7 @@ function Category() {
                                                                     }}
                                                                     whileTap={{ scale: 0.9 }}
                                                                 >
-                                                                    {sub.name}
+                                                                    {sub?.name}
                                                                 </motion.span>
                                                             </p>
                                                         </AccordionPanel>
@@ -296,7 +296,7 @@ function Category() {
                         ) : (
                             <div className="col-span-12 lg:col-span-9">
                                 {/* top right */}
-                                <div className="text-base mb-4">
+                                {/* <div className="text-base mb-4">
                                     <span>Sắp xếp theo: </span>
                                     <select name="" id="">
                                         <option value="1">Giá</option>
@@ -304,10 +304,10 @@ function Category() {
                                         <option value="1">abc</option>
                                         <option value="1">abc</option>
                                     </select>
-                                </div>
+                                </div> */}
                                 <div className="product-list">
                                     <div className="grid grid-cols-12 gap-4">
-                                        {products.length > 0 &&
+                                        {products?.length > 0 &&
                                             products?.map((item: any, index: number) => (
                                                 <div
                                                     key={index}
@@ -316,18 +316,18 @@ function Category() {
                                                     data-aos-delay="200"
                                                 >
                                                     <Product
-                                                        idProduct={item.id}
-                                                        name={item.name}
-                                                        slug={item.slug}
-                                                        color={item.classify_1}
-                                                        size={item.classify_2}
-                                                        type={item.classify_n}
-                                                        images={item.images}
-                                                        stocks={item.stocks}
+                                                        idProduct={item?.id}
+                                                        name={item?.name}
+                                                        slug={item?.slug}
+                                                        color={item?.classify_1}
+                                                        size={item?.classify_2}
+                                                        type={item?.classify_n}
+                                                        images={item?.images}
+                                                        stocks={item?.stocks}
                                                     />
                                                 </div>
                                             ))}
-                                        {products.length === 0 && (
+                                        {products?.length === 0 && (
                                             <p className="col-span-12 text-2xl font-semibold text-center">
                                                 Không có sản phẩm nào
                                                 <AiOutlineFilter className="inline-block text-3xl text-red-500" />

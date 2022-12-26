@@ -7,7 +7,7 @@ const getAllProduct = async ({
     page = 0,
     fromPrice = '',
     toPrice = '',
-    perPage = 9,
+    perPage = 8,
     name = '',
     id_category = '',
 }: any) => {
@@ -87,9 +87,14 @@ const getOneProduct = async (slug: string) => {
     return result;
 };
 
+const getProductOrderBy = ({ orderBy, perPage = 5 }: any) => {
+    return AxiosInstance.get(Config.apiUrl + url + `?perPage=${perPage}&orderBy=${orderBy}&orderType=DESC`);
+};
+
 const ProductService = {
     getAllProduct,
     getOneProduct,
+    getProductOrderBy,
 };
 
 export default ProductService;

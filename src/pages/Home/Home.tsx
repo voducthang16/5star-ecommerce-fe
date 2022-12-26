@@ -1,5 +1,5 @@
 import { Button } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Countdown from 'react-countdown';
 import { AiOutlineArrowRight } from 'react-icons/ai';
 import { BsSearch } from 'react-icons/bs';
@@ -21,15 +21,22 @@ import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import { fetchProductAsync, getProducts } from '~/features/product/productSlice';
 import './Home.scss';
 import { Helmet } from 'react-helmet-async';
-
+import HomeService from '~/services/HomeService';
+import Config from '~/config';
 function Home() {
     const dispatch = useAppDispatch();
     const products = useAppSelector(getProducts);
-
+    const [listBanner, setListBanner] = useState<any>([]);
     useEffect(() => {
-        dispatch(fetchProductAsync({ page: 0 }));
+        dispatch(fetchProductAsync({ page: 0, perPage: 8 }));
     }, [dispatch]);
-
+    const [productsView, setProductsView] = useState<any>([]);
+    const [productsSold, setProductsSold] = useState<any>([]);
+    useEffect(() => {
+        HomeService.GetBanner()
+            .then((res) => setListBanner(res.data.data))
+            .catch((err) => console.log(err));
+    }, []);
     return (
         <>
             <Helmet>
@@ -88,18 +95,18 @@ function Home() {
                                     navigation={true}
                                     modules={[Autoplay, Pagination, Navigation, EffectCreative]}
                                 >
-                                    {configSlide.map((slide: any, index: number) => (
+                                    {listBanner?.map((slide: any, index: number) => (
                                         <SwiperSlide key={index}>
                                             <div className="relative pt-12 lg:py-44 cursor-pointer">
                                                 <div className="pb-8 lg:pb-0">
                                                     <span className="desc-active block text-base md:text-xl text-slate-700 font-medium">
-                                                        Trong mùa hè này, chúng tôi đang có 🔥
+                                                        {slide?.sub_title}
                                                     </span>
                                                     <h2
                                                         className="title-active mt-6 font-semibold text-3xl sm:text-4xl md:text-5xl w-[70%]
                                                     xl:text-5xl 2xl:text-6xl !leading-[114%] text-slate-900 relative z-10 break-words"
                                                     >
-                                                        {slide.title}
+                                                        {slide?.title}
                                                     </h2>
                                                     <Link
                                                         className="relative h-auto inline-flex items-center justify-center 
@@ -108,7 +115,7 @@ function Home() {
                                                             text-slate-50 dark:text-slate-800 shadow-xl focus:outline-none focus:ring-2 
                                                             focus:ring-offset-2 focus:ring-primary-6000 mt-10 link-active"
                                                         rel="noopener noreferrer"
-                                                        to="/"
+                                                        to="/category"
                                                     >
                                                         <span>Mua ngay</span>
                                                         <span>
@@ -119,7 +126,7 @@ function Home() {
                                                 <div className="lg:absolute lg:top-0 lg:bottom-0 lg:-right-[1rem] lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl z-[5]">
                                                     <Image
                                                         className="w-full h-full object-contain object-right-top img-active"
-                                                        src={slide.logo}
+                                                        src={`${Config.apiUrl}upload/${slide?.media?.file_name}`}
                                                         alt="Slide"
                                                     />
                                                 </div>
@@ -132,7 +139,7 @@ function Home() {
                     </div>
                 </section>
 
-                {/* 3 Slide  */}
+                {/* 6 Slide  */}
                 <section className="px-5 my-10 lg:my-20 ">
                     <div className="bg-white h-60">
                         <Swiper
@@ -206,17 +213,17 @@ function Home() {
                             </p>
                         </div>
                         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 mt-10">
-                            {products.map((item: any, index: number) => (
+                            {products?.map((item: any, index: number) => (
                                 <div key={index} className="col-span-1" data-aos="zoom-in" data-aos-delay="200">
                                     <Product
-                                        idProduct={item.id}
-                                        name={item.name}
-                                        slug={item.slug}
-                                        color={item.classify_1}
-                                        size={item.classify_2}
-                                        type={item.classify_n}
-                                        images={item.images}
-                                        stocks={item.stocks}
+                                        idProduct={item?.id}
+                                        name={item?.name}
+                                        slug={item?.slug}
+                                        color={item?.classify_1}
+                                        size={item?.classify_2}
+                                        type={item?.classify_n}
+                                        images={item?.images}
+                                        stocks={item?.stocks}
                                     />
                                 </div>
                             ))}
@@ -307,7 +314,7 @@ function Home() {
                                         </p>
                                         <Countdown date="2022-12-30T01:02:03" renderer={renderer} />
                                         <div className="mt-6">
-                                            <Link to="/">
+                                            <Link to="/category">
                                                 <Button
                                                     colorScheme="teal"
                                                     className="!py-[25px] !px-[50px] !text-2xl"
@@ -368,7 +375,7 @@ function Home() {
                     </div>
                 </section>
                 {/* Best Accessories */}
-                {/* <section className="container py-10 lg:py-24 ">
+                <section className="container py-10 lg:py-24 ">
                     <div className="title-heading my-5 text-center mb-10">
                         <h3 className="uppercase font-bold text-4xl" data-aos="fade-up" data-aos-delay="200">
                             Thương hiệu yêu thích
@@ -443,7 +450,7 @@ function Home() {
                             <Image className="w-full object-contain" src={images.b_banner} alt={'Best Accessories'} />
                         </div>
                     </div>
-                </section> */}
+                </section>
             </div>
         </>
     );
