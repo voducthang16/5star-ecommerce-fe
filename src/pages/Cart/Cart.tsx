@@ -564,7 +564,7 @@ function Cart() {
                                                 className="object-contain w-full mr-3"
                                                 src={
                                                     cartItem?.image
-                                                        ? `${Config.apiUrl}upload/${cartItem?.image}`
+                                                        ? `${cartItem?.image}`
                                                         : `${Config.apiUrl}upload/${cartItem?.product?.images[0].file_name}`
                                                 }
                                             />
