@@ -8,10 +8,11 @@ import { RiUserSharedLine } from 'react-icons/ri';
 import { TbUserCircle } from 'react-icons/tb';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
-import { FourSquaresIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Logo from '~/components/Logo';
 import Config from '~/config';
+import io from 'socket.io-client';
+
 import { getCart, getCartAsync, getProductInCart } from '~/features/cart/cartSlice';
 import { getUser, resetUser } from '~/features/user/userSlice';
 import { getWishlist, getWishlistAsync } from '~/features/wishlist/wishlistSlice';
@@ -19,6 +20,9 @@ import CartService from '~/services/CartService';
 import { ResponseType } from '~/utils/Types';
 import Search from '../Search';
 import './Header.scss';
+
+let socket;
+
 function Header() {
     const dispatch = useAppDispatch();
     const listCart = useAppSelector(getCart);
@@ -26,6 +30,29 @@ function Header() {
     const infoUser: any = useAppSelector(getUser);
 
     const Navigate = useNavigate();
+    const toast = useToast();
+
+    useEffect(() => {
+        let access_token = localStorage.getItem('access_token');
+        if (access_token) {
+            socket = io(Config.apiUrl, {
+                query: {
+                    token: access_token,
+                },
+            });
+
+            socket.on('new-notification', (data) => {
+                if (data?.data.content) {
+                    toast({
+                        position: 'top-right',
+                        title: data?.data?.content,
+                        duration: 2000,
+                        status: 'info',
+                    });
+                }
+            });
+        }
+    }, []);
 
     useEffect(() => {
         handleScroll();
@@ -34,7 +61,6 @@ function Header() {
         dispatch(getCartAsync());
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productInCart]);
-    const toast = useToast();
     const navigate = useNavigate();
     const handleRemoveCart = (id: number) => {
         CartService.deleteCart(id).then((res: ResponseType) => {
