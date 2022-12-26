@@ -519,9 +519,9 @@ function ProductDetail() {
                                 >
                                     Thêm vào giỏ hàng
                                 </Button>
-                                <span>
+                                {/* <span>
                                     <AiFillHeart className="fill-[#cccccc] text-3xl" />
-                                </span>
+                                </span> */}
                             </div>
                         </div>
                     </div>

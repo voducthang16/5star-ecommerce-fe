@@ -50,6 +50,9 @@ const images: any = {
     size_quan_kaki: require('~/assets/images/size-quan-kaki.jpg'),
     size_quan_tay: require('~/assets/images/size-quan-tay.jpg'),
     size_quan_jean: require('~/assets/images/size-quan-jean.jpg'),
+    store_1: require('~/assets/images/store-1.jpg'),
+    store_2: require('~/assets/images/store-2.jpg'),
+    store_3: require('~/assets/images/store-3.jpg'),
 };
 
 export default images;

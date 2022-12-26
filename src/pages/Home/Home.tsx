@@ -25,6 +25,7 @@ import ProductService from '~/services/ProductService';
 import { ResponseType } from '~/utils/Types';
 import { FormatPriceVND } from '~/utils/FormatPriceVND';
 import Config from '~/config';
+import HomeService from '~/services/HomeService';
 
 function Home() {
     const [productSold, setProductSold] = useState<any>([]);
@@ -51,10 +52,16 @@ function Home() {
             }
         });
     };
-
+    const getBanner = () => {
+        HomeService.GetBanner()
+            .then((res) => setListBanner(res.data.data))
+            .catch((err) => console.log(err));
+    };
+    const [listBanner, setListBanner] = useState<any>([]);
     useEffect(() => {
         getProductTopNew();
         getProductTopSold();
+        getBanner();
     }, []);
 
     return (
@@ -115,18 +122,18 @@ function Home() {
                                     navigation={true}
                                     modules={[Autoplay, Pagination, Navigation, EffectCreative]}
                                 >
-                                    {configSlide.map((slide: any, index: number) => (
+                                    {listBanner?.map((slide: any, index: number) => (
                                         <SwiperSlide key={index}>
                                             <div className="relative pt-12 lg:py-44 cursor-pointer">
                                                 <div className="pb-8 lg:pb-0">
                                                     <span className="desc-active block text-base md:text-xl text-slate-700 font-medium">
-                                                        Trong mùa hè này, chúng tôi đang có 🔥
+                                                        {slide?.sub_title}
                                                     </span>
                                                     <h2
                                                         className="title-active mt-6 font-semibold text-3xl sm:text-4xl md:text-5xl w-[70%]
                                                     xl:text-5xl 2xl:text-6xl !leading-[114%] text-slate-900 relative z-10 break-words"
                                                     >
-                                                        {slide.title}
+                                                        {slide?.title}
                                                     </h2>
                                                     <Link
                                                         className="relative h-auto inline-flex items-center justify-center 
@@ -146,7 +153,7 @@ function Home() {
                                                 <div className="lg:absolute lg:top-0 lg:bottom-0 lg:-right-[1rem] lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl z-[5]">
                                                     <Image
                                                         className="w-full h-full object-contain object-right-top img-active"
-                                                        src={slide.logo}
+                                                        src={`${Config.apiUrl}upload/${slide?.media?.file_name}`}
                                                         alt="Slide"
                                                     />
                                                 </div>
@@ -233,17 +240,18 @@ function Home() {
                             </p>
                         </div>
                         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 mt-10">
-                            {products.map((item: any, index: number) => (
+                            {products?.map((item: any, index: number) => (
                                 <div key={index} className="col-span-1" data-aos="zoom-in" data-aos-delay="200">
                                     <Product
-                                        idProduct={item.id}
-                                        name={item.name}
-                                        slug={item.slug}
-                                        color={item.classify_1}
-                                        size={item.classify_2}
-                                        type={item.classify_n}
-                                        images={item.images}
-                                        stocks={item.stocks}
+                                        idProduct={item?.id}
+                                        name={item?.name}
+                                        brand={item?.brand?.name}
+                                        slug={item?.slug}
+                                        color={item?.classify_1}
+                                        size={item?.classify_2}
+                                        type={item?.classify_n}
+                                        images={item?.images}
+                                        stocks={item?.stocks}
                                     />
                                 </div>
                             ))}

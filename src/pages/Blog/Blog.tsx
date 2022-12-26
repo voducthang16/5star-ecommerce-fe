@@ -111,7 +111,9 @@ function Blog() {
                                                         </span>
                                                         <span className="flex items-center">
                                                             <BsPerson className="mr-1 inline w-4 h-4" />
-                                                            <span>Admin</span>
+                                                            <span>
+                                                                {item?.user?.first_name} {item?.user?.last_name}
+                                                            </span>
                                                         </span>
                                                     </div>
                                                     <Link to={`/blog/${item?.slug}`}>

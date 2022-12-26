@@ -7,9 +7,10 @@ import Config from '~/config';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import ContactService from '~/services/ContactService';
+import images from '~/assets/images';
 function Contact() {
     const [list, setList] = useState([]);
-
+    const imagesStore = [images.store_1, images.store_2, images.store_3];
     const getStoreSystem = () => {
         axios
             .get(`${Config.apiUrl}store-system?perPage=3`)
@@ -143,11 +144,7 @@ function Contact() {
                                     data-aos="fade-left"
                                     data-aos-delay={index * 200}
                                 >
-                                    <img
-                                        className="rounded-[6px]"
-                                        src="https://cartzilla.createx.studio/img/contacts/orlando.jpg"
-                                        alt=""
-                                    />
+                                    <img className="rounded-[6px]" src={imagesStore[index]} alt="" />
                                     <div className="p-[20px] pb-[0] shadow-slate-800 text-left">
                                         <h6 className="mb-[12px] text-[18px] font-semibold">{item?.name}</h6>
                                         <ul>

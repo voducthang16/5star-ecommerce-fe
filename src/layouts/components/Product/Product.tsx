@@ -19,6 +19,7 @@ import { getWishlist, getWishlistAsync, remove } from '~/features/wishlist/wishl
 interface ProductProps {
     idProduct: number;
     name?: string;
+    brand?: string;
     slug?: string;
     color?: any;
     size?: any;
@@ -36,7 +37,7 @@ const variants = {
         scale: 1,
     },
 };
-function Product({ idProduct, name, slug, color, size, images, type = 0, stocks }: ProductProps) {
+function Product({ idProduct, name, brand, slug, color, size, images, type = 0, stocks }: ProductProps) {
     const [imageInCart, setImageInCart] = useState('');
 
     const dispatch = useAppDispatch();
@@ -373,8 +374,8 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
                     )}
                     <div className="mt-4">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="block text-sm font-medium text-[#7d879c]">Thể thao</span>
-                            <Rate className="flex space-x-1" average={3.7} />
+                            <span className="block text-sm font-medium text-[#7d879c]">{brand}</span>
+                            {/* <Rate className="flex space-x-1" average={3.7} /> */}
                         </div>
                         <Link className="block text-base font-semibold text-[#373f50]" to={`/product/${slug}`}>
                             {name}

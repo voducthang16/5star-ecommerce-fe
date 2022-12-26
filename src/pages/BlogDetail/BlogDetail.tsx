@@ -72,14 +72,15 @@ function BlogDetail() {
             .then((res: any) => {
                 let parentTemp: any = [];
                 let a: any = {};
-                res.data.forEach((item: any) => {
+                res.data.data.forEach((item: any) => {
                     if (item.parent_id === null) {
                         parentTemp.push(item);
                     }
                 });
-                res.data.forEach((item: any) => {
+                res.data.data.forEach((item: any) => {
                     if (item.parent_id) {
                         let b = parentTemp.find((parentItem: any) => parentItem.id === item.parent_id);
+                        b.childComment = [];
                         if (b.childComment.length > 0) {
                             b.childComment.push(item);
                         } else {
@@ -90,8 +91,8 @@ function BlogDetail() {
                     }
                 });
                 setRenderCmt(parentTemp);
-                setList(res.data);
-                console.log(res);
+                setList(res.data.data);
+                console.log(res.data.data);
             })
             .catch((err) => console.log(err));
     };
@@ -176,7 +177,7 @@ function BlogDetail() {
                             </div>
                             <div className="mt-[24px]">
                                 <ul className="space-y-4">
-                                    {renderCmt.map((item: any, index: number) => (
+                                    {renderCmt?.map((item: any, index: number) => (
                                         <li key={index}>
                                             {/* parent cmt */}
                                             <div>
@@ -191,7 +192,7 @@ function BlogDetail() {
                                                         </div>
                                                         <div>
                                                             <h5 className="text-[15px] text-[#4a5568] font-[600]">
-                                                                Vo Duc Thang
+                                                                {item?.profile?.first_name} {item?.profile?.last_name}
                                                             </h5>
                                                         </div>
                                                     </div>
@@ -234,7 +235,7 @@ function BlogDetail() {
                                             </div>
                                             {/* rep cmt */}
                                             <div className="ml-20 space-y-4">
-                                                {item.childComment.length > 0 && (
+                                                {item?.childComment.length > 0 && (
                                                     <>
                                                         {item.childComment.map((itemChild: any, index: number) => (
                                                             <div key={index}>
@@ -249,7 +250,8 @@ function BlogDetail() {
                                                                         </div>
                                                                         <div>
                                                                             <h5 className="text-[15px] text-[#4a5568] font-[600]">
-                                                                                Glenn Greer
+                                                                                {item?.profile?.first_name}{' '}
+                                                                                {item?.profile?.last_name}
                                                                             </h5>
                                                                         </div>
                                                                     </div>

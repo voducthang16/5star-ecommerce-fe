@@ -393,11 +393,11 @@ function Header() {
                 {/* MENU */}
                 <div className="menu-header hidden lg:block navbar container h-16">
                     <div className="grid grid-cols-8 gap-4 h-16">
-                        <div className="col-span-2 flex items-center space-x-4">
+                        {/* <div className="col-span-2 flex items-center space-x-4">
                             <FourSquaresIcon width={16} height={16} />
                             <h4 className="text-base">Loại</h4>
-                        </div>
-                        <div className="col-span-4 flex items-center">
+                        </div> */}
+                        <div className="col-start-3 col-span-4 flex items-center">
                             <ul className="flex text-base space-x-8">
                                 <li>
                                     <NavLink
@@ -455,11 +455,11 @@ function Header() {
                         <div className="py-6">
                             <Search />
                             <ul className="flex flex-col text-base space-y-2 mt-2">
-                                <li className="py-2 px-4 bg-slate-50 rounded-md">
+                                {/* <li className="py-2 px-4 bg-slate-50 rounded-md">
                                     <a className="transition-all" href="/">
                                         Loại
                                     </a>
-                                </li>
+                                </li> */}
                                 <li className="py-2 px-4 bg-slate-50 rounded-md">
                                     <Link to={'/'} className="transition-all">
                                         Trang chủ
