@@ -84,7 +84,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
         let dataSendRequest: any = {
             id_product: idStock,
             quantity: 1,
-            image: imageInCart.split('/')[4],
+            image: imageInCart,
         };
         CartService.addToCart(dataSendRequest).then((res: ResponseType) => {
             if (res.statusCode === 201) {
