@@ -9,7 +9,6 @@ function OrderSuccess() {
     const search = useLocation().search;
     const vnpRef = new URLSearchParams(search).get('vnp_TxnRef');
     const vnp_ResponseCode: any = new URLSearchParams(search).get('vnp_ResponseCode');
-    console.log('vnp_ResponseCode: ', vnp_ResponseCode);
     if (vnp_ResponseCode && vnp_ResponseCode === '00') {
         OrderService.PaymentSuccess({ paymen_code: vnpRef }).then((res) => {
             console.log(res);

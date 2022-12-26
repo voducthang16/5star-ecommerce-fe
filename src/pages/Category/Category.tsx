@@ -8,7 +8,7 @@ import {
     Select,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CurrencyInput from 'react-currency-input-field';
 import { Helmet } from 'react-helmet-async';
 import { IoMdClose } from 'react-icons/io';
@@ -18,7 +18,12 @@ import { useLocation, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import Breadcrumb from '~/components/Breadcrumb';
 import { AccessoriesIcon, BagIcon, JeansIcon, ShirtIcon, ShoesIcon, WatchIcon } from '~/components/Icons';
-import { getCategory, getSubCategory } from '~/features/category/categorySlice';
+import {
+    fetchCategoryAsync,
+    fetchSubCategoryAsync,
+    getCategory,
+    getSubCategory,
+} from '~/features/category/categorySlice';
 
 import { AiOutlineFilter } from 'react-icons/ai';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
@@ -43,6 +48,11 @@ function Category() {
     const totalCountProduct = useAppSelector(totalProduct);
     const category = useAppSelector(getCategory);
     const subCategory = useAppSelector(getSubCategory);
+
+    useEffect(() => {
+        dispatch(fetchCategoryAsync);
+        dispatch(fetchSubCategoryAsync);
+    }, []);
 
     const totalPage = Math.ceil(totalCountProduct / 9);
     const handlePageChange = ({ selected }: any) => {
@@ -105,7 +115,7 @@ function Category() {
         return result;
     };
 
-    const icons: any = [<JeansIcon />, <ShoesIcon />, <BagIcon />, <ShirtIcon />, <WatchIcon />, <AccessoriesIcon />];
+    const icons: any = [<ShirtIcon />, <JeansIcon />, <ShoesIcon />, <BagIcon />, <WatchIcon />, <AccessoriesIcon />];
 
     return (
         <>

@@ -23,7 +23,7 @@ const RatingProduct = (data: any) => {
 };
 
 const PaymentSuccess = (data: any) => {
-    return AxiosInstance.post(Config.apiUrl + '/payment-success', data);
+    return AxiosInstance.put(Config.apiUrl + '/payment-success', data);
 };
 
 const OrderService = {
