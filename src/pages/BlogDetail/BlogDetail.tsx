@@ -184,9 +184,9 @@ function BlogDetail() {
                                                 <div className="flex justify-between">
                                                     <div className="flex">
                                                         <div className="h-[60px] w-[60px] mr-[20px]">
-                                                            <img
+                                                            <Image
                                                                 className="w-full h-full rounded-[50%]"
-                                                                src="https://themes.pixelstrap.com/fastkart/assets/images/inner-page/user/1.jpg"
+                                                                src={`${Config.apiUrl}upload/${item?.profile?.avatar?.file_name}`}
                                                                 alt=""
                                                             />
                                                         </div>
@@ -244,7 +244,7 @@ function BlogDetail() {
                                                                         <div className="h-[60px] w-[60px] mr-[20px]">
                                                                             <Image
                                                                                 className="w-full h-full rounded-[50%]"
-                                                                                src="https://themes.pixelstrap.com/fastkart/assets/images/inner-page/user/3.jpg"
+                                                                                src={`${Config.apiUrl}upload/${itemChild?.profile?.avatar?.file_name}`}
                                                                                 alt=""
                                                                             />
                                                                         </div>
