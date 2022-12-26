@@ -65,7 +65,7 @@ export const orderCartSchema = () => {
         phone: Yup.string()
             .required('Vui lòng nhập số điện thoại của bạn')
             .matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/, 'Vui lòng nhập đúng số điện thoại của bạn'),
-        email: Yup.string().email('Please enter correct email').required('Vui lòng nhập email chính xác'),
+        email: Yup.string().email('Vui lòng nhập email chính xác').required('Vui lòng nhập email chính xác'),
         address: Yup.string().required('Vui lòng nhập địa chỉ của bạn'),
     });
 };

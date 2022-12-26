@@ -3,7 +3,18 @@ import { HiShoppingCart } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import './OrderSuccess.scss';
 
+import { useLocation } from 'react-router-dom';
+import OrderService from '~/services/OrderService';
 function OrderSuccess() {
+    const search = useLocation().search;
+    const vnpRef = new URLSearchParams(search).get('vnp_TxnRef');
+    const vnp_ResponseCode: any = new URLSearchParams(search).get('vnp_ResponseCode');
+    console.log('vnp_ResponseCode: ', vnp_ResponseCode);
+    if (vnp_ResponseCode && vnp_ResponseCode === '00') {
+        OrderService.PaymentSuccess({ paymen_code: vnpRef }).then((res) => {
+            console.log(res);
+        });
+    }
     const Navigate = useNavigate();
     return (
         <section className="order-success-comp">
