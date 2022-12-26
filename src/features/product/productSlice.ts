@@ -15,6 +15,7 @@ export interface ProductProps {
 }
 
 export interface ProductState {
+    all: any;
     value: Array<ProductProps>;
     detail: any;
     search: Array<ProductProps>;
@@ -23,6 +24,7 @@ export interface ProductState {
 }
 
 const initialState: ProductState = {
+    all: [],
     value: [],
     total: 0,
     detail: {},
@@ -47,10 +49,16 @@ export const fetchProductAsync = createAsyncThunk('product/fetchProducts', async
     }
 });
 
-
 export const fetchDetailProductAsync = createAsyncThunk('product/fetchDetailProducts', async (slug: string) => {
     const response = await ProductService.getOneProduct(slug);
     return response.data;
+});
+
+export const fetchAll = createAsyncThunk('product/fetchAll', async () => {
+    const response: ResponseType = await ProductService.getAll({});
+    if (response.statusCode === 200) {
+        return response.data;
+    }
 });
 
 export const productSlice = createSlice({
@@ -73,6 +81,10 @@ export const productSlice = createSlice({
             .addCase(fetchDetailProductAsync.fulfilled, (state, action) => {
                 state.status = 'idle';
                 state.detail = action.payload;
+            })
+            .addCase(fetchAll.fulfilled, (state, action) => {
+                state.status = 'idle';
+                state.all = action.payload.data;
             });
     },
 });
@@ -80,6 +92,7 @@ export const productSlice = createSlice({
 // export const { increment, decrement, incrementByAmount } = productSlice.actions;
 
 export const getProducts = (state: RootState) => state.product.value;
+export const getAllProducts = (state: RootState) => state.product.all;
 export const getStatusFetchProduct = (state: RootState) => state.product.status;
 export const totalProduct = (state: RootState) => state.product.total;
 export const getDetail = (state: RootState) => state.product.detail;

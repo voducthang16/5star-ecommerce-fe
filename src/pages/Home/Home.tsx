@@ -18,7 +18,7 @@ import Product from '~/layouts/components/Product';
 import { configSlide, fourStep, specialProduct, threeSmallSlide, sixSmallSlide } from '~/utils/DataMockup/HomePageData';
 
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
-import { fetchProductAsync, getProducts } from '~/features/product/productSlice';
+import { fetchAll, fetchProductAsync, getAllProducts, getProducts } from '~/features/product/productSlice';
 import './Home.scss';
 import { Helmet } from 'react-helmet-async';
 import ProductService from '~/services/ProductService';
@@ -31,9 +31,9 @@ function Home() {
     const [productNew, setProductNew] = useState<any>([]);
     const dispatch = useAppDispatch();
     const products = useAppSelector(getProducts);
-
     useEffect(() => {
         dispatch(fetchProductAsync({ page: 0, perPage: 8 }));
+        dispatch(fetchAll());
     }, [dispatch]);
 
     const getProductTopSold = () => {

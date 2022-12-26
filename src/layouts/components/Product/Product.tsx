@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '~/app/hooks';
 import Image from '~/components/Image';
 import Config from '~/config';
 import { addToCart, getProductInCart, updateToCart } from '~/features/cart/cartSlice';
-import { getProducts } from '~/features/product/productSlice';
+import { getAllProducts, getProducts } from '~/features/product/productSlice';
 import CartService from '~/services/CartService';
 import WishlistService from '~/services/WishlistService';
 import { ResponseType } from '~/utils/Types';
@@ -41,6 +41,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
 
     const dispatch = useAppDispatch();
     const products = useAppSelector(getProducts);
+    const allProduct = useAppSelector(getAllProducts);
     const productAddCart = useAppSelector(getProductInCart);
     const colorArray: any = color ? Object?.entries(color) : '';
     const sizeArray: any = size ? Object?.entries(size) : '';
@@ -148,7 +149,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
         }
 
         if (type === 0) {
-            const find_product = products.find((item: any) => item.id === idProduct) as any;
+            const find_product = allProduct.find((item: any) => item.id === idProduct) as any;
             let stockProduct = find_product?.stocks;
             if (stockProduct?.length === 1) {
                 let idAttr = stockProduct[0].id;
@@ -156,7 +157,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
             }
         } else if (type === 1) {
             if (idColor) {
-                const find_product = products.find((item: any) => item.id === idProduct) as any;
+                const find_product = allProduct.find((item: any) => item.id === idProduct) as any;
                 idAttr = find_product.stocks.find((item: any) => item.id_classify_1 === idColor).id;
                 requestAddToCart(idAttr);
             } else {
@@ -171,7 +172,7 @@ function Product({ idProduct, name, slug, color, size, images, type = 0, stocks 
             }
         } else if (type === 2) {
             if (idColor && idSize) {
-                const find_product = products.find((item: any) => item.id === idProduct) as any;
+                const find_product = allProduct.find((item: any) => item.id === idProduct) as any;
                 idAttr = find_product.stocks.find(
                     (item: any) => item.id_classify_1 === idColor && item.id_classify_2 === idSize,
                 ).id;
