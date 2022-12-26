@@ -10,6 +10,7 @@ import {
 
 import { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { AiOutlineEye } from 'react-icons/ai';
 import { BsCalendar4, BsChatLeft, BsFillReplyFill, BsHandThumbsUp, BsPerson, BsSearch } from 'react-icons/bs';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/app/hooks';
@@ -105,7 +106,6 @@ function BlogDetail() {
         const cmtElm: any = document.querySelector(`.cmt-${id}`);
         cmtElm?.classList.toggle('hidden');
     };
-    console.log(detail);
     return (
         <>
             <Helmet>
@@ -142,7 +142,7 @@ function BlogDetail() {
                                     <li>
                                         <div className="flex items-center">
                                             <BsPerson className="w-[16px] h-[16px] mr-[3px]" />
-                                            <span>Caroline</span>
+                                            <span>ADMIN</span>
                                         </div>
                                     </li>
                                     <li>
@@ -155,6 +155,12 @@ function BlogDetail() {
                                         <div className="flex items-center">
                                             <BsChatLeft className="w-[16px] h-[16px] mr-[3px]" />
                                             <span>{list.length > 0 ? list.length : 0} nhận xét</span>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div className="flex items-center">
+                                            <AiOutlineEye className="w-[16px] h-[16px] mr-[3px]" />
+                                            <span>{list.views > 0 ? list.views : 0} nhận xét</span>
                                         </div>
                                     </li>
                                 </ul>
@@ -184,7 +190,6 @@ function BlogDetail() {
                                                             />
                                                         </div>
                                                         <div>
-                                                            <h6 className="mb-[6px] text-[13px]">10/18/2022</h6>
                                                             <h5 className="text-[15px] text-[#4a5568] font-[600]">
                                                                 Vo Duc Thang
                                                             </h5>
@@ -243,9 +248,6 @@ function BlogDetail() {
                                                                             />
                                                                         </div>
                                                                         <div>
-                                                                            <h6 className="mb-[6px] text-[13px]">
-                                                                                30 Jan, 2022
-                                                                            </h6>
                                                                             <h5 className="text-[15px] text-[#4a5568] font-[600]">
                                                                                 Glenn Greer
                                                                             </h5>

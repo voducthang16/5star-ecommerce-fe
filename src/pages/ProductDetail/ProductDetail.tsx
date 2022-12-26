@@ -23,7 +23,13 @@ import { PackageIcon } from '~/components/Icons';
 import Image from '~/components/Image';
 import Loading from '~/components/Loading';
 import Config from '~/config';
-import { fetchDetailProductAsync, fetchProductAsync, getDetail, getProducts } from '~/features/product/productSlice';
+import {
+    fetchDetailProductAsync,
+    fetchProductAsync,
+    getAllProducts,
+    getDetail,
+    getProducts,
+} from '~/features/product/productSlice';
 import Product from '~/layouts/components/Product';
 import Rate from '~/layouts/components/Rate';
 import { FormatPriceVND } from '~/utils/FormatPriceVND';
@@ -44,6 +50,7 @@ import { ResponseType } from '~/utils/Types';
 import { addToCart, getProductInCart, updateToCart } from '~/features/cart/cartSlice';
 import RatingService from '~/services/RatingService';
 import { convertDate } from '../Blog/Blog';
+import ProductService from '~/services/ProductService';
 function ProductDetail() {
     const dispatch = useAppDispatch();
     const detail = useAppSelector(getDetail);
@@ -58,9 +65,9 @@ function ProductDetail() {
     const [listRating, setListRating] = useState<any>([]);
 
     const location = useLocation();
-    useEffect(() => {
-        dispatch(fetchProductAsync({ page: 0 }));
-    }, [dispatch]);
+    // useEffect(() => {
+    //     dispatch(fetchProductAsync({ page: 0 }));
+    // }, [dispatch]);
 
     useEffect(() => {
         dispatch(fetchDetailProductAsync(slug!));
@@ -68,6 +75,7 @@ function ProductDetail() {
     }, [slug]);
     const infoUser: any = useAppSelector(getUser);
     const productAddCart = useAppSelector(getProductInCart);
+    const allProduct = useAppSelector(getAllProducts);
 
     const handleQuantity = (type: string) => {
         if (type === 'asc') {
@@ -85,6 +93,7 @@ function ProductDetail() {
         let quantity = +e.target.value;
         setQuantity(quantity);
     };
+    const [productLq, setProductLq] = useState<any>([]);
 
     const color = Object.entries(detail?.classify_1 || {});
     const size = Object.entries(detail?.classify_2 || {});
@@ -116,13 +125,25 @@ function ProductDetail() {
             return string;
         },
     };
-
+    const [quantityCheck, setQuantityCheck] = useState<any>(200);
     const requestAddToCart = (idStock: number) => {
+        if (quantity > quantityCheck || quantity > detail?.stocks[0].quantity) {
+            toast({
+                title: 'Thông báo',
+                description: 'Vui lòng mua số lượng nhỏ hơn',
+                status: 'warning',
+                position: 'bottom-right',
+                duration: 3000,
+                isClosable: true,
+            });
+            return;
+        }
         let dataSendRequest: any = {
             id_product: idStock,
             quantity: quantity,
-            image: imgInCart,
+            image: `${Config.apiUrl}upload/${imgInCart}`,
         };
+        console.log(dataSendRequest);
         CartService.addToCart(dataSendRequest).then((res: ResponseType) => {
             if (res.statusCode === 201) {
                 const existProduct = productAddCart.find((item: any) => item.id_product === idStock);
@@ -146,6 +167,40 @@ function ProductDetail() {
             }
         });
     };
+    const getQtt = (idProduct: number, type: number) => {
+        // e.preventDefault();
+        let idColor: number = 0;
+        let idSize: number = 0;
+        const colorArray = document.querySelectorAll('.color');
+        colorArray.forEach((item: any) => {
+            if (item.checked === true) {
+                idColor = +item.value;
+            }
+        });
+        const sizeArray = document.querySelectorAll('.size');
+        sizeArray.forEach((item: any) => {
+            if (item.checked === true) {
+                idSize = +item.value;
+            }
+        });
+        if (type === 2) {
+            if (idColor && idSize) {
+                const find_product = allProduct.find((item: any) => item.id === idProduct) as any;
+                const productAttr = find_product.stocks.find(
+                    (item: any) => item.id_classify_1 === idColor && item.id_classify_2 === idSize,
+                );
+                const quantityAttr = productAttr.quantity;
+                setQuantityCheck(quantityAttr);
+            }
+        } else if (type === 1) {
+            if (idColor) {
+                const find_product = allProduct.find((item: any) => item.id === idProduct) as any;
+                const productAttr = find_product.stocks.find((item: any) => item.id_classify_1 === idColor);
+                const quantityAttr = productAttr.quantity;
+                setQuantityCheck(quantityAttr);
+            }
+        }
+    };
 
     const handleAddToCart = (e: any, idProduct: number, type: number) => {
         e.preventDefault();
@@ -162,7 +217,7 @@ function ProductDetail() {
         }
         let idColor: number = 0;
         let idSize: number = 0;
-        let idAttr: number = 0;
+        let idAttr: any = 0;
         const colorArray = document.querySelectorAll('.color');
         colorArray.forEach((item: any) => {
             if (item.checked === true) {
@@ -175,7 +230,6 @@ function ProductDetail() {
                 idSize = +item.value;
             }
         });
-
         if (type === 0) {
             const find_product = products.find((item: any) => item.id === idProduct) as any;
             let stockProduct = find_product?.stocks;
@@ -201,9 +255,10 @@ function ProductDetail() {
         } else if (type === 2) {
             if (idColor && idSize) {
                 const find_product = products.find((item: any) => item.id === idProduct) as any;
-                idAttr = find_product.stocks.find(
+                const productAttr = find_product.stocks.find(
                     (item: any) => item.id_classify_1 === idColor && item.id_classify_2 === idSize,
-                ).id;
+                );
+                idAttr = productAttr.id;
                 requestAddToCart(idAttr);
             } else if (idSize) {
                 toast({
@@ -263,11 +318,28 @@ function ProductDetail() {
         //     })
         //     .catch((err) => console.log(err));
     };
+
+    const getProductLq = () => {
+        ProductService.getAllProductLq({
+            fromPrice: Math.min(...money) - 100000,
+            toPrice: Math.min(...money) + 100000,
+            id_category: detail?.id_category,
+        })
+            .then((res) => {
+                if (res.statusCode === 200) {
+                    setProductLq(res.data.data);
+                }
+            })
+            .catch((err) => console.log(err));
+    };
+
     useEffect(() => {
         getRating();
         setTimeout(() => {
             setLoading(false);
         }, 2000);
+        setQuantityCheck(200);
+        getProductLq();
     }, [detail?.id]);
     const [filterBg, setFilterBg] = useState(0);
     return loading ? (
@@ -318,6 +390,9 @@ function ProductDetail() {
                                 <span className="ml-2 inline-block text-sm text-[#aeb4be]">
                                     Đã bán (web): {detail?.sold}
                                 </span>
+                                <span className="ml-2 inline-block text-sm text-[#aeb4be]">
+                                    Lượt xem: {detail?.views}
+                                </span>
                             </div>
                             <div className="flex space-x-4 text-base items-end">
                                 <span className="font-semibold">{FormatPriceVND(Math.min(...money))}</span>
@@ -338,6 +413,7 @@ function ProductDetail() {
                                                     id={`c_${detail?.id}_${value}`}
                                                     value={value}
                                                     onClick={() => {
+                                                        getQtt(detail?.id, detail?.classify_n);
                                                         setImgInCart(detail?.images[index]?.file_name);
                                                     }}
                                                 />
@@ -365,6 +441,7 @@ function ProductDetail() {
                                         {size?.map(([key, value]: any, index: any) => (
                                             <div key={index}>
                                                 <input
+                                                    onClick={() => getQtt(detail?.id, detail?.classify_n)}
                                                     className="size w-px h-px appearance-none"
                                                     type="radio"
                                                     value={value}
@@ -428,7 +505,9 @@ function ProductDetail() {
                                         <AiOutlinePlus />
                                     </span>
                                 </div>
-                                <span className="text-sm text-gray-600/90">100 sản phẩm</span>
+                                <span className="text-sm text-gray-600/90">
+                                    {detail?.stocks.length > 1 ? quantityCheck : detail?.stocks[0].quantity} sản phẩm
+                                </span>
                             </div>
                             <div className="flex items-center space-x-4 pb-6">
                                 <Button
@@ -594,18 +673,18 @@ function ProductDetail() {
                 </div>
                 <div className="container">
                     <Swiper slidesPerView={4} spaceBetween={30} navigation={true} modules={[Navigation]}>
-                        {products.map((item: any, index: number) => (
+                        {productLq?.map((item: any, index: number) => (
                             <SwiperSlide key={index}>
                                 <div key={index} className="col-span-1" data-aos="zoom-in" data-aos-delay="200">
                                     <Product
-                                        idProduct={item.id}
-                                        name={item.name}
-                                        slug={item.slug}
-                                        color={item.classify_1}
-                                        size={item.classify_2}
-                                        type={item.classify_n}
-                                        images={item.images}
-                                        stocks={item.stocks}
+                                        idProduct={item?.id}
+                                        name={item?.name}
+                                        slug={item?.slug}
+                                        color={item?.classify_1}
+                                        size={item?.classify_2}
+                                        type={item?.classify_n}
+                                        images={item?.images}
+                                        stocks={item?.stocks}
                                     />
                                 </div>
                             </SwiperSlide>
