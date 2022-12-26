@@ -216,7 +216,7 @@ function Cart() {
                 payment_method_id: +values?.payment,
                 total: totalCart + fee,
             };
-            console.log('dataSendRequest: ', dataSendRequest);
+
             OrderService.CreateOrder(dataSendRequest).then((res: ResponseType) => {
                 if (res.statusCode === 201) {
                     toast({
@@ -465,7 +465,7 @@ function Cart() {
                                                         className="hidden"
                                                         type="radio"
                                                         name="type_payment"
-                                                        value="2"
+                                                        value="1"
                                                         id="cod"
                                                         onChange={(e) =>
                                                             formik.setFieldValue('payment', +e.target.value)
