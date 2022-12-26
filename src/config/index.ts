@@ -1,5 +1,7 @@
 const Config = {
-    apiUrl: 'https://5starfashion.xyz/api/',
-    // apiUrl: 'http://localhost:4000/',
+
+    apiUrl: 'http://5starfashion.xyz/api/',
+    // apiUrl: 'http://14.225.254.164:3001/',
+
 };
 export default Config;

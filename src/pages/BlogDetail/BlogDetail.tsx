@@ -90,6 +90,7 @@ function BlogDetail() {
                 });
                 setRenderCmt(parentTemp);
                 setList(res.data);
+                console.log(res);
             })
             .catch((err) => console.log(err));
     };
@@ -104,6 +105,7 @@ function BlogDetail() {
         const cmtElm: any = document.querySelector(`.cmt-${id}`);
         cmtElm?.classList.toggle('hidden');
     };
+    console.log(detail);
     return (
         <>
             <Helmet>

@@ -58,6 +58,7 @@ export const cartSlice = createSlice({
         },
         clearCart: (state) => {
             state.value = [];
+            state.product = [];
         },
         clearCoupon: (state) => {
             state.coupon = {};

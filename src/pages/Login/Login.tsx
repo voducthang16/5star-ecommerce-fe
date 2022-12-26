@@ -85,7 +85,7 @@ const Login = () => {
                     if (accessToken) {
                         localStorage.setItem('access_token', accessToken);
                         Navigate('/');
-                        dispatch(addUser(res?.data?.user_info.profile));
+                        dispatch(addUser(res?.data?.user_info));
                         toast({
                             position: 'top-right',
                             title: 'Đăng nhập thành công',
