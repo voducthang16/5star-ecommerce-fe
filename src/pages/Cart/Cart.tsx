@@ -200,6 +200,10 @@ function Cart() {
             listCart.forEach((item: any) => {
                 products.push({ id_product: item.id, quantity: +item.quantity });
             });
+            let couponId = null;
+            if (coupon) {
+                couponId = String(coupon?.id);
+            }
 
             let address = `${values?.address}, ${wardName?.name}, ${districtName?.name}, ${cityName?.name}`;
             let dataSendRequest = {
@@ -208,7 +212,7 @@ function Cart() {
                 phone: values.phone,
                 note: values.note,
                 products,
-                coupon_id: String(coupon?.id) || null,
+                coupon_id: couponId,
                 payment_method_id: +values?.payment,
                 total: totalCart + fee,
             };
