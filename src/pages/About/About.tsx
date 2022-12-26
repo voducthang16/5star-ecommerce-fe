@@ -1,5 +1,4 @@
 import { BiRightArrowAlt } from 'react-icons/bi';
-import { BsCartCheck } from 'react-icons/bs';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import images from '~/assets/images';
 import Breadcrumb from '~/components/Breadcrumb';
@@ -8,7 +7,50 @@ import Rate from '~/layouts/components/Rate';
 import { fourStepAbout } from '~/utils/DataMockup/AboutPageData';
 import './About.scss';
 import { Helmet } from 'react-helmet-async';
+import { HappyUser, Payment, Product, FastDeliveryIcon } from '~/components/Icons';
+import { AiOutlineComment, AiOutlineShoppingCart } from 'react-icons/ai';
+import RatingService from '~/services/RatingService';
+import { useState, useEffect } from 'react';
+import Config from '~/config';
 function About() {
+    const fakeData = [
+        {
+            title: 'Khách hàng hạnh phúc',
+            content: 'Mục tiêu của chúng tôi là mang đến trải nghiệm tốt nhất cho người tiêu dùng và làm họ hạnh phúc',
+            icon: <HappyUser width={48} height={48} className="fill-primary" />,
+        },
+        {
+            title: 'Thanh toán tiện lợi',
+            content: 'Quý khách hàng có thể tùy chọn việc thanh toán online hoặc thanh toán khi nhận hàng dễ dàng',
+            icon: <Payment width={48} height={48} className="fill-primary" />,
+        },
+        {
+            title: 'Nhiều loại sản phẩm',
+            content: '5star cung cấp nhiều loại sản phẩm giúp khách hàng có thể tìm kiếm những sản phẩm phù hợp',
+            icon: <Product width={48} height={48} className="fill-primary" />,
+        },
+        {
+            title: 'Cập nhật trạng thái đơn hàng',
+            content: 'Trải nghiệm mua sắm sẽ tối ưu hơn khi bạn biết được đơn hàng của mình đang được giao đến bạn',
+            icon: <AiOutlineShoppingCart />,
+        },
+        {
+            title: 'Tối ưu lựa chọn giao hàng',
+            content: 'Chúng tôi có hai hình thức giao hàng dành cho bạn là giao hàng nhanh và giao hàng tiết kiệm',
+            icon: <FastDeliveryIcon width={48} height={48} className="fill-primary" />,
+        },
+        {
+            title: 'Nhận xét của nhiều khách hàng',
+            content: 'Bạn sẽ có được nhiều thông tin hữu ích thông qua những đánh giá của các khách hàng khác',
+            icon: <AiOutlineComment />,
+        },
+    ];
+    const [list5Star, setList5Star] = useState<any>([]);
+    useEffect(() => {
+        RatingService.getRate5Star()
+            .then((res) => setList5Star(res.data.data))
+            .catch((err) => console.log(err));
+    }, []);
     return (
         <>
             <Helmet>
@@ -116,18 +158,15 @@ function About() {
                                 clickable: true,
                             }}
                         >
-                            {[1, 2, 3, 4, 5, 6].map((index) => (
+                            {fakeData.map((item: any, index) => (
                                 <SwiperSlide key={index}>
                                     <div className="item-slider cursor-pointer" data-aos="zoom-in-up">
                                         <div className="p-[28px] rounded-[22px] bg-[#fff] mr-[12px]">
                                             <span className="icon text-[3rem] text-primary mb-2 inline-block">
-                                                <BsCartCheck />
+                                                {item.icon}
                                             </span>
-                                            <h4 className="text-[22px]">Khách hàng hạnh phúc</h4>
-                                            <p className="text-[14px] leading-[1.7]">
-                                                Mục tiêu của chúng tôi là mang đến trải nghiệm tốt nhất cho người tiêu
-                                                dùng và làm họ hạnh phúc
-                                            </p>
+                                            <h4 className="text-[22px]">{item.title}</h4>
+                                            <p className="text-[14px] leading-[1.7]">{item.content}</p>
                                         </div>
                                     </div>
                                 </SwiperSlide>
@@ -236,31 +275,27 @@ function About() {
                             }}
                             modules={[]}
                         >
-                            {[1, 2, 3, 4, 5, 6].map((index) => (
+                            {list5Star?.map((item: any, index: number) => (
                                 <SwiperSlide key={index}>
                                     <div className="item-slider cursor-pointer" data-aos="zoom-in-up">
                                         <div className="p-[18px] rounded-[10px] bg-[#fff] mr-[12px]">
-                                            <Rate className="flex space-x-1" average={4} />
+                                            <Rate className="flex space-x-1" average={5} />
                                             <h3 className="mt-[10px] mb-[13px] text-[20px] font-[400] leading-6">
                                                 Đánh giá chất lượng
                                             </h3>
-                                            <p className="mb-6 text-sm text-[#4a5568]">
-                                                Sản phẩm chất lượng, trao đổi trả hàng uy tín. Áo đẹp chuẩn form người,
-                                                mẫu mã đa dạng. Mọi người nên ủng hộ để cửa hàng ngày càng phát triển ạ
-                                                !
-                                            </p>
+                                            <p className="mb-6 text-sm text-[#4a5568]">{item?.content}</p>
                                             <div className="flex">
                                                 <div className="w-[66px] mr-[12px]">
-                                                    <img
-                                                        className="w-full h-full object-contain rounded-[8px]"
-                                                        src="https://themes.pixelstrap.com/fastkart/assets/images/inner-page/user/1.jpg"
+                                                    <Image
+                                                        className="w-16 h-16 rounded-full"
+                                                        src={`${Config.apiUrl}upload/${item?.user?.avatar?.file_name}`}
                                                         alt=""
                                                     />
                                                 </div>
 
                                                 <div className="flex flex-col justify-center">
                                                     <h4 className="text-[16px] text-primary font-[700]">
-                                                        Nguyễn Thị Loan
+                                                        {item?.user?.last_name} {item?.user?.first_name}
                                                     </h4>
                                                 </div>
                                             </div>

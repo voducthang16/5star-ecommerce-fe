@@ -186,7 +186,10 @@ function Blog() {
                                         <AccordionPanel>
                                             <div>
                                                 {recentPosts?.map((item: any, index: number) => (
-                                                    <div className="min-h-[74px] pt-[16px] flex items-center">
+                                                    <div
+                                                        key={index}
+                                                        className="min-h-[74px] pt-[16px] flex items-center"
+                                                    >
                                                         <div className="w-[110px]">
                                                             <Link className="w-full h-full" to="#">
                                                                 <Image

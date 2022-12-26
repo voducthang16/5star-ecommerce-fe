@@ -149,7 +149,7 @@ function Contact() {
                                         alt=""
                                     />
                                     <div className="p-[20px] pb-[0] shadow-slate-800 text-left">
-                                        <h6 className="mb-[12px] text-[18px] font-semibold">{item.name}</h6>
+                                        <h6 className="mb-[12px] text-[18px] font-semibold">{item?.name}</h6>
                                         <ul>
                                             <li
                                                 className="mb-[12px] pb-[16px] flex text-[14px] border-b border-solid border-[#e3e9ef]"
@@ -158,7 +158,7 @@ function Contact() {
                                                 <BsGeoAlt className="text-primary text-3xl text-[20px]" />
                                                 <div className="pl-[16px] text-base">
                                                     <span>Địa chỉ</span>
-                                                    <p>{item.address}</p>
+                                                    <p>{item?.address}</p>
                                                 </div>
                                             </li>
                                             <li
@@ -168,7 +168,7 @@ function Contact() {
                                                 <BsTelephone className="text-primary text-3xl text-[20px]" />
                                                 <div className="pl-[16px] text-base">
                                                     <span>Liên hệ</span>
-                                                    <p>{item.phone}</p>
+                                                    <p>{item?.phone}</p>
                                                 </div>
                                             </li>
                                             <li
@@ -178,7 +178,7 @@ function Contact() {
                                                 <MdOutlineAttachEmail className="text-primary text-3xl text-[20px]" />
                                                 <div className="pl-[16px] text-base">
                                                     <span>Email</span>
-                                                    <p>{item.email}</p>
+                                                    <p>{item?.email}</p>
                                                 </div>
                                             </li>
                                         </ul>

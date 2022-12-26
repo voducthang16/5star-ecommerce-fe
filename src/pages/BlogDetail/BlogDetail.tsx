@@ -91,6 +91,7 @@ function BlogDetail() {
                 });
                 setRenderCmt(parentTemp);
                 setList(res.data);
+                console.log(res);
             })
             .catch((err) => console.log(err));
     };
@@ -105,6 +106,7 @@ function BlogDetail() {
         const cmtElm: any = document.querySelector(`.cmt-${id}`);
         cmtElm?.classList.toggle('hidden');
     };
+    console.log(detail);
     return (
         <>
             <Helmet>
@@ -483,7 +485,7 @@ function BlogDetail() {
                         >
                             <Image
                                 className="absolute top-0 right-0 bottom-0 left-1/2 -translate-x-1/2 w-ful h-full"
-                                src={`${Config.apiUrl}upload/${detail?.media.file_name}`}
+                                src={`${Config.apiUrl}upload/${detail?.media?.file_name}`}
                                 alt=""
                             />
                             <div className="w-full absolute bottom-0 px-[15px] pt-[55px] pb-[40px] bg-gradient-to-r from-[#fff0] to-[#ffffff]">
