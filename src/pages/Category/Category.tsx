@@ -50,9 +50,9 @@ function Category() {
     const subCategory = useAppSelector(getSubCategory);
 
     useEffect(() => {
-        dispatch(fetchCategoryAsync);
-        dispatch(fetchSubCategoryAsync);
-    }, []);
+        dispatch(fetchCategoryAsync());
+        dispatch(fetchSubCategoryAsync());
+    }, [dispatch]);
 
     const totalPage = Math.ceil(totalCountProduct / 9);
     const handlePageChange = ({ selected }: any) => {

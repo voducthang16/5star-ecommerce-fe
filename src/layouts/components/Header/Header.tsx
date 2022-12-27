@@ -32,27 +32,27 @@ function Header() {
     const Navigate = useNavigate();
     const toast = useToast();
 
-    useEffect(() => {
-        let access_token = localStorage.getItem('access_token');
-        if (access_token) {
-            socket = io(Config.apiUrl, {
-                query: {
-                    token: access_token,
-                },
-            });
+    // useEffect(() => {
+    //     let access_token = localStorage.getItem('access_token');
+    //     if (access_token) {
+    //         socket = io(Config.apiUrl, {
+    //             query: {
+    //                 token: access_token,
+    //             },
+    //         });
 
-            socket.on('new-notification', (data) => {
-                if (data?.data.content) {
-                    toast({
-                        position: 'top-right',
-                        title: data?.data?.content,
-                        duration: 2000,
-                        status: 'info',
-                    });
-                }
-            });
-        }
-    }, []);
+    //         socket.on('new-notification', (data) => {
+    //             if (data?.data.content) {
+    //                 toast({
+    //                     position: 'top-right',
+    //                     title: data?.data?.content,
+    //                     duration: 2000,
+    //                     status: 'info',
+    //                 });
+    //             }
+    //         });
+    //     }
+    // }, []);
 
     useEffect(() => {
         handleScroll();
