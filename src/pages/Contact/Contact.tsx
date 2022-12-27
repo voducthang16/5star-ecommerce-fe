@@ -28,7 +28,7 @@ function Contact() {
     const onSubmit = (e: any) => {
         e.preventDefault();
         const name = document.querySelector('#name') as any;
-        const mail = document.querySelector('#name') as any;
+        const mail = document.querySelector('#mail') as any;
         const phone = document.querySelector('#phone') as any;
         const message = document.querySelector('#message') as any;
         const data = {
